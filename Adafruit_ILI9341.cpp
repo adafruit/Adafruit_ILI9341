@@ -48,11 +48,18 @@ void Adafruit_ILI9341::spiwrite(uint8_t c) {
   //Serial.print("0x"); Serial.print(c, HEX); Serial.print(", ");
 
   if (hwSPI) {
-    uint8_t backupSPCR = SPCR;
+#if defined (__AVR__)
+      uint8_t backupSPCR = SPCR;
     SPCR = mySPCR;
     SPDR = c;
     while(!(SPSR & _BV(SPIF)));
     SPCR = backupSPCR;
+#elif defined (__arm__)
+    SPI.setClockDivider(11); // 8-ish MHz (full! speed!)
+    SPI.setBitOrder(MSBFIRST);
+    SPI.setDataMode(SPI_MODE0);
+    SPI.transfer(c);
+#endif
   } else {
     // Fast SPI bitbang swiped from LPD8806 library
     for(uint8_t bit = 0x80; bit; bit >>= 1) {
@@ -150,11 +157,18 @@ void Adafruit_ILI9341::begin(void) {
   dcpinmask = digitalPinToBitMask(_dc);
 
   if(hwSPI) { // Using hardware SPI
+#if defined (__AVR__)
     SPI.begin();
     SPI.setClockDivider(SPI_CLOCK_DIV2); // 8 MHz (full! speed!)
     SPI.setBitOrder(MSBFIRST);
     SPI.setDataMode(SPI_MODE0);
     mySPCR = SPCR;
+#elif defined (__arm__)
+      SPI.begin();
+      SPI.setClockDivider(11); // 8-ish MHz (full! speed!)
+      SPI.setBitOrder(MSBFIRST);
+      SPI.setDataMode(SPI_MODE0);
+#endif
   } else {
     pinMode(_sclk, OUTPUT);
     pinMode(_mosi, OUTPUT);
@@ -488,14 +502,19 @@ uint8_t Adafruit_ILI9341::spiread(void) {
   uint8_t r = 0;
 
   if (hwSPI) {
-
+#if defined (__AVR__)
     uint8_t backupSPCR = SPCR;
     SPCR = mySPCR;
     SPDR = 0x00;
     while(!(SPSR & _BV(SPIF)));
     r = SPDR;
     SPCR = backupSPCR;
-
+#elif defined (__arm__)
+    SPI.setClockDivider(11); // 8-ish MHz (full! speed!)
+    SPI.setBitOrder(MSBFIRST);
+    SPI.setDataMode(SPI_MODE0);
+    r = SPI.transfer(0x00);
+#endif
   } else {
 
     for (uint8_t i=0; i<8; i++) {
