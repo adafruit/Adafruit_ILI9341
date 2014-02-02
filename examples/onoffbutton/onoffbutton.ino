@@ -1,3 +1,8 @@
+//This example implements a simple sliding On/Off button. The example
+// demonstrates drawing and touch operations.
+//
+//Thanks to Adafruit forums member Asteroid for the original sketch!
+//
 #include <Adafruit_GFX.h>
 #include <SPI.h>
 #include <Wire.h>
