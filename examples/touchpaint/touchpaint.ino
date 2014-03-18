@@ -46,13 +46,14 @@ void setup(void) {
   Serial.begin(9600);
   Serial.println(F("Touch Paint!"));
   
+  tft.begin();
+
   if (!ts.begin()) {
     Serial.println("Couldn't start touchscreen controller");
     while (1);
   }
   Serial.println("Touchscreen started");
   
-  tft.begin();
   tft.fillScreen(ILI9341_BLACK);
   
   // make the color selection boxes
