@@ -54,6 +54,8 @@ void Adafruit_ILI9341::spiwrite(uint8_t c) {
     SPDR = c;
     while(!(SPSR & _BV(SPIF)));
     SPCR = backupSPCR;
+#elif defined(TEENSYDUINO)
+    SPI.transfer(c);
 #elif defined (__arm__)
     SPI.setClockDivider(11); // 8-ish MHz (full! speed!)
     SPI.setBitOrder(MSBFIRST);
@@ -82,7 +84,7 @@ void Adafruit_ILI9341::spiwrite(uint8_t c) {
 void Adafruit_ILI9341::writecommand(uint8_t c) {
   *dcport &=  ~dcpinmask;
   //digitalWrite(_dc, LOW);
-  *clkport &= ~clkpinmask;
+  //*clkport &= ~clkpinmask; // clkport is a NULL pointer when hwSPI==true
   //digitalWrite(_sclk, LOW);
   *csport &= ~cspinmask;
   //digitalWrite(_cs, LOW);
@@ -97,7 +99,7 @@ void Adafruit_ILI9341::writecommand(uint8_t c) {
 void Adafruit_ILI9341::writedata(uint8_t c) {
   *dcport |=  dcpinmask;
   //digitalWrite(_dc, HIGH);
-  *clkport &= ~clkpinmask;
+  //*clkport &= ~clkpinmask; // clkport is a NULL pointer when hwSPI==true
   //digitalWrite(_sclk, LOW);
   *csport &= ~cspinmask;
   //digitalWrite(_cs, LOW);
@@ -163,6 +165,11 @@ void Adafruit_ILI9341::begin(void) {
     SPI.setBitOrder(MSBFIRST);
     SPI.setDataMode(SPI_MODE0);
     mySPCR = SPCR;
+#elif defined(TEENSYDUINO)
+    SPI.begin();
+    SPI.setClockDivider(SPI_CLOCK_DIV2); // 8 MHz (full! speed!)
+    SPI.setBitOrder(MSBFIRST);
+    SPI.setDataMode(SPI_MODE0);
 #elif defined (__arm__)
       SPI.begin();
       SPI.setClockDivider(11); // 8-ish MHz (full! speed!)
@@ -509,6 +516,8 @@ uint8_t Adafruit_ILI9341::spiread(void) {
     while(!(SPSR & _BV(SPIF)));
     r = SPDR;
     SPCR = backupSPCR;
+#elif defined(TEENSYDUINO)
+    r = SPI.transfer(0x00);
 #elif defined (__arm__)
     SPI.setClockDivider(11); // 8-ish MHz (full! speed!)
     SPI.setBitOrder(MSBFIRST);
