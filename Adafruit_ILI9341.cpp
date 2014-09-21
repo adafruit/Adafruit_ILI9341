@@ -271,7 +271,7 @@ void Adafruit_ILI9341::begin(void) {
   writedata(0x10);   //SAP[2:0];BT[3:0] 
  
   writecommand(ILI9341_VMCTR1);    //VCM control 
-  writedata(0x3e); //对比度调节
+  writedata(0x3e); //露脭卤脠露脠碌梅陆脷
   writedata(0x28); 
   
   writecommand(ILI9341_VMCTR2);    //VCM control2 
@@ -593,7 +593,7 @@ uint8_t Adafruit_ILI9341::readcommand8(uint8_t c, uint8_t index) {
    digitalWrite(_cs, HIGH);
 
    digitalWrite(_dc, LOW);
-   digitalWrite(_sclk, LOW);
+   if (!hwSPI) digitalWrite(_sclk, LOW);
    digitalWrite(_cs, LOW);
    spiwrite(c);
  
