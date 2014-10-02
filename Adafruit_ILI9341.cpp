@@ -20,6 +20,7 @@
 #include "wiring_private.h"
 #include <SPI.h>
 
+#ifndef ILI9341_USE_HW_SPI
 // Constructor when using software SPI.  All output pins are configurable.
 Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t mosi,
 				   int8_t sclk, int8_t rst, int8_t miso) : Adafruit_GFX(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT) {
@@ -29,25 +30,23 @@ Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t mosi,
   _miso = miso;
   _sclk = sclk;
   _rst  = rst;
-  hwSPI = false;
 }
-
-
+#else
 // Constructor when using hardware SPI.  Faster, but must use SPI pins
 // specific to each board type (e.g. 11,13 for Uno, 51,52 for Mega, etc.)
 Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t rst) : Adafruit_GFX(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT) {
   _cs   = cs;
   _dc   = dc;
   _rst  = rst;
-  hwSPI = true;
   _mosi  = _sclk = 0;
 }
+#endif
 
 void Adafruit_ILI9341::spiwrite(uint8_t c) {
 
   //Serial.print("0x"); Serial.print(c, HEX); Serial.print(", ");
 
-  if (hwSPI) {
+#ifdef ILI9341_USE_HW_SPI
 #if defined(TEENSYDUINO) || (defined (__AVR__) && SPI_HAS_TRANSACTION)
     // transaction sets mode
     SPI.transfer(c);
@@ -63,7 +62,7 @@ void Adafruit_ILI9341::spiwrite(uint8_t c) {
     SPI.setDataMode(SPI_MODE0);
     SPI.transfer(c);
 #endif
-  } else {
+#else
     // Fast SPI bitbang swiped from LPD8806 library
     for(uint8_t bit = 0x80; bit; bit >>= 1) {
       if(c & bit) {
@@ -78,7 +77,7 @@ void Adafruit_ILI9341::spiwrite(uint8_t c) {
       //digitalWrite(_sclk, LOW);
       *clkport &= ~clkpinmask;
     }
-  }
+#endif
 }
 
 
@@ -114,7 +113,7 @@ void Adafruit_ILI9341::writedata(uint8_t c) {
 // If the SPI library has transaction support, these functions
 // establish settings and protect from interference from other
 // libraries.  Otherwise, they simply do nothing.
-#ifdef SPI_HAS_TRANSACTION
+#ifdef SPI_HAS_TRANSACTION && (defined ILI9341_USE_HW_SPI)
 static inline void spi_begin(void) __attribute__((always_inline));
 static inline void spi_begin(void) {
   SPI.beginTransaction(SPISettings(8000000, MSBFIRST, SPI_MODE0));
@@ -175,7 +174,7 @@ void Adafruit_ILI9341::begin(void) {
   dcport    = portOutputRegister(digitalPinToPort(_dc));
   dcpinmask = digitalPinToBitMask(_dc);
 
-  if(hwSPI) { // Using hardware SPI
+#ifdef ILI9341_USE_HW_SPI
 #if defined (__AVR__)
     SPI.begin();
     SPI.setClockDivider(SPI_CLOCK_DIV2); // 8 MHz (full! speed!)
@@ -193,7 +192,7 @@ void Adafruit_ILI9341::begin(void) {
       SPI.setBitOrder(MSBFIRST);
       SPI.setDataMode(SPI_MODE0);
 #endif
-  } else {
+#else
     pinMode(_sclk, OUTPUT);
     pinMode(_mosi, OUTPUT);
     pinMode(_miso, INPUT);
@@ -203,7 +202,7 @@ void Adafruit_ILI9341::begin(void) {
     mosipinmask = digitalPinToBitMask(_mosi);
     *clkport   &= ~clkpinmask;
     *mosiport  &= ~mosipinmask;
-  }
+#endif
 
   // toggle RST low to reset
   if (_rst > 0) {
@@ -229,7 +228,7 @@ void Adafruit_ILI9341::begin(void) {
 */
   //if(cmdList) commandList(cmdList);
   
-  if (hwSPI) spi_begin();
+  spi_begin();
   writecommand(0xEF);
   writedata(0x03);
   writedata(0x80);
@@ -334,11 +333,11 @@ void Adafruit_ILI9341::begin(void) {
   writedata(0x0F); 
 
   writecommand(ILI9341_SLPOUT);    //Exit Sleep 
-  if (hwSPI) spi_end();
+  spi_end();
   delay(120); 		
-  if (hwSPI) spi_begin();
+  spi_begin();
   writecommand(ILI9341_DISPON);    //Display on 
-  if (hwSPI) spi_end();
+  spi_end();
 
 }
 
@@ -363,7 +362,7 @@ void Adafruit_ILI9341::setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1,
 
 
 void Adafruit_ILI9341::pushColor(uint16_t color) {
-  if (hwSPI) spi_begin();
+  spi_begin();
   //digitalWrite(_dc, HIGH);
   *dcport |=  dcpinmask;
   //digitalWrite(_cs, LOW);
@@ -374,14 +373,14 @@ void Adafruit_ILI9341::pushColor(uint16_t color) {
 
   *csport |= cspinmask;
   //digitalWrite(_cs, HIGH);
-  if (hwSPI) spi_end();
+  spi_end();
 }
 
 void Adafruit_ILI9341::drawPixel(int16_t x, int16_t y, uint16_t color) {
 
   if((x < 0) ||(x >= _width) || (y < 0) || (y >= _height)) return;
 
-  if (hwSPI) spi_begin();
+  spi_begin();
   setAddrWindow(x,y,x+1,y+1);
 
   //digitalWrite(_dc, HIGH);
@@ -394,7 +393,7 @@ void Adafruit_ILI9341::drawPixel(int16_t x, int16_t y, uint16_t color) {
 
   *csport |= cspinmask;
   //digitalWrite(_cs, HIGH);
-  if (hwSPI) spi_end();
+  spi_end();
 }
 
 
@@ -407,7 +406,7 @@ void Adafruit_ILI9341::drawFastVLine(int16_t x, int16_t y, int16_t h,
   if((y+h-1) >= _height) 
     h = _height-y;
 
-  if (hwSPI) spi_begin();
+  spi_begin();
   setAddrWindow(x, y, x, y+h-1);
 
   uint8_t hi = color >> 8, lo = color;
@@ -423,7 +422,7 @@ void Adafruit_ILI9341::drawFastVLine(int16_t x, int16_t y, int16_t h,
   }
   *csport |= cspinmask;
   //digitalWrite(_cs, HIGH);
-  if (hwSPI) spi_end();
+  spi_end();
 }
 
 
@@ -433,7 +432,7 @@ void Adafruit_ILI9341::drawFastHLine(int16_t x, int16_t y, int16_t w,
   // Rudimentary clipping
   if((x >= _width) || (y >= _height)) return;
   if((x+w-1) >= _width)  w = _width-x;
-  if (hwSPI) spi_begin();
+  spi_begin();
   setAddrWindow(x, y, x+w-1, y);
 
   uint8_t hi = color >> 8, lo = color;
@@ -447,7 +446,7 @@ void Adafruit_ILI9341::drawFastHLine(int16_t x, int16_t y, int16_t w,
   }
   *csport |= cspinmask;
   //digitalWrite(_cs, HIGH);
-  if (hwSPI) spi_end();
+  spi_end();
 }
 
 void Adafruit_ILI9341::fillScreen(uint16_t color) {
@@ -463,7 +462,7 @@ void Adafruit_ILI9341::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
   if((x + w - 1) >= _width)  w = _width  - x;
   if((y + h - 1) >= _height) h = _height - y;
 
-  if (hwSPI) spi_begin();
+  spi_begin();
   setAddrWindow(x, y, x+w-1, y+h-1);
 
   uint8_t hi = color >> 8, lo = color;
@@ -481,7 +480,7 @@ void Adafruit_ILI9341::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
   }
   //digitalWrite(_cs, HIGH);
   *csport |= cspinmask;
-  if (hwSPI) spi_end();
+  spi_end();
 }
 
 
@@ -501,7 +500,7 @@ uint16_t Adafruit_ILI9341::color565(uint8_t r, uint8_t g, uint8_t b) {
 
 void Adafruit_ILI9341::setRotation(uint8_t m) {
 
-  if (hwSPI) spi_begin();
+  spi_begin();
   writecommand(ILI9341_MADCTL);
   rotation = m % 4; // can't be higher than 3
   switch (rotation) {
@@ -526,12 +525,12 @@ void Adafruit_ILI9341::setRotation(uint8_t m) {
      _height = ILI9341_TFTWIDTH;
      break;
   }
-  if (hwSPI) spi_end();
+  spi_end();
 }
 
 
 void Adafruit_ILI9341::invertDisplay(boolean i) {
-  if (hwSPI) spi_begin();
+  spi_begin();
   writecommand(i ? ILI9341_INVON : ILI9341_INVOFF);
-  if (hwSPI) spi_end();
+  spi_end();
 }
