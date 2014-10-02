@@ -42,7 +42,7 @@ Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t rst) : Adafruit_
 }
 #endif
 
-void Adafruit_ILI9341::spiwrite(uint8_t c) {
+void inline Adafruit_ILI9341::spiwrite(uint8_t c) {
 
   //Serial.print("0x"); Serial.print(c, HEX); Serial.print(", ");
 
@@ -80,6 +80,17 @@ void Adafruit_ILI9341::spiwrite(uint8_t c) {
 #endif
 }
 
+void inline Adafruit_ILI9341::spiwrite16(uint16_t c) {
+#ifdef ILI9341_USE_HW_SPI && SPI_HAS_TRANSACTION
+  // transfer 16 bits at once. New in 1.5.8
+  SPI.transfer16(c);
+#else
+  union { uint16_t val; struct { uint8_t lsb; uint8_t msb; }; } out;
+  out.val = c;
+  spiwrite(out.msb);
+  spiwrite(out.lsb);
+#endif
+}
 
 void Adafruit_ILI9341::writecommand(uint8_t c) {
   *dcport &=  ~dcpinmask;
@@ -368,8 +379,7 @@ void Adafruit_ILI9341::pushColor(uint16_t color) {
   //digitalWrite(_cs, LOW);
   *csport &= ~cspinmask;
 
-  spiwrite(color >> 8);
-  spiwrite(color);
+  spiwrite16(color);
 
   *csport |= cspinmask;
   //digitalWrite(_cs, HIGH);
@@ -388,8 +398,7 @@ void Adafruit_ILI9341::drawPixel(int16_t x, int16_t y, uint16_t color) {
   //digitalWrite(_cs, LOW);
   *csport &= ~cspinmask;
 
-  spiwrite(color >> 8);
-  spiwrite(color);
+  spiwrite16(color);
 
   *csport |= cspinmask;
   //digitalWrite(_cs, HIGH);
@@ -409,16 +418,13 @@ void Adafruit_ILI9341::drawFastVLine(int16_t x, int16_t y, int16_t h,
   spi_begin();
   setAddrWindow(x, y, x, y+h-1);
 
-  uint8_t hi = color >> 8, lo = color;
-
   *dcport |=  dcpinmask;
   //digitalWrite(_dc, HIGH);
   *csport &= ~cspinmask;
   //digitalWrite(_cs, LOW);
 
   while (h--) {
-    spiwrite(hi);
-    spiwrite(lo);
+    spiwrite16(color);
   }
   *csport |= cspinmask;
   //digitalWrite(_cs, HIGH);
@@ -435,14 +441,12 @@ void Adafruit_ILI9341::drawFastHLine(int16_t x, int16_t y, int16_t w,
   spi_begin();
   setAddrWindow(x, y, x+w-1, y);
 
-  uint8_t hi = color >> 8, lo = color;
   *dcport |=  dcpinmask;
   *csport &= ~cspinmask;
   //digitalWrite(_dc, HIGH);
   //digitalWrite(_cs, LOW);
   while (w--) {
-    spiwrite(hi);
-    spiwrite(lo);
+    spiwrite16(color);
   }
   *csport |= cspinmask;
   //digitalWrite(_cs, HIGH);
@@ -465,8 +469,6 @@ void Adafruit_ILI9341::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
   spi_begin();
   setAddrWindow(x, y, x+w-1, y+h-1);
 
-  uint8_t hi = color >> 8, lo = color;
-
   *dcport |=  dcpinmask;
   //digitalWrite(_dc, HIGH);
   *csport &= ~cspinmask;
@@ -474,8 +476,7 @@ void Adafruit_ILI9341::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
 
   for(y=h; y>0; y--) {
     for(x=w; x>0; x--) {
-      spiwrite(hi);
-      spiwrite(lo);
+      spiwrite16(color);
     }
   }
   //digitalWrite(_cs, HIGH);
