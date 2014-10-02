@@ -378,22 +378,18 @@ void Adafruit_ILI9341::setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1,
  uint16_t y1) {
 
   writecommand(ILI9341_CASET); // Column addr set
-  writedata(x0 >> 8);
-  writedata(x0 & 0xFF);     // XSTART 
-  writedata(x1 >> 8);
-  writedata(x1 & 0xFF);     // XEND
+  writedata16(x0);     // XSTART
+  writedata16(x1);     // XEND
 
   writecommand(ILI9341_PASET); // Row addr set
-  writedata(y0>>8);
-  writedata(y0);     // YSTART
-  writedata(y1>>8);
-  writedata(y1);     // YEND
+  writedata16(y0);     // YSTART
+  writedata16(y1);     // YEND
 
   writecommand(ILI9341_RAMWR); // write to RAM
 }
 
 
-void Adafruit_ILI9341::pushColor(uint16_t color) {
+void Adafruit_ILI9341::writedata16(uint16_t color) {
   spi_begin();
   //digitalWrite(_dc, HIGH);
   *dcport |=  dcpinmask;
