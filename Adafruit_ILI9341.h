@@ -123,15 +123,6 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
            invertDisplay(boolean i);
   uint16_t color565(uint8_t r, uint8_t g, uint8_t b);
 
-  /* These are not for current use, 8-bit protocol only! */
-  uint8_t  readdata(void),
-    readcommand8(uint8_t reg, uint8_t index = 0);
-  /*
-  uint16_t readcommand16(uint8_t);
-  uint32_t readcommand32(uint8_t);
-  void     dummyclock(void);
-  */  
-
   void     spiwrite(uint8_t),
     spiwrite16(uint16_t),
     spiwriteN(uint32_t, uint16_t),
@@ -140,12 +131,6 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
     commandList(uint8_t *addr);
   uint8_t  spiread(void);
 
- private:
-  uint8_t  tabcolor;
-
-
-
-  boolean  hwSPI;
 #if defined (__AVR__) || defined(TEENSYDUINO)
   uint8_t mySPCR;
   volatile uint8_t *mosiport, *clkport, *dcport, *rsport, *csport;
