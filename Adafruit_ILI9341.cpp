@@ -48,14 +48,15 @@ void Adafruit_ILI9341::spiwrite(uint8_t c) {
   //Serial.print("0x"); Serial.print(c, HEX); Serial.print(", ");
 
   if (hwSPI) {
-#if defined (__AVR__)
+#if defined(TEENSYDUINO) || (defined (__AVR__) && SPI_HAS_TRANSACTION)
+    // transaction sets mode
+    SPI.transfer(c);
+#elif defined (__AVR__)
       uint8_t backupSPCR = SPCR;
     SPCR = mySPCR;
     SPDR = c;
     while(!(SPSR & _BV(SPIF)));
     SPCR = backupSPCR;
-#elif defined(TEENSYDUINO)
-    SPI.transfer(c);
 #elif defined (__arm__)
     SPI.setClockDivider(11); // 8-ish MHz (full! speed!)
     SPI.setBitOrder(MSBFIRST);
