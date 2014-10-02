@@ -134,6 +134,7 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
 
   void     spiwrite(uint8_t),
     spiwrite16(uint16_t),
+    spiwriteN(uint32_t, uint16_t),
     writecommand(uint8_t c),
     writedata(uint8_t d),
     commandList(uint8_t *addr);

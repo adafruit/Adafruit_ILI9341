@@ -92,6 +92,27 @@ void inline Adafruit_ILI9341::spiwrite16(uint16_t c) {
 #endif
 }
 
+void inline Adafruit_ILI9341::spiwriteN(uint32_t count, uint16_t c) {
+#ifdef ILI9341_USE_HW_SPI && SPI_HAS_TRANSACTION
+  union { uint16_t val; struct { uint8_t lsb; uint8_t msb; }; } out;
+  out.val = c;
+
+  if (count == 0) return;
+  SPDR = out.msb;
+  while (!(SPSR & _BV(SPIF))) ;
+  SPDR = out.lsb;
+  while (--count) {
+    while (!(SPSR & _BV(SPIF))) ;
+    SPDR = out.msb;
+    while (!(SPSR & _BV(SPIF))) ;
+    SPDR = out.lsb;
+  }
+  while (!(SPSR & _BV(SPIF))) ;
+#else
+  while(count--) spiwrite16(c);
+#endif
+}
+
 void Adafruit_ILI9341::writecommand(uint8_t c) {
   *dcport &=  ~dcpinmask;
   //digitalWrite(_dc, LOW);
@@ -423,9 +444,7 @@ void Adafruit_ILI9341::drawFastVLine(int16_t x, int16_t y, int16_t h,
   *csport &= ~cspinmask;
   //digitalWrite(_cs, LOW);
 
-  while (h--) {
-    spiwrite16(color);
-  }
+  spiwriteN(h, color);
   *csport |= cspinmask;
   //digitalWrite(_cs, HIGH);
   spi_end();
@@ -445,9 +464,7 @@ void Adafruit_ILI9341::drawFastHLine(int16_t x, int16_t y, int16_t w,
   *csport &= ~cspinmask;
   //digitalWrite(_dc, HIGH);
   //digitalWrite(_cs, LOW);
-  while (w--) {
-    spiwrite16(color);
-  }
+  spiwriteN(w, color);
   *csport |= cspinmask;
   //digitalWrite(_cs, HIGH);
   spi_end();
@@ -474,11 +491,7 @@ void Adafruit_ILI9341::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
   *csport &= ~cspinmask;
   //digitalWrite(_cs, LOW);
 
-  for(y=h; y>0; y--) {
-    for(x=w; x>0; x--) {
-      spiwrite16(color);
-    }
-  }
+  spiwriteN((uint32_t)h*w, color);
   //digitalWrite(_cs, HIGH);
   *csport |= cspinmask;
   spi_end();
