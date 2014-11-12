@@ -426,11 +426,10 @@ void Adafruit_ILI9341::drawPixel(int16_t x, int16_t y, uint16_t color) {
 void Adafruit_ILI9341::drawFastVLine(int16_t x, int16_t y, int16_t h,
  uint16_t color) {
 
+  if((x < 0) ||(x >= _width) || (y + h < 0) || (y >= _height)) return;
   // Rudimentary clipping
-  if((x >= _width) || (y >= _height)) return;
-
-  if((y+h-1) >= _height) 
-    h = _height-y;
+  if((y+h-1) >= _height) h = _height-y;
+  if(y < 0) y = 0;
 
   spi_begin();
   setAddrWindow(x, y, x, y+h-1);
@@ -451,8 +450,9 @@ void Adafruit_ILI9341::drawFastHLine(int16_t x, int16_t y, int16_t w,
   uint16_t color) {
 
   // Rudimentary clipping
-  if((x >= _width) || (y >= _height)) return;
+  if((x+w < 0) ||(x >= _width) || (y < 0) || (y >= _height)) return;
   if((x+w-1) >= _width)  w = _width-x;
+  if(x < 0) x = 0;
   spi_begin();
   setAddrWindow(x, y, x+w-1, y);
 
