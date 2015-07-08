@@ -14,7 +14,11 @@
  ****************************************************/
 
 #include "Adafruit_ILI9341.h"
-#include <avr/pgmspace.h>
+#ifdef __AVR
+  #include <avr/pgmspace.h>
+#elif defined(ESP8266)
+  #include <pgmspace.h>
+#endif
 #include <limits.h>
 #include "pins_arduino.h"
 #include "wiring_private.h"
@@ -271,7 +275,7 @@ void Adafruit_ILI9341::begin(void) {
   writedata(0x10);   //SAP[2:0];BT[3:0] 
  
   writecommand(ILI9341_VMCTR1);    //VCM control 
-  writedata(0x3e); //对比度调节
+  writedata(0x3e); //露脭卤脠露脠碌梅陆脷
   writedata(0x28); 
   
   writecommand(ILI9341_VMCTR2);    //VCM control2 
