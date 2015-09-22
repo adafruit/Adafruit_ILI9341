@@ -31,7 +31,8 @@
 #ifdef SPI_HAS_TRANSACTION
 static inline void spi_begin(void) __attribute__((always_inline));
 static inline void spi_begin(void) {
-  SPI.beginTransaction(SPISettings(8000000, MSBFIRST, SPI_MODE0));
+  // max speed!
+  SPI.beginTransaction(SPISettings(24000000, MSBFIRST, SPI_MODE0));
 }
 static inline void spi_end(void) __attribute__((always_inline));
 static inline void spi_end(void) {
@@ -132,6 +133,7 @@ void Adafruit_ILI9341::writedata(uint8_t c) {
   *csport |= cspinmask;
 } 
 
+
 // Rather than a bazillion writecommand() and writedata() calls, screen
 // initialization commands and arguments are organized in these tables
 // stored in PROGMEM.  The table may look bulky, but that's mostly the
@@ -186,14 +188,14 @@ void Adafruit_ILI9341::begin(void) {
 #ifndef SPI_HAS_TRANSACTION
     SPI.setBitOrder(MSBFIRST);
     SPI.setDataMode(SPI_MODE0);
-    #if defined (__AVR__)
+  #if defined (__AVR__)
     SPI.setClockDivider(SPI_CLOCK_DIV2); // 8 MHz (full! speed!)
     mySPCR = SPCR;
-    #elif defined(TEENSYDUINO)
+  #elif defined(TEENSYDUINO)
     SPI.setClockDivider(SPI_CLOCK_DIV2); // 8 MHz (full! speed!)
-    #elif defined (__arm__)
-    SPI.setClockDivider(2); // 8-ish MHz (full! speed!)
-    #endif
+  #elif defined (__arm__)
+    SPI.setClockDivider(11); // 8-ish MHz (full! speed!)
+  #endif
 #endif
   } else {
     pinMode(_sclk, OUTPUT);
@@ -554,6 +556,7 @@ uint8_t Adafruit_ILI9341::spiread(void) {
   #ifndef SPI_HAS_TRANSACTION
     uint8_t backupSPCR = SPCR;
     SPCR = mySPCR;
+  #endif
     SPDR = 0x00;
   #endif
     while(!(SPSR & _BV(SPIF)));
@@ -563,7 +566,7 @@ uint8_t Adafruit_ILI9341::spiread(void) {
     SPCR = backupSPCR;
   #endif
 #else
-    r = SPI.transfer(0x0);
+    r = SPI.transfer(0x00);
 #endif
 
   } else {
