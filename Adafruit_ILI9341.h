@@ -139,7 +139,7 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
   uint16_t readcommand16(uint8_t);
   uint32_t readcommand32(uint8_t);
   void     dummyclock(void);
-  */  
+  */
 
   void     spiwrite(uint8_t),
     writecommand(uint8_t c),
@@ -160,7 +160,7 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
   uint8_t  mosipinmask, clkpinmask, cspinmask, dcpinmask;
 #elif defined (__arm__)
     volatile RwReg *mosiport, *clkport, *dcport, *rsport, *csport;
-    uint32_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
+    int32_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
     uint32_t  mosipinmask, clkpinmask, cspinmask, dcpinmask;
 #endif
 };
