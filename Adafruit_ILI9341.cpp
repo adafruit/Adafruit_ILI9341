@@ -24,6 +24,25 @@
 #include "wiring_private.h"
 #include <SPI.h>
 
+
+// If the SPI library has transaction support, these functions
+// establish settings and protect from interference from other
+// libraries.  Otherwise, they simply do nothing.
+#ifdef SPI_HAS_TRANSACTION
+static inline void spi_begin(void) __attribute__((always_inline));
+static inline void spi_begin(void) {
+  // max speed!
+  SPI.beginTransaction(SPISettings(24000000, MSBFIRST, SPI_MODE0));
+}
+static inline void spi_end(void) __attribute__((always_inline));
+static inline void spi_end(void) {
+  SPI.endTransaction();
+}
+#else
+#define spi_begin()
+#define spi_end()
+#endif
+
 // Constructor when using software SPI.  All output pins are configurable.
 Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t mosi,
 				   int8_t sclk, int8_t rst, int8_t miso) : Adafruit_GFX(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT) {
@@ -53,17 +72,16 @@ void Adafruit_ILI9341::spiwrite(uint8_t c) {
 
   if (hwSPI) {
 #if defined (__AVR__)
-      uint8_t backupSPCR = SPCR;
+  #ifndef SPI_HAS_TRANSACTION
+    uint8_t backupSPCR = SPCR;
     SPCR = mySPCR;
+  #endif
     SPDR = c;
     while(!(SPSR & _BV(SPIF)));
+  #ifndef SPI_HAS_TRANSACTION
     SPCR = backupSPCR;
-#elif defined(TEENSYDUINO)
-    SPI.transfer(c);
-#elif defined (__arm__)
-    SPI.setClockDivider(11); // 8-ish MHz (full! speed!)
-    SPI.setBitOrder(MSBFIRST);
-    SPI.setDataMode(SPI_MODE0);
+  #endif
+#else
     SPI.transfer(c);
 #endif
   } else {
@@ -114,22 +132,6 @@ void Adafruit_ILI9341::writedata(uint8_t c) {
   *csport |= cspinmask;
 } 
 
-// If the SPI library has transaction support, these functions
-// establish settings and protect from interference from other
-// libraries.  Otherwise, they simply do nothing.
-#ifdef SPI_HAS_TRANSACTION
-static inline void spi_begin(void) __attribute__((always_inline));
-static inline void spi_begin(void) {
-  SPI.beginTransaction(SPISettings(8000000, MSBFIRST, SPI_MODE0));
-}
-static inline void spi_end(void) __attribute__((always_inline));
-static inline void spi_end(void) {
-  SPI.endTransaction();
-}
-#else
-#define spi_begin()
-#define spi_end()
-#endif
 
 // Rather than a bazillion writecommand() and writedata() calls, screen
 // initialization commands and arguments are organized in these tables
@@ -179,22 +181,18 @@ void Adafruit_ILI9341::begin(void) {
   dcpinmask = digitalPinToBitMask(_dc);
 
   if(hwSPI) { // Using hardware SPI
-#if defined (__AVR__)
     SPI.begin();
-    SPI.setClockDivider(SPI_CLOCK_DIV2); // 8 MHz (full! speed!)
+#ifndef SPI_HAS_TRANSACTION
     SPI.setBitOrder(MSBFIRST);
     SPI.setDataMode(SPI_MODE0);
+  #if defined (__AVR__)
+    SPI.setClockDivider(SPI_CLOCK_DIV2); // 8 MHz (full! speed!)
     mySPCR = SPCR;
-#elif defined(TEENSYDUINO)
-    SPI.begin();
+  #elif defined(TEENSYDUINO)
     SPI.setClockDivider(SPI_CLOCK_DIV2); // 8 MHz (full! speed!)
-    SPI.setBitOrder(MSBFIRST);
-    SPI.setDataMode(SPI_MODE0);
-#elif defined (__arm__)
-      SPI.begin();
-      SPI.setClockDivider(11); // 8-ish MHz (full! speed!)
-      SPI.setBitOrder(MSBFIRST);
-      SPI.setDataMode(SPI_MODE0);
+  #elif defined (__arm__)
+    SPI.setClockDivider(11); // 8-ish MHz (full! speed!)
+  #endif
 #endif
   } else {
     pinMode(_sclk, OUTPUT);
@@ -548,18 +546,17 @@ uint8_t Adafruit_ILI9341::spiread(void) {
 
   if (hwSPI) {
 #if defined (__AVR__)
+  #ifndef SPI_HAS_TRANSACTION
     uint8_t backupSPCR = SPCR;
     SPCR = mySPCR;
+  #endif
     SPDR = 0x00;
     while(!(SPSR & _BV(SPIF)));
     r = SPDR;
+  #ifndef SPI_HAS_TRANSACTION
     SPCR = backupSPCR;
-#elif defined(TEENSYDUINO)
-    r = SPI.transfer(0x00);
-#elif defined (__arm__)
-    SPI.setClockDivider(11); // 8-ish MHz (full! speed!)
-    SPI.setBitOrder(MSBFIRST);
-    SPI.setDataMode(SPI_MODE0);
+  #endif
+#else
     r = SPI.transfer(0x00);
 #endif
   } else {
