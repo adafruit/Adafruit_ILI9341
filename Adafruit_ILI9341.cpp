@@ -219,7 +219,6 @@ void Adafruit_ILI9341::begin(void) {
     digitalWrite(_rst, HIGH);
     delay(150);
   }
-  Serial.println("b");
 
   /*
   uint8_t x = readcommand8(ILI9341_RDMODE);
@@ -338,8 +337,6 @@ void Adafruit_ILI9341::begin(void) {
   writedata(0x31); 
   writedata(0x36); 
   writedata(0x0F); 
-
-  Serial.println("c");
 
   writecommand(ILI9341_SLPOUT);    //Exit Sleep 
   if (hwSPI) spi_end();
@@ -558,7 +555,6 @@ uint8_t Adafruit_ILI9341::spiread(void) {
     SPCR = mySPCR;
   #endif
     SPDR = 0x00;
-  #endif
     while(!(SPSR & _BV(SPIF)));
     r = SPDR;
 
