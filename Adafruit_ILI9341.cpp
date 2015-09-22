@@ -43,6 +43,7 @@ static inline void spi_end(void) {
 #define spi_end()
 #endif
 
+
 // Constructor when using software SPI.  All output pins are configurable.
 Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t mosi,
 				   int8_t sclk, int8_t rst, int8_t miso) : Adafruit_GFX(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT) {
@@ -175,6 +176,7 @@ void Adafruit_ILI9341::begin(void) {
 
   pinMode(_dc, OUTPUT);
   pinMode(_cs, OUTPUT);
+
   csport    = portOutputRegister(digitalPinToPort(_cs));
   cspinmask = digitalPinToBitMask(_cs);
   dcport    = portOutputRegister(digitalPinToPort(_dc));
@@ -182,6 +184,7 @@ void Adafruit_ILI9341::begin(void) {
 
   if(hwSPI) { // Using hardware SPI
     SPI.begin();
+
 #ifndef SPI_HAS_TRANSACTION
     SPI.setBitOrder(MSBFIRST);
     SPI.setDataMode(SPI_MODE0);
@@ -198,6 +201,7 @@ void Adafruit_ILI9341::begin(void) {
     pinMode(_sclk, OUTPUT);
     pinMode(_mosi, OUTPUT);
     pinMode(_miso, INPUT);
+
     clkport     = portOutputRegister(digitalPinToPort(_sclk));
     clkpinmask  = digitalPinToBitMask(_sclk);
     mosiport    = portOutputRegister(digitalPinToPort(_mosi));
@@ -215,6 +219,7 @@ void Adafruit_ILI9341::begin(void) {
     digitalWrite(_rst, HIGH);
     delay(150);
   }
+  Serial.println("b");
 
   /*
   uint8_t x = readcommand8(ILI9341_RDMODE);
@@ -333,6 +338,8 @@ void Adafruit_ILI9341::begin(void) {
   writedata(0x31); 
   writedata(0x36); 
   writedata(0x0F); 
+
+  Serial.println("c");
 
   writecommand(ILI9341_SLPOUT);    //Exit Sleep 
   if (hwSPI) spi_end();
@@ -551,14 +558,17 @@ uint8_t Adafruit_ILI9341::spiread(void) {
     SPCR = mySPCR;
   #endif
     SPDR = 0x00;
+  #endif
     while(!(SPSR & _BV(SPIF)));
     r = SPDR;
+
   #ifndef SPI_HAS_TRANSACTION
     SPCR = backupSPCR;
   #endif
 #else
     r = SPI.transfer(0x00);
 #endif
+
   } else {
 
     for (uint8_t i=0; i<8; i++) {
