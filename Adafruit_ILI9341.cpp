@@ -14,11 +14,33 @@
  ****************************************************/
 
 #include "Adafruit_ILI9341.h"
-#include <avr/pgmspace.h>
+#ifdef __AVR
+  #include <avr/pgmspace.h>
+#elif defined(ESP8266)
+  #include <pgmspace.h>
+#endif
 #include <limits.h>
 #include "pins_arduino.h"
 #include "wiring_private.h"
 #include <SPI.h>
+
+// If the SPI library has transaction support, these functions
+// establish settings and protect from interference from other
+// libraries.  Otherwise, they simply do nothing.
+#ifdef SPI_HAS_TRANSACTION
+static inline void spi_begin(void) __attribute__((always_inline));
+static inline void spi_begin(void) {
+  // max speed!
+  SPI.beginTransaction(SPISettings(24000000, MSBFIRST, SPI_MODE0));
+}
+static inline void spi_end(void) __attribute__((always_inline));
+static inline void spi_end(void) {
+  SPI.endTransaction();
+}
+#else
+#define spi_begin()
+#define spi_end()
+#endif
 
 #ifndef ILI9341_USE_HW_SPI
 // Constructor when using software SPI.  All output pins are configurable.
@@ -47,19 +69,17 @@ void inline Adafruit_ILI9341::spiwrite(uint8_t c) {
   //Serial.print("0x"); Serial.print(c, HEX); Serial.print(", ");
 
 #ifdef ILI9341_USE_HW_SPI
-#if defined(TEENSYDUINO) || (defined (__AVR__) && SPI_HAS_TRANSACTION)
-    // transaction sets mode
-    SPI.transfer(c);
-#elif defined (__AVR__)
-      uint8_t backupSPCR = SPCR;
+#if defined (__AVR__)
+  #ifndef SPI_HAS_TRANSACTION
+    uint8_t backupSPCR = SPCR;
     SPCR = mySPCR;
+  #endif
     SPDR = c;
     while(!(SPSR & _BV(SPIF)));
+  #ifndef SPI_HAS_TRANSACTION
     SPCR = backupSPCR;
-#elif defined (__arm__)
-    SPI.setClockDivider(11); // 8-ish MHz (full! speed!)
-    SPI.setBitOrder(MSBFIRST);
-    SPI.setDataMode(SPI_MODE0);
+  #endif
+#else
     SPI.transfer(c);
 #endif
 #else
@@ -142,23 +162,6 @@ void Adafruit_ILI9341::writedata(uint8_t c) {
   *csport |= cspinmask;
 } 
 
-// If the SPI library has transaction support, these functions
-// establish settings and protect from interference from other
-// libraries.  Otherwise, they simply do nothing.
-#ifdef SPI_HAS_TRANSACTION && (defined ILI9341_USE_HW_SPI)
-static inline void spi_begin(void) __attribute__((always_inline));
-static inline void spi_begin(void) {
-  SPI.beginTransaction(SPISettings(8000000, MSBFIRST, SPI_MODE0));
-}
-static inline void spi_end(void) __attribute__((always_inline));
-static inline void spi_end(void) {
-  SPI.endTransaction();
-}
-#else
-#define spi_begin()
-#define spi_end()
-#endif
-
 // Rather than a bazillion writecommand() and writedata() calls, screen
 // initialization commands and arguments are organized in these tables
 // stored in PROGMEM.  The table may look bulky, but that's mostly the
@@ -201,33 +204,32 @@ void Adafruit_ILI9341::begin(void) {
 
   pinMode(_dc, OUTPUT);
   pinMode(_cs, OUTPUT);
+
   csport    = portOutputRegister(digitalPinToPort(_cs));
   cspinmask = digitalPinToBitMask(_cs);
   dcport    = portOutputRegister(digitalPinToPort(_dc));
   dcpinmask = digitalPinToBitMask(_dc);
 
 #ifdef ILI9341_USE_HW_SPI
-#if defined (__AVR__)
     SPI.begin();
-    SPI.setClockDivider(SPI_CLOCK_DIV2); // 8 MHz (full! speed!)
+
+#ifndef SPI_HAS_TRANSACTION
     SPI.setBitOrder(MSBFIRST);
     SPI.setDataMode(SPI_MODE0);
+  #if defined (__AVR__)
+    SPI.setClockDivider(SPI_CLOCK_DIV2); // 8 MHz (full! speed!)
     mySPCR = SPCR;
-#elif defined(TEENSYDUINO)
-    SPI.begin();
+  #elif defined(TEENSYDUINO)
     SPI.setClockDivider(SPI_CLOCK_DIV2); // 8 MHz (full! speed!)
-    SPI.setBitOrder(MSBFIRST);
-    SPI.setDataMode(SPI_MODE0);
-#elif defined (__arm__)
-      SPI.begin();
-      SPI.setClockDivider(11); // 8-ish MHz (full! speed!)
-      SPI.setBitOrder(MSBFIRST);
-      SPI.setDataMode(SPI_MODE0);
+  #elif defined (__arm__)
+    SPI.setClockDivider(11); // 8-ish MHz (full! speed!)
+  #endif
 #endif
 #else
     pinMode(_sclk, OUTPUT);
     pinMode(_mosi, OUTPUT);
     pinMode(_miso, INPUT);
+
     clkport     = portOutputRegister(digitalPinToPort(_sclk));
     clkpinmask  = digitalPinToBitMask(_sclk);
     mosiport    = portOutputRegister(digitalPinToPort(_mosi));
@@ -303,7 +305,7 @@ void Adafruit_ILI9341::begin(void) {
   writedata(0x10);   //SAP[2:0];BT[3:0] 
  
   writecommand(ILI9341_VMCTR1);    //VCM control 
-  writedata(0x3e); //对比度调节
+  writedata(0x3e); //露脭卤脠露脠碌梅陆脷
   writedata(0x28); 
   
   writecommand(ILI9341_VMCTR2);    //VCM control2 
@@ -544,3 +546,4 @@ void Adafruit_ILI9341::invertDisplay(boolean i) {
   writecommand(i ? ILI9341_INVON : ILI9341_INVOFF);
   spi_end();
 }
+
