@@ -29,6 +29,8 @@
   #include <pgmspace.h>
 #endif
 
+// remove this to use software SPI
+#define ILI9341_USE_HW_SPI
 
 #define ILI9341_TFTWIDTH  240
 #define ILI9341_TFTHEIGHT 320
@@ -115,13 +117,16 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
 
  public:
 
+#ifndef ILI9341_USE_HW_SPI
   Adafruit_ILI9341(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK,
 		   int8_t _RST, int8_t _MISO);
+#else
   Adafruit_ILI9341(int8_t _CS, int8_t _DC, int8_t _RST = -1);
+#endif
 
   void     begin(void),
            setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1),
-           pushColor(uint16_t color),
+           writedata16(uint16_t color),
            fillScreen(uint16_t color),
            drawPixel(int16_t x, int16_t y, uint16_t color),
            drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color),
@@ -132,27 +137,14 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
            invertDisplay(boolean i);
   uint16_t color565(uint8_t r, uint8_t g, uint8_t b);
 
-  /* These are not for current use, 8-bit protocol only! */
-  uint8_t  readdata(void),
-    readcommand8(uint8_t reg, uint8_t index = 0);
-  /*
-  uint16_t readcommand16(uint8_t);
-  uint32_t readcommand32(uint8_t);
-  void     dummyclock(void);
-  */
-
   void     spiwrite(uint8_t),
+    spiwrite16(uint16_t),
+    spiwriteN(uint32_t, uint16_t),
     writecommand(uint8_t c),
     writedata(uint8_t d),
     commandList(uint8_t *addr);
   uint8_t  spiread(void);
 
- private:
-  uint8_t  tabcolor;
-
-
-
-  boolean  hwSPI;
 #if defined (__AVR__) || defined(TEENSYDUINO)
   uint8_t mySPCR;
   volatile uint8_t *mosiport, *clkport, *dcport, *rsport, *csport;
