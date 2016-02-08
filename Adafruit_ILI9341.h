@@ -29,6 +29,9 @@
   #include <pgmspace.h>
 #endif
 
+#if defined (__AVR__) || defined(TEENSYDUINO) || defined (__arm__)
+#define USE_FAST_PINIO
+#endif
 
 #define ILI9341_TFTWIDTH  240
 #define ILI9341_TFTHEIGHT 320
@@ -162,6 +165,8 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
     volatile RwReg *mosiport, *clkport, *dcport, *rsport, *csport;
     int32_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
     uint32_t  mosipinmask, clkpinmask, cspinmask, dcpinmask;
+#else
+    int32_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
 #endif
 };
 

@@ -110,10 +110,15 @@ void loop(void) {
 unsigned long testFillScreen() {
   unsigned long start = micros();
   tft.fillScreen(ILI9341_BLACK);
+  yield();
   tft.fillScreen(ILI9341_RED);
+  yield();
   tft.fillScreen(ILI9341_GREEN);
+  yield();
   tft.fillScreen(ILI9341_BLUE);
+  yield();
   tft.fillScreen(ILI9341_BLACK);
+  yield();
   return micros() - start;
 }
 
@@ -160,6 +165,7 @@ unsigned long testLines(uint16_t color) {
   for(y2=0; y2<h; y2+=6) tft.drawLine(x1, y1, x2, y2, color);
   t     = micros() - start; // fillScreen doesn't count against timing
 
+  yield();
   tft.fillScreen(ILI9341_BLACK);
 
   x1    = w - 1;
@@ -171,6 +177,7 @@ unsigned long testLines(uint16_t color) {
   for(y2=0; y2<h; y2+=6) tft.drawLine(x1, y1, x2, y2, color);
   t    += micros() - start;
 
+  yield();
   tft.fillScreen(ILI9341_BLACK);
 
   x1    = 0;
@@ -182,6 +189,7 @@ unsigned long testLines(uint16_t color) {
   for(y2=0; y2<h; y2+=6) tft.drawLine(x1, y1, x2, y2, color);
   t    += micros() - start;
 
+  yield();
   tft.fillScreen(ILI9341_BLACK);
 
   x1    = w - 1;
