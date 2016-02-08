@@ -36,6 +36,8 @@ void setup(void) {
   tft.begin();
   tft.fillScreen(ILI9341_BLUE);
   
+  yield();
+
   Serial.print("Initializing SD card...");
   if (!SD.begin(SD_CS)) {
     Serial.println("failed!");

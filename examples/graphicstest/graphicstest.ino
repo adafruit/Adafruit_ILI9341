@@ -46,7 +46,7 @@ void setup() {
   Serial.print("Self Diagnostic: 0x"); Serial.println(x, HEX); 
   
   Serial.println(F("Benchmark                Time (microseconds)"));
-
+  delay(10);
   Serial.print(F("Screen fill              "));
   Serial.println(testFillScreen());
   delay(500);
@@ -156,7 +156,8 @@ unsigned long testLines(uint16_t color) {
                 h = tft.height();
 
   tft.fillScreen(ILI9341_BLACK);
-
+  yield();
+  
   x1 = y1 = 0;
   y2    = h - 1;
   start = micros();
@@ -167,6 +168,7 @@ unsigned long testLines(uint16_t color) {
 
   yield();
   tft.fillScreen(ILI9341_BLACK);
+  yield();
 
   x1    = w - 1;
   y1    = 0;
@@ -179,6 +181,7 @@ unsigned long testLines(uint16_t color) {
 
   yield();
   tft.fillScreen(ILI9341_BLACK);
+  yield();
 
   x1    = 0;
   y1    = h - 1;
@@ -191,6 +194,7 @@ unsigned long testLines(uint16_t color) {
 
   yield();
   tft.fillScreen(ILI9341_BLACK);
+  yield();
 
   x1    = w - 1;
   y1    = h - 1;
@@ -200,6 +204,7 @@ unsigned long testLines(uint16_t color) {
   x2    = 0;
   for(y2=0; y2<h; y2+=6) tft.drawLine(x1, y1, x2, y2, color);
 
+  yield();
   return micros() - start;
 }
 
@@ -247,6 +252,7 @@ unsigned long testFilledRects(uint16_t color1, uint16_t color2) {
     t    += micros() - start;
     // Outlines are not included in timing results
     tft.drawRect(cx-i2, cy-i2, i, i, color2);
+    yield();
   }
 
   return t;
@@ -298,7 +304,7 @@ unsigned long testTriangles() {
       cx    , cy - i, // peak
       cx - i, cy + i, // bottom left
       cx + i, cy + i, // bottom right
-      tft.color565(0, 0, i));
+      tft.color565(i, i, i));
   }
 
   return micros() - start;
@@ -314,10 +320,11 @@ unsigned long testFilledTriangles() {
   for(i=min(cx,cy); i>10; i-=5) {
     start = micros();
     tft.fillTriangle(cx, cy - i, cx - i, cy + i, cx + i, cy + i,
-      tft.color565(0, i, i));
+      tft.color565(0, i*10, i*10));
     t += micros() - start;
     tft.drawTriangle(cx, cy - i, cx - i, cy + i, cx + i, cy + i,
-      tft.color565(i, i, 0));
+      tft.color565(i*10, i*10, 0));
+    yield();
   }
 
   return t;
@@ -351,6 +358,7 @@ unsigned long testFilledRoundRects() {
   for(i=min(tft.width(), tft.height()); i>20; i-=6) {
     i2 = i / 2;
     tft.fillRoundRect(cx-i2, cy-i2, i, i, i/8, tft.color565(0, i, 0));
+    yield();
   }
 
   return micros() - start;
