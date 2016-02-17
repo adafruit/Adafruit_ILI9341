@@ -31,8 +31,13 @@
 #ifdef SPI_HAS_TRANSACTION
 static inline void spi_begin(void) __attribute__((always_inline));
 static inline void spi_begin(void) {
+#if defined (ARDUINO_ARCH_ARC32)
   // max speed!
+  SPI.beginTransaction(SPISettings(16000000, MSBFIRST, SPI_MODE0));
+#else
+    // max speed!
   SPI.beginTransaction(SPISettings(24000000, MSBFIRST, SPI_MODE0));
+#endif
 }
 static inline void spi_end(void) __attribute__((always_inline));
 static inline void spi_end(void) {
@@ -86,7 +91,7 @@ void Adafruit_ILI9341::spiwrite(uint8_t c) {
     SPI.transfer(c);
 #endif
   } else {
-#if defined(ESP8266)
+#if defined(ESP8266) || defined (ARDUINO_ARCH_ARC32)
     for(uint8_t bit = 0x80; bit; bit >>= 1) {
       if(c & bit) {
 	digitalWrite(_mosi, HIGH); 
