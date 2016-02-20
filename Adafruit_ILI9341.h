@@ -173,6 +173,8 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
     uint32_t  mosipinmask, clkpinmask, cspinmask, dcpinmask;
 #elif defined (ARDUINO_ARCH_ARC32)
     int8_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
+#elif defined (ESP8266)
+    int32_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
 #endif
 };
 
