@@ -49,6 +49,17 @@ static inline void spi_end(void) {
 #endif
 
 
+#ifndef YIELD
+// not so great on UNO, slows things to a crawl if you actually
+// are doing anything in your yield
+//#define YIELD yield()
+
+// for faster processors maybe we'll beat the SPI bus, and if we are waiting
+// for more than a few cycles then pop out and do a yield
+//#define YIELD { uint8_t thinnedYield = 0; if(++thinnedYield > 10) { yield(); } }
+#define YIELD {  }
+#endif
+
 // Constructor when using software SPI.  All output pins are configurable.
 Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t mosi,
 				   int8_t sclk, int8_t rst, int8_t miso) : Adafruit_GFX(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT) {
@@ -83,7 +94,7 @@ void Adafruit_ILI9341::spiwrite(uint8_t c) {
     SPCR = mySPCR;
   #endif
     SPDR = c;
-    while(!(SPSR & _BV(SPIF)));
+    while(!(SPSR & _BV(SPIF))) YIELD;
   #ifndef SPI_HAS_TRANSACTION
     SPCR = backupSPCR;
   #endif
@@ -158,7 +169,6 @@ void Adafruit_ILI9341::writedata(uint8_t c) {
   digitalWrite(_cs, HIGH);
 #endif
 } 
-
 
 // Rather than a bazillion writecommand() and writedata() calls, screen
 // initialization commands and arguments are organized in these tables
@@ -601,6 +611,13 @@ void Adafruit_ILI9341::setRotation(uint8_t m) {
 }
 
 
+void Adafruit_ILI9341::setScrollStart(uint16_t y)
+{
+  writecommand(ILI9341_SCRLSA); // Vertical Scroll definition.
+  writedata16(y);   //
+}
+
+
 void Adafruit_ILI9341::invertDisplay(boolean i) {
   if (hwSPI) spi_begin();
   writecommand(i ? ILI9341_INVON : ILI9341_INVOFF);
@@ -621,7 +638,7 @@ uint8_t Adafruit_ILI9341::spiread(void) {
     SPCR = mySPCR;
   #endif
     SPDR = 0x00;
-    while(!(SPSR & _BV(SPIF)));
+    while(!(SPSR & _BV(SPIF))) YIELD;
     r = SPDR;
 
   #ifndef SPI_HAS_TRANSACTION
