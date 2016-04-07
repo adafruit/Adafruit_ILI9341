@@ -30,7 +30,7 @@
 #endif
 
 
-#if defined (__AVR__) || defined(TEENSYDUINO) || defined (__arm__)
+#if defined (__AVR__) || defined(TEENSYDUINO) || defined (__arm__) || defined (ESP8266)
 #define USE_FAST_PINIO
 #endif
 
@@ -146,6 +146,7 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
   */
 
   void     spiwrite(uint8_t),
+    spiwrite16(uint16_t),
     writecommand(uint8_t c),
     writedata(uint8_t d),
     commandList(uint8_t *addr);
@@ -175,6 +176,8 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
     int8_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
 #elif defined (ESP8266)
     int32_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
+    volatile uint32_t *mosiport, *clkport, *dcport, *rsport, *csport;
+    uint32_t  mosipinmask, clkpinmask, cspinmask, dcpinmask;
 #endif
 };
 

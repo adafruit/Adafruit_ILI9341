@@ -34,6 +34,8 @@ static inline void spi_begin(void) {
 #if defined (ARDUINO_ARCH_ARC32)
   // max speed!
   SPI.beginTransaction(SPISettings(16000000, MSBFIRST, SPI_MODE0));
+#elif defined (ESP8266)
+  SPI.beginTransaction(SPISettings(ESP8266_CLOCK, MSBFIRST, SPI_MODE0));
 #else
     // max speed!
   SPI.beginTransaction(SPISettings(24000000, MSBFIRST, SPI_MODE0));
@@ -70,6 +72,19 @@ Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t rst) : Adafruit_
   _rst  = rst;
   hwSPI = true;
   _mosi  = _sclk = -1;
+}
+
+void Adafruit_ILI9341::spiwrite16(uint16_t c) {
+  #ifdef ESP8266
+  if(hwSPI) SPI.write16(c, true);
+  else {
+    spiwrite(c >> 8);
+    spiwrite(c);
+    }
+  #else
+  spiwrite(c >> 8);
+  spiwrite(c);
+  #endif
 }
 
 void Adafruit_ILI9341::spiwrite(uint8_t c) {
@@ -408,8 +423,7 @@ void Adafruit_ILI9341::pushColor(uint16_t color) {
   digitalWrite(_cs, LOW);
 #endif
 
-  spiwrite(color >> 8);
-  spiwrite(color);
+  spiwrite16(color);
 
 #if defined(USE_FAST_PINIO)
   *csport |= cspinmask;
@@ -435,8 +449,7 @@ void Adafruit_ILI9341::drawPixel(int16_t x, int16_t y, uint16_t color) {
   digitalWrite(_cs, LOW);
 #endif
 
-  spiwrite(color >> 8);
-  spiwrite(color);
+  spiwrite16(color);
 
 #if defined(USE_FAST_PINIO)
   *csport |= cspinmask;
@@ -460,8 +473,6 @@ void Adafruit_ILI9341::drawFastVLine(int16_t x, int16_t y, int16_t h,
   if (hwSPI) spi_begin();
   setAddrWindow(x, y, x, y+h-1);
 
-  uint8_t hi = color >> 8, lo = color;
-
 #if defined(USE_FAST_PINIO)
   *dcport |=  dcpinmask;
   *csport &= ~cspinmask;
@@ -471,8 +482,7 @@ void Adafruit_ILI9341::drawFastVLine(int16_t x, int16_t y, int16_t h,
 #endif
 
   while (h--) {
-    spiwrite(hi);
-    spiwrite(lo);
+    spiwrite16(color);
   }
 
 #if defined(USE_FAST_PINIO)
@@ -494,7 +504,6 @@ void Adafruit_ILI9341::drawFastHLine(int16_t x, int16_t y, int16_t w,
   if (hwSPI) spi_begin();
   setAddrWindow(x, y, x+w-1, y);
 
-  uint8_t hi = color >> 8, lo = color;
 #if defined(USE_FAST_PINIO)
   *dcport |=  dcpinmask;
   *csport &= ~cspinmask;
@@ -503,8 +512,7 @@ void Adafruit_ILI9341::drawFastHLine(int16_t x, int16_t y, int16_t w,
   digitalWrite(_cs, LOW);
 #endif
   while (w--) {
-    spiwrite(hi);
-    spiwrite(lo);
+    spiwrite16(color);
   }
 #if defined(USE_FAST_PINIO)
   *csport |= cspinmask;
@@ -530,8 +538,6 @@ void Adafruit_ILI9341::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
   if (hwSPI) spi_begin();
   setAddrWindow(x, y, x+w-1, y+h-1);
 
-  uint8_t hi = color >> 8, lo = color;
-
 #if defined(USE_FAST_PINIO)
   *dcport |=  dcpinmask;
   *csport &= ~cspinmask;
@@ -542,8 +548,7 @@ void Adafruit_ILI9341::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
 
   for(y=h; y>0; y--) {
     for(x=w; x>0; x--) {
-      spiwrite(hi);
-      spiwrite(lo);
+      spiwrite16(color);
     }
   }
 #if defined(USE_FAST_PINIO)
