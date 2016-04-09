@@ -69,7 +69,7 @@ Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t rst) : Adafruit_
   _dc   = dc;
   _rst  = rst;
   hwSPI = true;
-  _mosi  = _sclk = 0;
+  _mosi  = _sclk = -1;
 }
 
 void Adafruit_ILI9341::spiwrite(uint8_t c) {
