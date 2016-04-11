@@ -69,7 +69,7 @@ Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t rst) : Adafruit_
   _dc   = dc;
   _rst  = rst;
   hwSPI = true;
-  _mosi  = _sclk = -1;
+  _mosi  = _sclk = 0;
 }
 
 void Adafruit_ILI9341::spiwrite(uint8_t c) {
@@ -127,7 +127,7 @@ void Adafruit_ILI9341::writecommand(uint8_t c) {
   *csport &= ~cspinmask;
 #else
   digitalWrite(_dc, LOW);
-  digitalWrite(_sclk, LOW);
+  if(!hwSPI) digitalWrite(_sclk, LOW);
   digitalWrite(_cs, LOW);
 #endif
 
@@ -666,7 +666,7 @@ uint8_t Adafruit_ILI9341::readcommand8(uint8_t c, uint8_t index) {
    digitalWrite(_cs, HIGH);
 
    digitalWrite(_dc, LOW);
-   digitalWrite(_sclk, LOW);
+   if(!hwSPI) digitalWrite(_sclk, LOW);
    digitalWrite(_cs, LOW);
    spiwrite(c);
  
