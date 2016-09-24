@@ -29,6 +29,9 @@
   #include <pgmspace.h>
 #endif
 
+#ifdef ARDUINO_STM32_FEATHER
+typedef volatile uint32 RwReg;
+#endif
 
 #if defined (__AVR__) || defined(TEENSYDUINO) || defined (__arm__)
 #define USE_FAST_PINIO
@@ -171,10 +174,10 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
     volatile RwReg *mosiport, *clkport, *dcport, *rsport, *csport;
     int32_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
     uint32_t  mosipinmask, clkpinmask, cspinmask, dcpinmask;
-#elif defined (ARDUINO_ARCH_ARC32)
-    int8_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
 #elif defined (ESP8266)
     int32_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
+#else
+    int8_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
 #endif
 };
 

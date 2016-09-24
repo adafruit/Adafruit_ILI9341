@@ -19,9 +19,13 @@
 #elif defined(ESP8266)
   #include <pgmspace.h>
 #endif
+
+#ifndef ARDUINO_STM32_FEATHER
+  #include "pins_arduino.h"
+  #include "wiring_private.h"
+#endif
+
 #include <limits.h>
-#include "pins_arduino.h"
-#include "wiring_private.h"
 #include <SPI.h>
 
 
