@@ -14,7 +14,7 @@
  ****************************************************/
 
 #include "Adafruit_ILI9341.h"
-#ifdef __AVR
+#ifdef __AVR__
   #include <avr/pgmspace.h>
 #elif defined(ESP8266) || defined(ESP32)
   #include <pgmspace.h>

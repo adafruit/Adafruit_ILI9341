@@ -23,17 +23,21 @@
  #include "WProgram.h"
 #endif
 #include <Adafruit_GFX.h>
-#ifdef __AVR
+#if defined (__AVR__)
   #include <avr/pgmspace.h>
 #elif defined(ESP8266)
   #include <pgmspace.h>
 #endif
 
-#ifdef ARDUINO_STM32_FEATHER
+#if defined(ARDUINO_STM32_FEATHER)
 typedef volatile uint32 RwReg;
 #endif
+#if defined(ARDUINO_FEATHER52)
+typedef volatile uint32_t RwReg;
+#endif
 
-#if defined (__AVR__) || defined(TEENSYDUINO) || defined (__arm__)
+// not everything has this!
+#if defined (__AVR__) || defined(TEENSYDUINO)
 #define USE_FAST_PINIO
 #endif
 
