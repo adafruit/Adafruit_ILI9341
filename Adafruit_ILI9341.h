@@ -72,7 +72,9 @@ typedef volatile uint32_t RwReg;
 #define ILI9341_RAMRD   0x2E
 
 #define ILI9341_PTLAR   0x30
+#define ILI9341_SCRLDEF 0x33
 #define ILI9341_MADCTL  0x36
+#define ILI9341_SCRLSA  0x37
 #define ILI9341_PIXFMT  0x3A
 
 #define ILI9341_FRMCTR1 0xB1
@@ -140,6 +142,7 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
            fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
              uint16_t color),
            setRotation(uint8_t r),
+           setScrollStart(uint16_t y),
            invertDisplay(boolean i);
   uint16_t color565(uint8_t r, uint8_t g, uint8_t b);
 
@@ -156,6 +159,13 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
     writecommand(uint8_t c),
     writedata(uint8_t d),
     commandList(uint8_t *addr);
+    
+  void  writedata16(uint16_t w)
+  {
+    writedata(w >> 8);
+    writedata(w & 0xFF);     // XSTART
+  }
+
   uint8_t  spiread(void);
 
  private:
