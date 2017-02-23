@@ -22,23 +22,14 @@
 #else
  #include "WProgram.h"
 #endif
-#include <Adafruit_GFX.h>
-#if defined (__AVR__)
-  #include <avr/pgmspace.h>
-#elif defined(ESP8266)
-  #include <pgmspace.h>
-#endif
+#include <SPI.h>
+#include "Adafruit_GFX.h"
 
 #if defined(ARDUINO_STM32_FEATHER)
 typedef volatile uint32 RwReg;
 #endif
 #if defined(ARDUINO_FEATHER52)
 typedef volatile uint32_t RwReg;
-#endif
-
-// not everything has this!
-#if defined (__AVR__) || defined(TEENSYDUINO)
-#define USE_FAST_PINIO
 #endif
 
 #define ILI9341_TFTWIDTH  240
@@ -99,7 +90,7 @@ typedef volatile uint32_t RwReg;
 /*
 #define ILI9341_PWCTR6  0xFC
 
-*/
+ */
 
 // Color definitions
 #define ILI9341_BLACK       0x0000      /*   0,   0,   0 */
@@ -122,67 +113,82 @@ typedef volatile uint32_t RwReg;
 #define ILI9341_GREENYELLOW 0xAFE5      /* 173, 255,  47 */
 #define ILI9341_PINK        0xF81F
 
-class Adafruit_ILI9341 : public Adafruit_GFX {
-
- public:
-
-  Adafruit_ILI9341(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK,
-		   int8_t _RST, int8_t _MISO);
-  Adafruit_ILI9341(int8_t _CS, int8_t _DC, int8_t _RST = -1);
-
-  void     begin(void),
-           setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1),
-           pushColor(uint16_t color),
-           fillScreen(uint16_t color),
-           drawPixel(int16_t x, int16_t y, uint16_t color),
-           drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color),
-           drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color),
-           fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
-             uint16_t color),
-           setRotation(uint8_t r),
-           invertDisplay(boolean i);
-  uint16_t color565(uint8_t r, uint8_t g, uint8_t b);
-
-  /* These are not for current use, 8-bit protocol only! */
-  uint8_t  readdata(void),
-    readcommand8(uint8_t reg, uint8_t index = 0);
-  /*
-  uint16_t readcommand16(uint8_t);
-  uint32_t readcommand32(uint8_t);
-  void     dummyclock(void);
-  */
-
-  void     spiwrite(uint8_t),
-    writecommand(uint8_t c),
-    writedata(uint8_t d),
-    commandList(uint8_t *addr);
-  uint8_t  spiread(void);
-
- private:
-  uint8_t  tabcolor;
-
-
-
-  boolean  hwSPI;
-#if defined (__AVR__) || defined(TEENSYDUINO)
-  uint8_t mySPCR;
-  volatile uint8_t *mosiport, *clkport, *dcport, *rsport, *csport;
-  int8_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
-  uint8_t  mosipinmask, clkpinmask, cspinmask, dcpinmask;
-////This def is for the Arduino.ORG M0!!!
-//#elif defined(ARDUINO_SAM_ZERO)
-//    volatile PORT_OUT_Type *mosiport, *clkport, *dcport, *rsport, *csport;
-//    int32_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
-//    PORT_OUT_Type  mosipinmask, clkpinmask, cspinmask, dcpinmask;
-#elif defined (__arm__)
-    volatile RwReg *mosiport, *clkport, *dcport, *rsport, *csport;
-    int32_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
-    uint32_t  mosipinmask, clkpinmask, cspinmask, dcpinmask;
-#elif defined (ESP8266) || defined (ESP32)
-    int32_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
-#else
-    int8_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
+#if defined (__AVR__) || defined(TEENSYDUINO) || defined(ESP8266) || defined (ESP32)
+#define USE_FAST_PINIO
 #endif
+
+class Adafruit_ILI9341 : public Adafruit_GFX {
+    protected:
+
+    public:
+        Adafruit_ILI9341(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1);
+        Adafruit_ILI9341(int8_t _CS, int8_t _DC, int8_t _RST = -1);
+
+#ifndef ESP32
+        void      begin(uint32_t freq = 0);
+#else
+        void      begin(uint32_t freq = 0, SPIClass &spi=SPI);
+#endif
+        void      setRotation(uint8_t r);
+        void      invertDisplay(boolean i);
+        void      scrollTo(uint16_t y);
+
+        // Required Non-Transaction
+        void      drawPixel(int16_t x, int16_t y, uint16_t color);
+
+        // Transaction API
+        void      startWrite(void);
+        void      endWrite(void);
+        void      writePixel(int16_t x, int16_t y, uint16_t color);
+        void      writeFillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
+        void      writeFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
+        void      writeFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
+
+        // Transaction API not used by GFX
+        void      setAddrWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
+        void      writePixel(uint16_t color);
+        void      writePixels(uint16_t * colors, uint32_t len);
+        void      writeColor(uint16_t color, uint32_t len);
+
+        // Recommended Non-Transaction
+        void      drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
+        void      drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
+        void      fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
+
+        uint8_t   readcommand8(uint8_t reg, uint8_t index = 0);
+
+        uint16_t  color565(uint8_t r, uint8_t g, uint8_t b);
+
+    private:
+#ifdef ESP32
+        SPIClass _spi;
+#endif
+        uint32_t _freq;
+#if defined (__AVR__) || defined(TEENSYDUINO)
+        int8_t  _cs, _dc, _rst, _sclk, _mosi, _miso;
+#ifdef USE_FAST_PINIO
+        volatile uint8_t *mosiport, *misoport, *clkport, *dcport, *csport;
+        uint8_t  mosipinmask, misopinmask, clkpinmask, cspinmask, dcpinmask;
+#endif
+#elif defined (__arm__)
+        int32_t  _cs, _dc, _rst, _sclk, _mosi, _miso;
+#ifdef USE_FAST_PINIO
+        volatile RwReg *mosiport, *misoport, *clkport, *dcport, *csport;
+        uint32_t  mosipinmask, misopinmask, clkpinmask, cspinmask, dcpinmask;
+#endif
+#elif defined (ESP8266) || defined (ESP32)
+        int8_t   _cs, _dc, _rst, _sclk, _mosi, _miso;
+#ifdef USE_FAST_PINIO
+        volatile uint32_t *mosiport, *misoport, *clkport, *dcport, *csport;
+        uint32_t  mosipinmask, misopinmask, clkpinmask, cspinmask, dcpinmask;
+#endif
+#else
+        int8_t      _cs, _dc, _rst, _sclk, _mosi, _miso;
+#endif
+
+        void        writeCommand(uint8_t cmd);
+        void        spiWrite(uint8_t v);
+        uint8_t     spiRead(void);
 };
 
 #endif
