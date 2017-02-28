@@ -146,23 +146,22 @@ static inline uint8_t _avr_spi_read(void) {
  * Final SPI Macros
  * */
 #if defined (ARDUINO_ARCH_ARC32)
-#define SPI_DEFULT_FREQ         16000000
+#define SPI_DEFAULT_FREQ         16000000
 #elif defined (__AVR__) || defined(TEENSYDUINO)
-#define SPI_DEFULT_FREQ         8000000
+#define SPI_DEFAULT_FREQ         8000000
 #elif defined(ESP8266) || defined(ESP32)
-#define SPI_DEFULT_FREQ         40000000
+#define SPI_DEFAULT_FREQ         40000000
 #elif defined(RASPI)
-#define SPI_DEFULT_FREQ         80000000
+#define SPI_DEFAULT_FREQ         80000000
 #elif defined(ARDUINO_ARCH_STM32F1)
-#define SPI_DEFULT_FREQ         36000000
+#define SPI_DEFAULT_FREQ         36000000
 #else
-#define SPI_DEFULT_FREQ         24000000
+#define SPI_DEFAULT_FREQ         24000000
 #endif
 
-#define SPI_INIT()               SPI_OBJECT.begin();
-
-#define SPI_BEGIN_TRANSACTION() if(_sclk < 0){HSPI_BEGIN_TRANSACTION();}else{SSPI_BEGIN_TRANSACTION();}
-#define SPI_END_TRANSACTION()   if(_sclk < 0){HSPI_END_TRANSACTION();}else{SSPI_END_TRANSACTION();}
+#define SPI_BEGIN()             if(_sclk < 0){SPI_OBJECT.begin();}
+#define SPI_BEGIN_TRANSACTION() if(_sclk < 0){HSPI_BEGIN_TRANSACTION();}
+#define SPI_END_TRANSACTION()   if(_sclk < 0){HSPI_END_TRANSACTION();}
 #define SPI_WRITE16(s)          if(_sclk < 0){HSPI_WRITE16(s);}else{SSPI_WRITE16(s);}
 #define SPI_WRITE32(l)          if(_sclk < 0){HSPI_WRITE32(l);}else{SSPI_WRITE32(l);}
 #define SPI_WRITE_PIXELS(c,l)   if(_sclk < 0){HSPI_WRITE_PIXELS(c,l);}else{SSPI_WRITE_PIXELS(c,l);}
@@ -233,24 +232,29 @@ void Adafruit_ILI9341::begin(uint32_t freq)
     _spi = spi;
 #endif
     if(!freq){
-        freq = SPI_DEFULT_FREQ;
+        freq = SPI_DEFAULT_FREQ;
     }
     _freq = freq;
+
+    // Control Pins
     pinMode(_dc, OUTPUT);
     digitalWrite(_dc, LOW);
     pinMode(_cs, OUTPUT);
     digitalWrite(_cs, HIGH);
 
+    // Software SPI
     if(_sclk >= 0){
         pinMode(_mosi, OUTPUT);
         digitalWrite(_mosi, LOW);
         pinMode(_sclk, OUTPUT);
         digitalWrite(_sclk, HIGH);
+        if(_miso >= 0){
+            pinMode(_miso, INPUT);
+        }
     }
 
-    if(_miso >= 0){
-        pinMode(_miso, INPUT);
-    }
+    // Hardware SPI
+    SPI_BEGIN();
 
     // toggle RST low to reset
     if (_rst >= 0) {
@@ -261,10 +265,6 @@ void Adafruit_ILI9341::begin(uint32_t freq)
         delay(100);
         digitalWrite(_rst, HIGH);
         delay(200);
-    }
-
-    if(_sclk < 0){
-        SPI_INIT();
     }
 
     startWrite();
@@ -583,7 +583,6 @@ void Adafruit_ILI9341::drawPixel(int16_t x, int16_t y, uint16_t color){
 
 void Adafruit_ILI9341::drawFastVLine(int16_t x, int16_t y,
         int16_t h, uint16_t color) {
-    // Update in subclasses if desired!
     startWrite();
     writeFastVLine(x, y, h, color);
     endWrite();
@@ -591,7 +590,6 @@ void Adafruit_ILI9341::drawFastVLine(int16_t x, int16_t y,
 
 void Adafruit_ILI9341::drawFastHLine(int16_t x, int16_t y,
         int16_t w, uint16_t color) {
-    // Update in subclasses if desired!
     startWrite();
     writeFastHLine(x, y, w, color);
     endWrite();
@@ -599,7 +597,6 @@ void Adafruit_ILI9341::drawFastHLine(int16_t x, int16_t y,
 
 void Adafruit_ILI9341::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
         uint16_t color) {
-    // Update in subclasses if desired!
     startWrite();
     writeFillRect(x,y,w,h,color);
     endWrite();
