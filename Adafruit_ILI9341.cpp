@@ -159,7 +159,7 @@ static inline uint8_t _avr_spi_read(void) {
 #define SPI_DEFULT_FREQ         24000000
 #endif
 
-#define SPI_INIT()               SPI.begin();
+#define SPI_INIT()               SPI_OBJECT.begin();
 
 #define SPI_BEGIN_TRANSACTION() if(_sclk < 0){HSPI_BEGIN_TRANSACTION();}else{SSPI_BEGIN_TRANSACTION();}
 #define SPI_END_TRANSACTION()   if(_sclk < 0){HSPI_END_TRANSACTION();}else{SSPI_END_TRANSACTION();}
