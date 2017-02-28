@@ -228,380 +228,379 @@ void Adafruit_ILI9341::begin(uint32_t freq, SPIClass &spi)
 #else
 void Adafruit_ILI9341::begin(uint32_t freq)
 #endif
-    {
+{
 #ifdef ESP32
-        _spi = spi;
+    _spi = spi;
 #endif
-        if(!freq){
-            freq = SPI_DEFULT_FREQ;
-        }
-        _freq = freq;
-        pinMode(_dc, OUTPUT);
-        digitalWrite(_dc, LOW);
-        pinMode(_cs, OUTPUT);
-        digitalWrite(_cs, HIGH);
+    if(!freq){
+        freq = SPI_DEFULT_FREQ;
+    }
+    _freq = freq;
+    pinMode(_dc, OUTPUT);
+    digitalWrite(_dc, LOW);
+    pinMode(_cs, OUTPUT);
+    digitalWrite(_cs, HIGH);
 
-        if(_sclk >= 0){
-            pinMode(_mosi, OUTPUT);
-            digitalWrite(_mosi, LOW);
-            pinMode(_sclk, OUTPUT);
-            digitalWrite(_sclk, HIGH);
-        }
-
-        if(_miso >= 0){
-            pinMode(_miso, INPUT);
-        }
-
-        // toggle RST low to reset
-        if (_rst >= 0) {
-            pinMode(_rst, OUTPUT);
-            digitalWrite(_rst, HIGH);
-            delay(100);
-            digitalWrite(_rst, LOW);
-            delay(100);
-            digitalWrite(_rst, HIGH);
-            delay(200);
-        }
-
-        if(_sclk < 0){
-            SPI_INIT();
-        }
-
-        startWrite();
-
-        writeCommand(0xEF);
-        spiWrite(0x03);
-        spiWrite(0x80);
-        spiWrite(0x02);
-
-        writeCommand(0xCF);
-        spiWrite(0x00);
-        spiWrite(0XC1);
-        spiWrite(0X30);
-
-        writeCommand(0xED);
-        spiWrite(0x64);
-        spiWrite(0x03);
-        spiWrite(0X12);
-        spiWrite(0X81);
-
-        writeCommand(0xE8);
-        spiWrite(0x85);
-        spiWrite(0x00);
-        spiWrite(0x78);
-
-        writeCommand(0xCB);
-        spiWrite(0x39);
-        spiWrite(0x2C);
-        spiWrite(0x00);
-        spiWrite(0x34);
-        spiWrite(0x02);
-
-        writeCommand(0xF7);
-        spiWrite(0x20);
-
-        writeCommand(0xEA);
-        spiWrite(0x00);
-        spiWrite(0x00);
-
-        writeCommand(ILI9341_PWCTR1);    //Power control
-        spiWrite(0x23);   //VRH[5:0]
-
-        writeCommand(ILI9341_PWCTR2);    //Power control
-        spiWrite(0x10);   //SAP[2:0];BT[3:0]
-
-        writeCommand(ILI9341_VMCTR1);    //VCM control
-        spiWrite(0x3e);
-        spiWrite(0x28);
-
-        writeCommand(ILI9341_VMCTR2);    //VCM control2
-        spiWrite(0x86);  //--
-
-        writeCommand(ILI9341_MADCTL);    // Memory Access Control
-        spiWrite(0x48);
-
-        writeCommand(ILI9341_PIXFMT);
-        spiWrite(0x55);
-
-        writeCommand(ILI9341_FRMCTR1);
-        spiWrite(0x00);
-        spiWrite(0x18);
-
-        writeCommand(ILI9341_DFUNCTR);    // Display Function Control
-        spiWrite(0x08);
-        spiWrite(0x82);
-        spiWrite(0x27);
-
-        writeCommand(0xF2);    // 3Gamma Function Disable
-        spiWrite(0x00);
-
-        writeCommand(ILI9341_GAMMASET);    //Gamma curve selected
-        spiWrite(0x01);
-
-        writeCommand(ILI9341_GMCTRP1);    //Set Gamma
-        spiWrite(0x0F);
-        spiWrite(0x31);
-        spiWrite(0x2B);
-        spiWrite(0x0C);
-        spiWrite(0x0E);
-        spiWrite(0x08);
-        spiWrite(0x4E);
-        spiWrite(0xF1);
-        spiWrite(0x37);
-        spiWrite(0x07);
-        spiWrite(0x10);
-        spiWrite(0x03);
-        spiWrite(0x0E);
-        spiWrite(0x09);
-        spiWrite(0x00);
-
-        writeCommand(ILI9341_GMCTRN1);    //Set Gamma
-        spiWrite(0x00);
-        spiWrite(0x0E);
-        spiWrite(0x14);
-        spiWrite(0x03);
-        spiWrite(0x11);
-        spiWrite(0x07);
-        spiWrite(0x31);
-        spiWrite(0xC1);
-        spiWrite(0x48);
-        spiWrite(0x08);
-        spiWrite(0x0F);
-        spiWrite(0x0C);
-        spiWrite(0x31);
-        spiWrite(0x36);
-        spiWrite(0x0F);
-
-        writeCommand(ILI9341_SLPOUT);    //Exit Sleep
-        delay(120);
-        writeCommand(ILI9341_DISPON);    //Display on
-        delay(120);
-        endWrite();
-
-        _width  = ILI9341_TFTWIDTH;
-        _height = ILI9341_TFTHEIGHT;
+    if(_sclk >= 0){
+        pinMode(_mosi, OUTPUT);
+        digitalWrite(_mosi, LOW);
+        pinMode(_sclk, OUTPUT);
+        digitalWrite(_sclk, HIGH);
     }
 
-    void Adafruit_ILI9341::setRotation(uint8_t m) {
-        rotation = m % 4; // can't be higher than 3
-        switch (rotation) {
-            case 0:
-                m = (MADCTL_MX | MADCTL_BGR);
-                _width  = ILI9341_TFTWIDTH;
-                _height = ILI9341_TFTHEIGHT;
-                break;
-            case 1:
-                m = (MADCTL_MV | MADCTL_BGR);
-                _width  = ILI9341_TFTHEIGHT;
-                _height = ILI9341_TFTWIDTH;
-                break;
-            case 2:
-                m = (MADCTL_MY | MADCTL_BGR);
-                _width  = ILI9341_TFTWIDTH;
-                _height = ILI9341_TFTHEIGHT;
-                break;
-            case 3:
-                m = (MADCTL_MX | MADCTL_MY | MADCTL_MV | MADCTL_BGR);
-                _width  = ILI9341_TFTHEIGHT;
-                _height = ILI9341_TFTWIDTH;
-                break;
+    if(_miso >= 0){
+        pinMode(_miso, INPUT);
+    }
+
+    // toggle RST low to reset
+    if (_rst >= 0) {
+        pinMode(_rst, OUTPUT);
+        digitalWrite(_rst, HIGH);
+        delay(100);
+        digitalWrite(_rst, LOW);
+        delay(100);
+        digitalWrite(_rst, HIGH);
+        delay(200);
+    }
+
+    if(_sclk < 0){
+        SPI_INIT();
+    }
+
+    startWrite();
+
+    writeCommand(0xEF);
+    spiWrite(0x03);
+    spiWrite(0x80);
+    spiWrite(0x02);
+
+    writeCommand(0xCF);
+    spiWrite(0x00);
+    spiWrite(0XC1);
+    spiWrite(0X30);
+
+    writeCommand(0xED);
+    spiWrite(0x64);
+    spiWrite(0x03);
+    spiWrite(0X12);
+    spiWrite(0X81);
+
+    writeCommand(0xE8);
+    spiWrite(0x85);
+    spiWrite(0x00);
+    spiWrite(0x78);
+
+    writeCommand(0xCB);
+    spiWrite(0x39);
+    spiWrite(0x2C);
+    spiWrite(0x00);
+    spiWrite(0x34);
+    spiWrite(0x02);
+
+    writeCommand(0xF7);
+    spiWrite(0x20);
+
+    writeCommand(0xEA);
+    spiWrite(0x00);
+    spiWrite(0x00);
+
+    writeCommand(ILI9341_PWCTR1);    //Power control
+    spiWrite(0x23);   //VRH[5:0]
+
+    writeCommand(ILI9341_PWCTR2);    //Power control
+    spiWrite(0x10);   //SAP[2:0];BT[3:0]
+
+    writeCommand(ILI9341_VMCTR1);    //VCM control
+    spiWrite(0x3e);
+    spiWrite(0x28);
+
+    writeCommand(ILI9341_VMCTR2);    //VCM control2
+    spiWrite(0x86);  //--
+
+    writeCommand(ILI9341_MADCTL);    // Memory Access Control
+    spiWrite(0x48);
+
+    writeCommand(ILI9341_PIXFMT);
+    spiWrite(0x55);
+
+    writeCommand(ILI9341_FRMCTR1);
+    spiWrite(0x00);
+    spiWrite(0x18);
+
+    writeCommand(ILI9341_DFUNCTR);    // Display Function Control
+    spiWrite(0x08);
+    spiWrite(0x82);
+    spiWrite(0x27);
+
+    writeCommand(0xF2);    // 3Gamma Function Disable
+    spiWrite(0x00);
+
+    writeCommand(ILI9341_GAMMASET);    //Gamma curve selected
+    spiWrite(0x01);
+
+    writeCommand(ILI9341_GMCTRP1);    //Set Gamma
+    spiWrite(0x0F);
+    spiWrite(0x31);
+    spiWrite(0x2B);
+    spiWrite(0x0C);
+    spiWrite(0x0E);
+    spiWrite(0x08);
+    spiWrite(0x4E);
+    spiWrite(0xF1);
+    spiWrite(0x37);
+    spiWrite(0x07);
+    spiWrite(0x10);
+    spiWrite(0x03);
+    spiWrite(0x0E);
+    spiWrite(0x09);
+    spiWrite(0x00);
+
+    writeCommand(ILI9341_GMCTRN1);    //Set Gamma
+    spiWrite(0x00);
+    spiWrite(0x0E);
+    spiWrite(0x14);
+    spiWrite(0x03);
+    spiWrite(0x11);
+    spiWrite(0x07);
+    spiWrite(0x31);
+    spiWrite(0xC1);
+    spiWrite(0x48);
+    spiWrite(0x08);
+    spiWrite(0x0F);
+    spiWrite(0x0C);
+    spiWrite(0x31);
+    spiWrite(0x36);
+    spiWrite(0x0F);
+
+    writeCommand(ILI9341_SLPOUT);    //Exit Sleep
+    delay(120);
+    writeCommand(ILI9341_DISPON);    //Display on
+    delay(120);
+    endWrite();
+
+    _width  = ILI9341_TFTWIDTH;
+    _height = ILI9341_TFTHEIGHT;
+}
+
+void Adafruit_ILI9341::setRotation(uint8_t m) {
+    rotation = m % 4; // can't be higher than 3
+    switch (rotation) {
+        case 0:
+            m = (MADCTL_MX | MADCTL_BGR);
+            _width  = ILI9341_TFTWIDTH;
+            _height = ILI9341_TFTHEIGHT;
+            break;
+        case 1:
+            m = (MADCTL_MV | MADCTL_BGR);
+            _width  = ILI9341_TFTHEIGHT;
+            _height = ILI9341_TFTWIDTH;
+            break;
+        case 2:
+            m = (MADCTL_MY | MADCTL_BGR);
+            _width  = ILI9341_TFTWIDTH;
+            _height = ILI9341_TFTHEIGHT;
+            break;
+        case 3:
+            m = (MADCTL_MX | MADCTL_MY | MADCTL_MV | MADCTL_BGR);
+            _width  = ILI9341_TFTHEIGHT;
+            _height = ILI9341_TFTWIDTH;
+            break;
+    }
+
+    startWrite();
+    writeCommand(ILI9341_MADCTL);
+    spiWrite(m);
+    endWrite();
+}
+
+void Adafruit_ILI9341::invertDisplay(boolean i) {
+    startWrite();
+    writeCommand(i ? ILI9341_INVON : ILI9341_INVOFF);
+    endWrite();
+}
+
+void Adafruit_ILI9341::scrollTo(uint16_t y) {
+    startWrite();
+    writeCommand(0x37);
+    spiWrite(y);
+    endWrite();
+}
+
+uint8_t Adafruit_ILI9341::spiRead() {
+    if(_sclk < 0){
+        return HSPI_READ();
+    }
+    if(_miso < 0){
+        return 0;
+    }
+    uint8_t r = 0;
+    for (uint8_t i=0; i<8; i++) {
+        SSPI_SCK_LOW();
+        SSPI_SCK_HIGH();
+        r <<= 1;
+        if (SSPI_MISO_READ()){
+            r |= 0x1;
         }
-
-        startWrite();
-        writeCommand(ILI9341_MADCTL);
-        spiWrite(m);
-        endWrite();
     }
+    return r;
+}
 
-    void Adafruit_ILI9341::invertDisplay(boolean i) {
-        startWrite();
-        writeCommand(i ? ILI9341_INVON : ILI9341_INVOFF);
-        endWrite();
+void Adafruit_ILI9341::spiWrite(uint8_t b) {
+    if(_sclk < 0){
+        HSPI_WRITE(b);
+        return;
     }
-
-    void Adafruit_ILI9341::scrollTo(uint16_t y) {
-        startWrite();
-        writeCommand(0x37);
-        spiWrite(y);
-        endWrite();
-    }
-
-    uint8_t Adafruit_ILI9341::spiRead() {
-        if(_sclk < 0){
-            return HSPI_READ();
+    for(uint8_t bit = 0x80; bit; bit >>= 1){
+        if((b) & bit){
+            SSPI_MOSI_HIGH();
+        } else {
+            SSPI_MOSI_LOW();
         }
-        if(_miso < 0){
-            return 0;
+        SSPI_SCK_LOW();
+        SSPI_SCK_HIGH();
+    }
+}
+
+
+/*
+ * Transaction API
+ * */
+
+void Adafruit_ILI9341::startWrite(void){
+    SPI_BEGIN_TRANSACTION();
+    SPI_CS_LOW();
+}
+
+void Adafruit_ILI9341::endWrite(void){
+    SPI_CS_HIGH();
+    SPI_END_TRANSACTION();
+}
+
+void Adafruit_ILI9341::writeCommand(uint8_t cmd){
+    SPI_DC_LOW();
+    spiWrite(cmd);
+    SPI_DC_HIGH();
+}
+
+void Adafruit_ILI9341::setAddrWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
+    uint32_t xa = ((uint32_t)x << 16) | (x+w-1);
+    uint32_t ya = ((uint32_t)y << 16) | (y+h-1);
+    writeCommand(ILI9341_CASET); // Column addr set
+    SPI_WRITE32(xa);
+    writeCommand(ILI9341_PASET); // Row addr set
+    SPI_WRITE32(ya);
+    writeCommand(ILI9341_RAMWR); // write to RAM
+}
+
+void Adafruit_ILI9341::writePixel(uint16_t color){
+    SPI_WRITE16(color);
+}
+
+void Adafruit_ILI9341::writePixels(uint16_t * colors, uint32_t len){
+    SPI_WRITE_PIXELS((uint8_t*)colors , len * 2);
+}
+
+void Adafruit_ILI9341::writeColor(uint16_t color, uint32_t len){
+#ifdef SPI_HAS_WRITE_PIXELS
+    if(_sclk >= 0){
+        for (uint32_t t=0; t<len; t++){
+            writePixel(color);
         }
-        uint8_t r = 0;
-        for (uint8_t i=0; i<8; i++) {
-            SSPI_SCK_LOW();
-            SSPI_SCK_HIGH();
-            r <<= 1;
-            if (SSPI_MISO_READ()){
-                r |= 0x1;
-            }
-        }
-        return r;
+        return;
+    }
+    static uint16_t temp[SPI_MAX_PIXELS_AT_ONCE];
+    size_t blen = (len > SPI_MAX_PIXELS_AT_ONCE)?SPI_MAX_PIXELS_AT_ONCE:len;
+    uint16_t tlen = 0;
+
+    for (uint32_t t=0; t<blen; t++){
+        temp[t] = color;
     }
 
-    void Adafruit_ILI9341::spiWrite(uint8_t b) {
-        if(_sclk < 0){
-            HSPI_WRITE(b);
-            return;
-        }
-        for(uint8_t bit = 0x80; bit; bit >>= 1){
-            if((b) & bit){
-                SSPI_MOSI_HIGH();
-            } else {
-                SSPI_MOSI_LOW();
-            }
-            SSPI_SCK_LOW();
-            SSPI_SCK_HIGH();
-        }
+    while(len){
+        tlen = (len>blen)?blen:len;
+        writePixels(temp, tlen);
+        len -= tlen;
     }
-
-
-    /*
-     * Transaction API
-     * */
-
-    void Adafruit_ILI9341::startWrite(void){
-        SPI_BEGIN_TRANSACTION();
-        SPI_CS_LOW();
-    }
-
-    void Adafruit_ILI9341::endWrite(void){
-        SPI_CS_HIGH();
-        SPI_END_TRANSACTION();
-    }
-
-    void Adafruit_ILI9341::writeCommand(uint8_t cmd){
-        SPI_DC_LOW();
-        spiWrite(cmd);
-        SPI_DC_HIGH();
-    }
-
-    void Adafruit_ILI9341::setAddrWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
-        uint32_t xa = ((uint32_t)x << 16) | (x+w-1);
-        uint32_t ya = ((uint32_t)y << 16) | (y+h-1);
-        writeCommand(ILI9341_CASET); // Column addr set
-        SPI_WRITE32(xa);
-        writeCommand(ILI9341_PASET); // Row addr set
-        SPI_WRITE32(ya);
-        writeCommand(ILI9341_RAMWR); // write to RAM
-    }
-
-    void Adafruit_ILI9341::writePixel(uint16_t color){
-        SPI_WRITE16(color);
-    }
-
-    void Adafruit_ILI9341::writePixels(uint16_t * colors, uint32_t len){
-        SPI_WRITE_PIXELS((uint8_t*)colors , len * 2);
-    }
-
-    void Adafruit_ILI9341::writeColor(uint16_t color, uint32_t len){
- #ifdef SPI_HAS_WRITE_PIXELS
-        if(_sclk >= 0){
-            for (uint32_t t=0; t<len; t++){
-                writePixel(color);
-            }
-            return;
-        }
-        static uint16_t temp[SPI_MAX_PIXELS_AT_ONCE];
-        size_t blen = (len > SPI_MAX_PIXELS_AT_ONCE)?SPI_MAX_PIXELS_AT_ONCE:len;
-        uint16_t tlen = 0;
-
-        for (uint32_t t=0; t<blen; t++){
-            temp[t] = color;
-        }
-
-        while(len){
-            tlen = (len>blen)?blen:len;
-            writePixels(temp, tlen);
-            len -= tlen;
-        }
 #else
-        uint8_t hi = color >> 8, lo = color;
-        if(_sclk < 0){ //AVR Optimization
-            for (uint32_t t=len; t; t--){
-                HSPI_WRITE(hi);
-                HSPI_WRITE(lo);
-            }
-            return;
-        }
+    uint8_t hi = color >> 8, lo = color;
+    if(_sclk < 0){ //AVR Optimization
         for (uint32_t t=len; t; t--){
-            spiWrite(hi);
-            spiWrite(lo);
+            HSPI_WRITE(hi);
+            HSPI_WRITE(lo);
         }
+        return;
+    }
+    for (uint32_t t=len; t; t--){
+        spiWrite(hi);
+        spiWrite(lo);
+    }
 #endif
-    }
+}
 
-    void Adafruit_ILI9341::writePixel(int16_t x, int16_t y, uint16_t color) {
-        if((x < 0) ||(x >= _width) || (y < 0) || (y >= _height)) return;
-        setAddrWindow(x,y,1,1);
-        writePixel(color);
-    }
+void Adafruit_ILI9341::writePixel(int16_t x, int16_t y, uint16_t color) {
+    if((x < 0) ||(x >= _width) || (y < 0) || (y >= _height)) return;
+    setAddrWindow(x,y,1,1);
+    writePixel(color);
+}
 
-    void Adafruit_ILI9341::writeFillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color){
-        if((x >= _width) || (y >= _height)) return;
-        if((x + w - 1) >= _width)  w = _width  - x;
-        if((y + h - 1) >= _height) h = _height - y;
-        int32_t len = (int32_t)w * h;
-        setAddrWindow(x, y, w, h);
-        writeColor(color, len);
-    }
+void Adafruit_ILI9341::writeFillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color){
+    if((x >= _width) || (y >= _height)) return;
+    if((x + w - 1) >= _width)  w = _width  - x;
+    if((y + h - 1) >= _height) h = _height - y;
+    int32_t len = (int32_t)w * h;
+    setAddrWindow(x, y, w, h);
+    writeColor(color, len);
+}
 
-    void Adafruit_ILI9341::writeFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color){
-        writeFillRect(x, y, 1, h, color);
-    }
+void Adafruit_ILI9341::writeFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color){
+    writeFillRect(x, y, 1, h, color);
+}
 
-    void Adafruit_ILI9341::writeFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color){
-        writeFillRect(x, y, w, 1, color);
-    }
+void Adafruit_ILI9341::writeFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color){
+    writeFillRect(x, y, w, 1, color);
+}
 
-    uint8_t Adafruit_ILI9341::readcommand8(uint8_t c, uint8_t index) {
-        uint32_t freq = _freq;
-        if(_freq > 24000000){
-            _freq = 24000000;
-        }
-        startWrite();
-        writeCommand(0xD9);  // woo sekret command?
-        spiWrite(0x10 + index);
-        writeCommand(c);
-        uint8_t r = spiRead();
-        endWrite();
-        _freq = freq;
-        return r;
+uint8_t Adafruit_ILI9341::readcommand8(uint8_t c, uint8_t index) {
+    uint32_t freq = _freq;
+    if(_freq > 24000000){
+        _freq = 24000000;
     }
+    startWrite();
+    writeCommand(0xD9);  // woo sekret command?
+    spiWrite(0x10 + index);
+    writeCommand(c);
+    uint8_t r = spiRead();
+    endWrite();
+    _freq = freq;
+    return r;
+}
 
-    void Adafruit_ILI9341::drawPixel(int16_t x, int16_t y, uint16_t color){
-        startWrite();
-        writePixel(x, y, color);
-        endWrite();
-    }
+void Adafruit_ILI9341::drawPixel(int16_t x, int16_t y, uint16_t color){
+    startWrite();
+    writePixel(x, y, color);
+    endWrite();
+}
 
-    void Adafruit_ILI9341::drawFastVLine(int16_t x, int16_t y,
-            int16_t h, uint16_t color) {
-        // Update in subclasses if desired!
-        startWrite();
-        writeFastVLine(x, y, h, color);
-        endWrite();
-    }
+void Adafruit_ILI9341::drawFastVLine(int16_t x, int16_t y,
+        int16_t h, uint16_t color) {
+    // Update in subclasses if desired!
+    startWrite();
+    writeFastVLine(x, y, h, color);
+    endWrite();
+}
 
-    void Adafruit_ILI9341::drawFastHLine(int16_t x, int16_t y,
-            int16_t w, uint16_t color) {
-        // Update in subclasses if desired!
-        startWrite();
-        writeFastHLine(x, y, w, color);
-        endWrite();
-    }
+void Adafruit_ILI9341::drawFastHLine(int16_t x, int16_t y,
+        int16_t w, uint16_t color) {
+    // Update in subclasses if desired!
+    startWrite();
+    writeFastHLine(x, y, w, color);
+    endWrite();
+}
 
-    void Adafruit_ILI9341::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
-            uint16_t color) {
-        // Update in subclasses if desired!
-        startWrite();
-        writeFillRect(x,y,w,h,color);
-        endWrite();
-    }
-
+void Adafruit_ILI9341::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
+        uint16_t color) {
+    // Update in subclasses if desired!
+    startWrite();
+    writeFillRect(x,y,w,h,color);
+    endWrite();
+}
