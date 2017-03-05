@@ -422,7 +422,7 @@ void Adafruit_ILI9341::invertDisplay(boolean i) {
 void Adafruit_ILI9341::scrollTo(uint16_t y) {
     startWrite();
     writeCommand(0x37);
-    spiWrite(y);
+    SPI_WRITE16(y);
     endWrite();
 }
 
