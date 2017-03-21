@@ -149,6 +149,7 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
         void      writePixel(uint16_t color);
         void      writePixels(uint16_t * colors, uint32_t len);
         void      writeColor(uint16_t color, uint32_t len);
+	void      pushColor(uint16_t color);
 
         // Recommended Non-Transaction
         void      drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);

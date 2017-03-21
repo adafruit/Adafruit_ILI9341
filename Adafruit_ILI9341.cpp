@@ -492,6 +492,13 @@ void Adafruit_ILI9341::setAddrWindow(uint16_t x, uint16_t y, uint16_t w, uint16_
     writeCommand(ILI9341_RAMWR); // write to RAM
 }
 
+void Adafruit_ILI9341::pushColor(uint16_t color) {
+  startWrite();
+  SPI_WRITE16(color);
+  endWrite();
+}
+
+
 void Adafruit_ILI9341::writePixel(uint16_t color){
     SPI_WRITE16(color);
 }
