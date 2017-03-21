@@ -552,8 +552,23 @@ void Adafruit_ILI9341::writePixel(int16_t x, int16_t y, uint16_t color) {
 
 void Adafruit_ILI9341::writeFillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color){
     if((x >= _width) || (y >= _height)) return;
-    if((x + w - 1) >= _width)  w = _width  - x;
-    if((y + h - 1) >= _height) h = _height - y;
+    int16_t x2 = x + w - 1, y2 = y + h - 1;
+    if((x2 < 0) || (y2 < 0)) return;
+
+    // Clip left/top
+    if(x < 0) {
+        x = 0;
+        w = x2 + 1;
+    }
+    if(y < 0) {
+        y = 0;
+        h = y2 + 1;
+    }
+
+    // Clip right/bottom
+    if(x2 >= _width)  w = _width  - x;
+    if(y2 >= _height) h = _height - y;
+
     int32_t len = (int32_t)w * h;
     setAddrWindow(x, y, w, h);
     writeColor(color, len);
