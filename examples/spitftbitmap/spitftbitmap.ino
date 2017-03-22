@@ -34,7 +34,6 @@ void setup(void) {
   Serial.begin(9600);
 
   tft.begin();
-  tft.fillScreen(ILI9341_BLUE);
   
   yield();
 
@@ -44,10 +43,18 @@ void setup(void) {
   }
   Serial.println("OK!");
 
-  bmpDraw("purple.bmp", 0, 0);
 }
 
 void loop() {
+  for(uint8_t r=0; r<4; r++) {
+    tft.setRotation(r);
+    tft.fillScreen(ILI9341_BLUE);
+    for(int8_t i=-2; i<1; i++) {
+      bmpDraw("purple.bmp",
+        (tft.width()  / 2) + (i * 120),
+        (tft.height() / 2) + (i * 160));
+    }
+  }
 }
 
 // This function opens a Windows Bitmap (BMP) file and
@@ -60,7 +67,7 @@ void loop() {
 
 #define BUFFPIXEL 20
 
-void bmpDraw(char *filename, uint8_t x, uint16_t y) {
+void bmpDraw(char *filename, int16_t x, int16_t y) {
 
   File     bmpFile;
   int      bmpWidth, bmpHeight;   // W+H in pixels
@@ -71,7 +78,7 @@ void bmpDraw(char *filename, uint8_t x, uint16_t y) {
   uint8_t  buffidx = sizeof(sdbuffer); // Current position in sdbuffer
   boolean  goodBmp = false;       // Set to true on valid header parse
   boolean  flip    = true;        // BMP is stored bottom-to-top
-  int      w, h, row, col;
+  int      w, h, row, col, x2, y2, bx1, by1;
   uint8_t  r, g, b;
   uint32_t pos = 0, startTime = millis();
 
@@ -120,45 +127,61 @@ void bmpDraw(char *filename, uint8_t x, uint16_t y) {
         }
 
         // Crop area to be loaded
-        w = bmpWidth;
-        h = bmpHeight;
-        if((x+w-1) >= tft.width())  w = tft.width()  - x;
-        if((y+h-1) >= tft.height()) h = tft.height() - y;
-
-        // Set TFT address window to clipped image bounds
-        tft.setAddrWindow(x, y, x+w-1, y+h-1);
-
-        for (row=0; row<h; row++) { // For each scanline...
-
-          // Seek to start of scan line.  It might seem labor-
-          // intensive to be doing this on every line, but this
-          // method covers a lot of gritty details like cropping
-          // and scanline padding.  Also, the seek only takes
-          // place if the file position actually needs to change
-          // (avoids a lot of cluster math in SD library).
-          if(flip) // Bitmap is stored bottom-to-top order (normal BMP)
-            pos = bmpImageoffset + (bmpHeight - 1 - row) * rowSize;
-          else     // Bitmap is stored top-to-bottom
-            pos = bmpImageoffset + row * rowSize;
-          if(bmpFile.position() != pos) { // Need seek?
-            bmpFile.seek(pos);
-            buffidx = sizeof(sdbuffer); // Force buffer reload
+        x2 = x + bmpWidth  - 1; // Lower-right corner
+        y2 = y + bmpHeight - 1;
+        if((x2 >= 0) && (y2 >= 0)) { // On screen?
+          w = bmpWidth; // Width/height of section to load/display
+          h = bmpHeight;
+          bx1 = by1 = 0; // UL coordinate in BMP file
+          if(x < 0) { // Clip left
+            bx1 = -x;
+            x   = 0;
+            w   = x2 + 1;
           }
-
-          for (col=0; col<w; col++) { // For each pixel...
-            // Time to read more pixel data?
-            if (buffidx >= sizeof(sdbuffer)) { // Indeed
-              bmpFile.read(sdbuffer, sizeof(sdbuffer));
-              buffidx = 0; // Set index to beginning
+          if(y < 0) { // Clip top
+            by1 = -y;
+            y   = 0;
+            h   = y2 + 1;
+          }
+          if(x2 >= tft.width())  w = tft.width()  - x; // Clip right
+          if(y2 >= tft.height()) h = tft.height() - y; // Clip bottom
+  
+          // Set TFT address window to clipped image bounds
+          tft.startWrite(); // Requires start/end transaction now
+          tft.setAddrWindow(x, y, w, h);
+          tft.endWrite();
+  
+          for (row=0; row<h; row++) { // For each scanline...
+  
+            // Seek to start of scan line.  It might seem labor-
+            // intensive to be doing this on every line, but this
+            // method covers a lot of gritty details like cropping
+            // and scanline padding.  Also, the seek only takes
+            // place if the file position actually needs to change
+            // (avoids a lot of cluster math in SD library).
+            if(flip) // Bitmap is stored bottom-to-top order (normal BMP)
+              pos = bmpImageoffset + (bmpHeight - 1 - (row + by1)) * rowSize;
+            else     // Bitmap is stored top-to-bottom
+              pos = bmpImageoffset + (row + by1) * rowSize;
+            pos += bx1 * 3; // Factor in starting column (bx1)
+            if(bmpFile.position() != pos) { // Need seek?
+              bmpFile.seek(pos);
+              buffidx = sizeof(sdbuffer); // Force buffer reload
             }
-
-            // Convert pixel from BMP to TFT format, push to display
-            b = sdbuffer[buffidx++];
-            g = sdbuffer[buffidx++];
-            r = sdbuffer[buffidx++];
-            tft.pushColor(tft.color565(r,g,b));
-          } // end pixel
-        } // end scanline
+            for (col=0; col<w; col++) { // For each pixel...
+              // Time to read more pixel data?
+              if (buffidx >= sizeof(sdbuffer)) { // Indeed
+                bmpFile.read(sdbuffer, sizeof(sdbuffer));
+                buffidx = 0; // Set index to beginning
+              }
+              // Convert pixel from BMP to TFT format, push to display
+              b = sdbuffer[buffidx++];
+              g = sdbuffer[buffidx++];
+              r = sdbuffer[buffidx++];
+              tft.pushColor(tft.color565(r,g,b));
+            } // end pixel
+          } // end scanline
+        } // end onscreen
         Serial.print(F("Loaded in "));
         Serial.print(millis() - startTime);
         Serial.println(" ms");
