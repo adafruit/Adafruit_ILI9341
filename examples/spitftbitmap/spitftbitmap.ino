@@ -149,7 +149,6 @@ void bmpDraw(char *filename, int16_t x, int16_t y) {
           // Set TFT address window to clipped image bounds
           tft.startWrite(); // Requires start/end transaction now
           tft.setAddrWindow(x, y, w, h);
-          tft.endWrite();
   
           for (row=0; row<h; row++) { // For each scanline...
   
@@ -165,22 +164,27 @@ void bmpDraw(char *filename, int16_t x, int16_t y) {
               pos = bmpImageoffset + (row + by1) * rowSize;
             pos += bx1 * 3; // Factor in starting column (bx1)
             if(bmpFile.position() != pos) { // Need seek?
+              tft.endWrite(); // End TFT transaction
               bmpFile.seek(pos);
               buffidx = sizeof(sdbuffer); // Force buffer reload
+              tft.startWrite(); // Start new TFT transaction
             }
             for (col=0; col<w; col++) { // For each pixel...
               // Time to read more pixel data?
               if (buffidx >= sizeof(sdbuffer)) { // Indeed
+                tft.endWrite(); // End TFT transaction
                 bmpFile.read(sdbuffer, sizeof(sdbuffer));
                 buffidx = 0; // Set index to beginning
+                tft.startWrite(); // Start new TFT transaction
               }
               // Convert pixel from BMP to TFT format, push to display
               b = sdbuffer[buffidx++];
               g = sdbuffer[buffidx++];
               r = sdbuffer[buffidx++];
-              tft.pushColor(tft.color565(r,g,b));
+              tft.writePixel(tft.color565(r,g,b));
             } // end pixel
           } // end scanline
+          tft.endWrite(); // End last TFT transaction
         } // end onscreen
         Serial.print(F("Loaded in "));
         Serial.print(millis() - startTime);
