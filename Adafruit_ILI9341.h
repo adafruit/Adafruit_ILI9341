@@ -64,6 +64,7 @@ typedef volatile uint32_t RwReg;
 
 #define ILI9341_PTLAR   0x30
 #define ILI9341_MADCTL  0x36
+#define ILI9341_VSCRSADD 0x37
 #define ILI9341_PIXFMT  0x3A
 
 #define ILI9341_FRMCTR1 0xB1
