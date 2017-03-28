@@ -114,7 +114,7 @@ typedef volatile uint32_t RwReg;
 #define ILI9341_GREENYELLOW 0xAFE5      /* 173, 255,  47 */
 #define ILI9341_PINK        0xF81F
 
-#if defined (__AVR__) || defined(TEENSYDUINO) || defined(ESP8266) || defined (ESP32)
+#if defined (__AVR__) || defined(TEENSYDUINO) || defined(ESP8266) || defined (ESP32) || defined(__arm__)
 #define USE_FAST_PINIO
 #endif
 
