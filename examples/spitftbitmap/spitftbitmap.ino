@@ -16,12 +16,9 @@
 
 #include <Adafruit_GFX.h>    // Core graphics library
 #include "WROVER_KIT_LCD.h" // Hardware-specific library
-#include <SPI.h>
-#include <SD.h>
+#include <SD_MMC.h>
 
 WROVER_KIT_LCD tft;
-
-#define SD_CS 4
 
 void setup(void) {
   Serial.begin(9600);
@@ -32,12 +29,12 @@ void setup(void) {
   yield();
 
   Serial.print("Initializing SD card...");
-  if (!SD.begin(SD_CS)) {
+  if (!SD_MMC.begin()) {
     Serial.println("failed!");
   }
   Serial.println("OK!");
 
-  tft.drawBmpFile(SD, "purple.bmp", 0, 0);
+  tft.drawBmpFile(SD_MMC, "/purple.bmp", 0, 0);
 }
 
 void loop() {
