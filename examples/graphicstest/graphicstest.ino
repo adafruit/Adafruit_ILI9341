@@ -24,6 +24,7 @@ void setup() {
   Serial.begin(115200);
  
   tft.begin();
+  tft.setRotation(1);
 
   uint8_t x = 0;
   uint32_t id = tft.readId();
@@ -35,17 +36,17 @@ void setup() {
   Serial.println("============================================");
   Serial.printf("Display ID:      0x%06X\n", id);
 
-  x = tft.readcommand8(WROVER_KIT_LCD_RDDST);
+  x = tft.readcommand8(WROVER_RDDST);
   Serial.print("Status:          0x"); Serial.println(x, HEX);
-  x = tft.readcommand8(WROVER_KIT_LCD_RDDPM);
+  x = tft.readcommand8(WROVER_RDDPM);
   Serial.print("Power Mode:      0x"); Serial.println(x, HEX);
-  x = tft.readcommand8(WROVER_KIT_LCD_RDDMADCTL);
+  x = tft.readcommand8(WROVER_RDDMADCTL);
   Serial.print("MADCTL Mode:     0x"); Serial.println(x, HEX);
-  x = tft.readcommand8(WROVER_KIT_LCD_RDDCOLMOD);
+  x = tft.readcommand8(WROVER_RDDCOLMOD);
   Serial.print("Pixel Format:    0x"); Serial.println(x, HEX);
-  x = tft.readcommand8(WROVER_KIT_LCD_RDDIM);
+  x = tft.readcommand8(WROVER_RDDIM);
   Serial.print("Image Format:    0x"); Serial.println(x, HEX);
-  x = tft.readcommand8(WROVER_KIT_LCD_RDDSDR);
+  x = tft.readcommand8(WROVER_RDDSDR);
   Serial.print("Self Diagnostic: 0x"); Serial.println(x, HEX);
   
   Serial.println(F("Benchmark                Time (microseconds)"));

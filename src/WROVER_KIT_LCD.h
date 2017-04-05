@@ -14,68 +14,68 @@
 #include "SPI.h"
 #include "Adafruit_GFX.h"
 
-#define WROVER_KIT_LCD_WIDTH       240
-#define WROVER_KIT_LCD_HEIGHT      320
+#define WROVER_WIDTH       240
+#define WROVER_HEIGHT      320
 
-#define WROVER_KIT_LCD_NOP         0x00
-#define WROVER_KIT_LCD_SWRESET     0x01 // Software Reset
-#define WROVER_KIT_LCD_RDDID       0x04 // Read Display ID
-#define WROVER_KIT_LCD_RDDST       0x09 // Read Display Status
-#define WROVER_KIT_LCD_RDDPM       0x0A // Read Display Power
-#define WROVER_KIT_LCD_RDDMADCTL   0x0B // Read Display Memory Data Access Mode
-#define WROVER_KIT_LCD_RDDCOLMOD   0x0C // Read Display Pixel
-#define WROVER_KIT_LCD_RDDIM       0x0D // Read Display Image
-#define WROVER_KIT_LCD_RDDSM       0x0E // Read Display Signal
-#define WROVER_KIT_LCD_RDDSDR      0x0F // Read Display Self Diagnostics
-#define WROVER_KIT_LCD_SLPIN       0x10 // Sleep In
-#define WROVER_KIT_LCD_SLPOUT      0x11 // Sleep Out
-#define WROVER_KIT_LCD_PTLON       0x12 // Partial Mode On
-#define WROVER_KIT_LCD_NORON       0x13 // Partial Mode Off
-#define WROVER_KIT_LCD_INVOFF      0x20 // Display Invert Off
-#define WROVER_KIT_LCD_INVON       0x21 // Display Invert On
-#define WROVER_KIT_LCD_GAMSET      0x26 // Display Invert On Gamma
-#define WROVER_KIT_LCD_DISPOFF     0x28 // Display Off
-#define WROVER_KIT_LCD_DISPON      0x29 // Display On
-#define WROVER_KIT_LCD_CASET       0x2A // Column Address Set
-#define WROVER_KIT_LCD_RASET       0x2B // Row Address Set
-#define WROVER_KIT_LCD_RAMWR       0x2C // Memory Write
-#define WROVER_KIT_LCD_RAMRD       0x2E // Memory Read
-#define WROVER_KIT_LCD_PTLAR       0x30 // Partial Start/End Address Set
-#define WROVER_KIT_LCD_VSCRDEF     0x33 // Vertical Scrolling Definition
-#define WROVER_KIT_LCD_TEOFF       0x34 // Tearing Effect Line Off
-#define WROVER_KIT_LCD_TEON        0x35 // Tearing Effect Line On
-#define WROVER_KIT_LCD_MADCTL      0x36 // Memory Data Access Control
-#define WROVER_KIT_LCD_VSCRSADD    0x37 // Vertical Scrolling Start Address
-#define WROVER_KIT_LCD_IDMOFF      0x38 // Idle Mode Off
-#define WROVER_KIT_LCD_IDMON       0x39 // Idle Mode On
-#define WROVER_KIT_LCD_COLMOD      0x3A // Interface Pixel Format
-#define WROVER_KIT_LCD_RAMWRC      0x3C // Memory Write Continue
-#define WROVER_KIT_LCD_RAMRDC      0x3E // Memory Read Continue
-#define WROVER_KIT_LCD_TESCAN      0x44 // Set Tear Scan Line
-#define WROVER_KIT_LCD_RDTESCAN    0x45 // Get Tear Scan Line
-#define WROVER_KIT_LCD_WRDISBV     0x51 // Set Display Brightness
-#define WROVER_KIT_LCD_RDDISBV     0x52 // Get Display Brightness
-#define WROVER_KIT_LCD_WRCTRLD     0x53 // Set Display Control
-#define WROVER_KIT_LCD_RDCTRLD     0x54 // Get Display Control
-#define WROVER_KIT_LCD_WRCACE      0x55 // Write content adaptive brightness control and Color enhancement
-#define WROVER_KIT_LCD_RDCABC      0x56 // Read content adaptive brightness control and Color enhancement
-#define WROVER_KIT_LCD_WRCABCMB    0x5E // Write CABC minimum brightness
-#define WROVER_KIT_LCD_RDCABCMB    0x5F // Read CABC minimum brightness
-#define WROVER_KIT_LCD_RDABCSDR    0x68 // Read Automatic Brightness Control Self-Diagnostic Result
-#define WROVER_KIT_LCD_PORCTRK     0xB2 // Porch setting
-#define WROVER_KIT_LCD_GCTRL       0xB7 // Gate Control
-#define WROVER_KIT_LCD_VCOMS       0xBB // VCOM setting
-#define WROVER_KIT_LCD_LCMCTRL     0xC0 // LCM Control
-#define WROVER_KIT_LCD_VDVVRHEN    0xC2 // VDV and VRH Command Enable
-#define WROVER_KIT_LCD_VRHS        0xC3 // VRH Set
-#define WROVER_KIT_LCD_VDVS        0xC4 // VDV Set
-#define WROVER_KIT_LCD_FRCTRL2     0xC6 // Frame Rate control in normal mode
-#define WROVER_KIT_LCD_PWCTRL1     0xD0 // Power Control 1
-#define WROVER_KIT_LCD_RDID1       0xDA // Read ID1
-#define WROVER_KIT_LCD_RDID2       0xDB // Read ID2
-#define WROVER_KIT_LCD_RDID3       0xDC // Read ID3
-#define WROVER_KIT_LCD_PVGAMCTRL   0xE0 // Positive Voltage Gamma control
-#define WROVER_KIT_LCD_NVGAMCTRL   0xE1 // Negative Voltage Gamma control
+#define WROVER_NOP         0x00
+#define WROVER_SWRESET     0x01 // Software Reset
+#define WROVER_RDDID       0x04 // Read Display ID
+#define WROVER_RDDST       0x09 // Read Display Status
+#define WROVER_RDDPM       0x0A // Read Display Power
+#define WROVER_RDDMADCTL   0x0B // Read Display Memory Data Access Mode
+#define WROVER_RDDCOLMOD   0x0C // Read Display Pixel
+#define WROVER_RDDIM       0x0D // Read Display Image
+#define WROVER_RDDSM       0x0E // Read Display Signal
+#define WROVER_RDDSDR      0x0F // Read Display Self Diagnostics
+#define WROVER_SLPIN       0x10 // Sleep In
+#define WROVER_SLPOUT      0x11 // Sleep Out
+#define WROVER_PTLON       0x12 // Partial Mode On
+#define WROVER_NORON       0x13 // Partial Mode Off
+#define WROVER_INVOFF      0x20 // Display Invert Off
+#define WROVER_INVON       0x21 // Display Invert On
+#define WROVER_GAMSET      0x26 // Display Invert On Gamma
+#define WROVER_DISPOFF     0x28 // Display Off
+#define WROVER_DISPON      0x29 // Display On
+#define WROVER_CASET       0x2A // Column Address Set
+#define WROVER_RASET       0x2B // Row Address Set
+#define WROVER_RAMWR       0x2C // Memory Write
+#define WROVER_RAMRD       0x2E // Memory Read
+#define WROVER_PTLAR       0x30 // Partial Start/End Address Set
+#define WROVER_VSCRDEF     0x33 // Vertical Scrolling Definition
+#define WROVER_TEOFF       0x34 // Tearing Effect Line Off
+#define WROVER_TEON        0x35 // Tearing Effect Line On
+#define WROVER_MADCTL      0x36 // Memory Data Access Control
+#define WROVER_VSCRSADD    0x37 // Vertical Scrolling Start Address
+#define WROVER_IDMOFF      0x38 // Idle Mode Off
+#define WROVER_IDMON       0x39 // Idle Mode On
+#define WROVER_COLMOD      0x3A // Interface Pixel Format
+#define WROVER_RAMWRC      0x3C // Memory Write Continue
+#define WROVER_RAMRDC      0x3E // Memory Read Continue
+#define WROVER_TESCAN      0x44 // Set Tear Scan Line
+#define WROVER_RDTESCAN    0x45 // Get Tear Scan Line
+#define WROVER_WRDISBV     0x51 // Set Display Brightness
+#define WROVER_RDDISBV     0x52 // Get Display Brightness
+#define WROVER_WRCTRLD     0x53 // Set Display Control
+#define WROVER_RDCTRLD     0x54 // Get Display Control
+#define WROVER_WRCACE      0x55 // Write content adaptive brightness control and Color enhancement
+#define WROVER_RDCABC      0x56 // Read content adaptive brightness control and Color enhancement
+#define WROVER_WRCABCMB    0x5E // Write CABC minimum brightness
+#define WROVER_RDCABCMB    0x5F // Read CABC minimum brightness
+#define WROVER_RDABCSDR    0x68 // Read Automatic Brightness Control Self-Diagnostic Result
+#define WROVER_PORCTRK     0xB2 // Porch setting
+#define WROVER_GCTRL       0xB7 // Gate Control
+#define WROVER_VCOMS       0xBB // VCOM setting
+#define WROVER_LCMCTRL     0xC0 // LCM Control
+#define WROVER_VDVVRHEN    0xC2 // VDV and VRH Command Enable
+#define WROVER_VRHS        0xC3 // VRH Set
+#define WROVER_VDVS        0xC4 // VDV Set
+#define WROVER_FRCTRL2     0xC6 // Frame Rate control in normal mode
+#define WROVER_PWCTRL1     0xD0 // Power Control 1
+#define WROVER_RDID1       0xDA // Read ID1
+#define WROVER_RDID2       0xDB // Read ID2
+#define WROVER_RDID3       0xDC // Read ID3
+#define WROVER_PVGAMCTRL   0xE0 // Positive Voltage Gamma control
+#define WROVER_NVGAMCTRL   0xE1 // Negative Voltage Gamma control
 
 // Color definitions
 #define WROVER_BLACK       0x0000 /*   0,   0,   0 */

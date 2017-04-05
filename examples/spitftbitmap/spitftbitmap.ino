@@ -13,7 +13,6 @@
   MIT license, all text above must be included in any redistribution
  ****************************************************/
 
-
 #include <Adafruit_GFX.h>    // Core graphics library
 #include "WROVER_KIT_LCD.h" // Hardware-specific library
 #include <SD_MMC.h>
@@ -21,21 +20,20 @@
 WROVER_KIT_LCD tft;
 
 void setup(void) {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   tft.begin();
+  tft.setRotation(1);
   tft.fillScreen(WROVER_BLUE);
   
-  yield();
-
   Serial.print("Initializing SD card...");
   if (!SD_MMC.begin()) {
     Serial.println("failed!");
+    return;
   }
   Serial.println("OK!");
 
   tft.drawBmpFile(SD_MMC, "/purple.bmp", 0, 0);
 }
 
-void loop() {
-}
+void loop() {}

@@ -119,7 +119,7 @@ uint16_t WROVER_KIT_LCD::color565(uint8_t r, uint8_t g, uint8_t b) {
     return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | ((b & 0xF8) >> 3);
 }
 
-WROVER_KIT_LCD::WROVER_KIT_LCD() : Adafruit_GFX(WROVER_KIT_LCD_WIDTH, WROVER_KIT_LCD_HEIGHT) {
+WROVER_KIT_LCD::WROVER_KIT_LCD() : Adafruit_GFX(WROVER_WIDTH, WROVER_HEIGHT) {
     _id   = 0;
     _freq = WROVER_DEFAULT_FREQ;
 }
@@ -141,8 +141,8 @@ void WROVER_KIT_LCD::writeCommand(uint8_t cmd){
 }
 
 void WROVER_KIT_LCD::begin(){
-    _width  = WROVER_KIT_LCD_WIDTH;
-    _height = WROVER_KIT_LCD_HEIGHT;
+    _width  = WROVER_WIDTH;
+    _height = WROVER_HEIGHT;
 
     pinMode(WROVER_DC, OUTPUT);
     digitalWrite(WROVER_DC, LOW);
@@ -172,9 +172,9 @@ void WROVER_KIT_LCD::begin(){
         writeInitData(ili9341_init_data);
     }
 
-    writeCommand(WROVER_KIT_LCD_SLPOUT);
+    writeCommand(WROVER_SLPOUT);
     delay(120);
-    writeCommand(WROVER_KIT_LCD_DISPON);
+    writeCommand(WROVER_DISPON);
     delay(120);
 
     endWrite();
@@ -189,17 +189,17 @@ typedef struct {
 } rotation_data_t;
 
 const rotation_data_t ili9341_rotations[4] = {
-    {(WROVER_MADCTL_MX|WROVER_MADCTL_BGR),(WROVER_MADCTL_MX|WROVER_MADCTL_MY|WROVER_MADCTL_BGR),WROVER_KIT_LCD_WIDTH,WROVER_KIT_LCD_HEIGHT},
-    {(WROVER_MADCTL_MV|WROVER_MADCTL_BGR),(WROVER_MADCTL_MV|WROVER_MADCTL_MX|WROVER_MADCTL_BGR),WROVER_KIT_LCD_HEIGHT,WROVER_KIT_LCD_WIDTH},
-    {(WROVER_MADCTL_MY|WROVER_MADCTL_BGR),(WROVER_MADCTL_BGR),WROVER_KIT_LCD_WIDTH,WROVER_KIT_LCD_HEIGHT},
-    {(WROVER_MADCTL_MX|WROVER_MADCTL_MY|WROVER_MADCTL_MV|WROVER_MADCTL_BGR),(WROVER_MADCTL_MY|WROVER_MADCTL_MV|WROVER_MADCTL_BGR),WROVER_KIT_LCD_HEIGHT,WROVER_KIT_LCD_WIDTH}
+    {(WROVER_MADCTL_MX|WROVER_MADCTL_BGR),(WROVER_MADCTL_MX|WROVER_MADCTL_MY|WROVER_MADCTL_BGR),WROVER_WIDTH,WROVER_HEIGHT},
+    {(WROVER_MADCTL_MV|WROVER_MADCTL_BGR),(WROVER_MADCTL_MV|WROVER_MADCTL_MX|WROVER_MADCTL_BGR),WROVER_HEIGHT,WROVER_WIDTH},
+    {(WROVER_MADCTL_MY|WROVER_MADCTL_BGR),(WROVER_MADCTL_BGR),WROVER_WIDTH,WROVER_HEIGHT},
+    {(WROVER_MADCTL_MX|WROVER_MADCTL_MY|WROVER_MADCTL_MV|WROVER_MADCTL_BGR),(WROVER_MADCTL_MY|WROVER_MADCTL_MV|WROVER_MADCTL_BGR),WROVER_HEIGHT,WROVER_WIDTH}
 };
 
 const rotation_data_t st7789v_rotations[4] = {
-    {0,WROVER_MADCTL_MY,WROVER_KIT_LCD_WIDTH,WROVER_KIT_LCD_HEIGHT},
-    {(WROVER_MADCTL_MV|WROVER_MADCTL_MX),WROVER_MADCTL_MV,WROVER_KIT_LCD_HEIGHT,WROVER_KIT_LCD_WIDTH},
-    {(WROVER_MADCTL_MY|WROVER_MADCTL_MX),WROVER_MADCTL_MX,WROVER_KIT_LCD_WIDTH,WROVER_KIT_LCD_HEIGHT},
-    {(WROVER_MADCTL_MY|WROVER_MADCTL_MV),(WROVER_MADCTL_MX|WROVER_MADCTL_MY|WROVER_MADCTL_MV),WROVER_KIT_LCD_HEIGHT,WROVER_KIT_LCD_WIDTH}
+    {0,WROVER_MADCTL_MY,WROVER_WIDTH,WROVER_HEIGHT},
+    {(WROVER_MADCTL_MV|WROVER_MADCTL_MX),WROVER_MADCTL_MV,WROVER_HEIGHT,WROVER_WIDTH},
+    {(WROVER_MADCTL_MY|WROVER_MADCTL_MX),WROVER_MADCTL_MX,WROVER_WIDTH,WROVER_HEIGHT},
+    {(WROVER_MADCTL_MY|WROVER_MADCTL_MV),(WROVER_MADCTL_MX|WROVER_MADCTL_MY|WROVER_MADCTL_MV),WROVER_HEIGHT,WROVER_WIDTH}
 };
 
 void WROVER_KIT_LCD::setRotation(uint8_t m) {
@@ -216,14 +216,14 @@ void WROVER_KIT_LCD::setRotation(uint8_t m) {
     }
 
     startWrite();
-    writeCommand(WROVER_KIT_LCD_MADCTL);
+    writeCommand(WROVER_MADCTL);
     SPI.write(m);
     endWrite();
 }
 
 void WROVER_KIT_LCD::invertDisplay(boolean i) {
     startWrite();
-    writeCommand(i ? WROVER_KIT_LCD_INVON : WROVER_KIT_LCD_INVOFF);
+    writeCommand(i ? WROVER_INVON : WROVER_INVOFF);
     endWrite();
 }
 
@@ -241,16 +241,16 @@ void WROVER_KIT_LCD::scrollTo(uint16_t y) {
 void WROVER_KIT_LCD::setAddrWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
     uint32_t xa = ((uint32_t)x << 16) | (x+w-1);
     uint32_t ya = ((uint32_t)y << 16) | (y+h-1);
-    writeCommand(WROVER_KIT_LCD_CASET);
+    writeCommand(WROVER_CASET);
     SPI.write32(xa);
-    writeCommand(WROVER_KIT_LCD_RASET);
+    writeCommand(WROVER_RASET);
     SPI.write32(ya);
-    writeCommand(WROVER_KIT_LCD_RAMWR);
+    writeCommand(WROVER_RAMWR);
 }
 
 void WROVER_KIT_LCD::startBitmap(uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
     startWrite();
-    writeCommand(WROVER_KIT_LCD_MADCTL);
+    writeCommand(WROVER_MADCTL);
     if(_id){
         SPI.write(st7789v_rotations[rotation].bmpctl);
     } else {
@@ -264,7 +264,7 @@ void WROVER_KIT_LCD::startBitmap(uint16_t x, uint16_t y, uint16_t w, uint16_t h)
 void WROVER_KIT_LCD::endBitmap() {
     endWrite();
     startWrite();
-    writeCommand(WROVER_KIT_LCD_MADCTL);
+    writeCommand(WROVER_MADCTL);
     if(_id){
         SPI.write(st7789v_rotations[rotation].madctl);
     } else {
