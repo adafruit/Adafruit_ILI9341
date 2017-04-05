@@ -29,7 +29,9 @@
 // Feather 32u4 or M0 with TFT FeatherWing:
 #define TFT_DC 10
 #define TFT_CS  9
-
+// ESP8266:
+//#define TFT_DC 15
+//#define TFT_CS 0
 // Other boards (including Feather boards) may have other pinouts;
 // see learn.adafruit.com/adafruit-2-4-tft-touch-screen-featherwing/pinouts
 
