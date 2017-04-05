@@ -18,32 +18,35 @@
 #include "Adafruit_GFX.h"
 #include "WROVER_KIT_LCD.h"
 
-// For the Adafruit shield, these are the default.
-#define TFT_DC 9
-#define TFT_CS 10
-
-// Use hardware SPI (on Uno, #13, #12, #11) and the above for CS/DC
-WROVER_KIT_LCD tft = WROVER_KIT_LCD(TFT_CS, TFT_DC);
-// If using the breakout, change pins as desired
-//WROVER_KIT_LCD tft = WROVER_KIT_LCD(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);
+WROVER_KIT_LCD tft;
 
 void setup() {
-  Serial.begin(9600);
-  Serial.println("ILI9341 Test!"); 
+  Serial.begin(115200);
  
   tft.begin();
 
-  // read diagnostics (optional but can help debug problems)
-  uint8_t x = tft.readcommand8(ILI9341_RDMODE);
-  Serial.print("Display Power Mode: 0x"); Serial.println(x, HEX);
-  x = tft.readcommand8(ILI9341_RDMADCTL);
-  Serial.print("MADCTL Mode: 0x"); Serial.println(x, HEX);
-  x = tft.readcommand8(ILI9341_RDPIXFMT);
-  Serial.print("Pixel Format: 0x"); Serial.println(x, HEX);
-  x = tft.readcommand8(ILI9341_RDIMGFMT);
-  Serial.print("Image Format: 0x"); Serial.println(x, HEX);
-  x = tft.readcommand8(ILI9341_RDSELFDIAG);
-  Serial.print("Self Diagnostic: 0x"); Serial.println(x, HEX); 
+  uint8_t x = 0;
+  uint32_t id = tft.readId();
+  if(id){
+      Serial.println("======= WROVER ST7789V Display Test ========");
+  } else {
+      Serial.println("======= WROVER ILI9341 Display Test ========");
+  }
+  Serial.println("============================================");
+  Serial.printf("Display ID:      0x%06X\n", id);
+
+  x = tft.readcommand8(WROVER_KIT_LCD_RDDST);
+  Serial.print("Status:          0x"); Serial.println(x, HEX);
+  x = tft.readcommand8(WROVER_KIT_LCD_RDDPM);
+  Serial.print("Power Mode:      0x"); Serial.println(x, HEX);
+  x = tft.readcommand8(WROVER_KIT_LCD_RDDMADCTL);
+  Serial.print("MADCTL Mode:     0x"); Serial.println(x, HEX);
+  x = tft.readcommand8(WROVER_KIT_LCD_RDDCOLMOD);
+  Serial.print("Pixel Format:    0x"); Serial.println(x, HEX);
+  x = tft.readcommand8(WROVER_KIT_LCD_RDDIM);
+  Serial.print("Image Format:    0x"); Serial.println(x, HEX);
+  x = tft.readcommand8(WROVER_KIT_LCD_RDDSDR);
+  Serial.print("Self Diagnostic: 0x"); Serial.println(x, HEX);
   
   Serial.println(F("Benchmark                Time (microseconds)"));
   delay(10);
@@ -56,26 +59,26 @@ void setup() {
   delay(3000);
 
   Serial.print(F("Lines                    "));
-  Serial.println(testLines(ILI9341_CYAN));
+  Serial.println(testLines(WROVER_CYAN));
   delay(500);
 
   Serial.print(F("Horiz/Vert Lines         "));
-  Serial.println(testFastLines(ILI9341_RED, ILI9341_BLUE));
+  Serial.println(testFastLines(WROVER_RED, WROVER_BLUE));
   delay(500);
 
   Serial.print(F("Rectangles (outline)     "));
-  Serial.println(testRects(ILI9341_GREEN));
+  Serial.println(testRects(WROVER_GREEN));
   delay(500);
 
   Serial.print(F("Rectangles (filled)      "));
-  Serial.println(testFilledRects(ILI9341_YELLOW, ILI9341_MAGENTA));
+  Serial.println(testFilledRects(WROVER_YELLOW, WROVER_MAGENTA));
   delay(500);
 
   Serial.print(F("Circles (filled)         "));
-  Serial.println(testFilledCircles(10, ILI9341_MAGENTA));
+  Serial.println(testFilledCircles(10, WROVER_MAGENTA));
 
   Serial.print(F("Circles (outline)        "));
-  Serial.println(testCircles(10, ILI9341_WHITE));
+  Serial.println(testCircles(10, WROVER_WHITE));
   delay(500);
 
   Serial.print(F("Triangles (outline)      "));
@@ -109,31 +112,31 @@ void loop(void) {
 
 unsigned long testFillScreen() {
   unsigned long start = micros();
-  tft.fillScreen(ILI9341_BLACK);
+  tft.fillScreen(WROVER_BLACK);
   yield();
-  tft.fillScreen(ILI9341_RED);
+  tft.fillScreen(WROVER_RED);
   yield();
-  tft.fillScreen(ILI9341_GREEN);
+  tft.fillScreen(WROVER_GREEN);
   yield();
-  tft.fillScreen(ILI9341_BLUE);
+  tft.fillScreen(WROVER_BLUE);
   yield();
-  tft.fillScreen(ILI9341_BLACK);
+  tft.fillScreen(WROVER_BLACK);
   yield();
   return micros() - start;
 }
 
 unsigned long testText() {
-  tft.fillScreen(ILI9341_BLACK);
+  tft.fillScreen(WROVER_BLACK);
   unsigned long start = micros();
   tft.setCursor(0, 0);
-  tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(1);
+  tft.setTextColor(WROVER_WHITE);  tft.setTextSize(1);
   tft.println("Hello World!");
-  tft.setTextColor(ILI9341_YELLOW); tft.setTextSize(2);
+  tft.setTextColor(WROVER_YELLOW); tft.setTextSize(2);
   tft.println(1234.56);
-  tft.setTextColor(ILI9341_RED);    tft.setTextSize(3);
+  tft.setTextColor(WROVER_RED);    tft.setTextSize(3);
   tft.println(0xDEADBEEF, HEX);
   tft.println();
-  tft.setTextColor(ILI9341_GREEN);
+  tft.setTextColor(WROVER_GREEN);
   tft.setTextSize(5);
   tft.println("Groop");
   tft.setTextSize(2);
@@ -155,7 +158,7 @@ unsigned long testLines(uint16_t color) {
                 w = tft.width(),
                 h = tft.height();
 
-  tft.fillScreen(ILI9341_BLACK);
+  tft.fillScreen(WROVER_BLACK);
   yield();
   
   x1 = y1 = 0;
@@ -167,7 +170,7 @@ unsigned long testLines(uint16_t color) {
   t     = micros() - start; // fillScreen doesn't count against timing
 
   yield();
-  tft.fillScreen(ILI9341_BLACK);
+  tft.fillScreen(WROVER_BLACK);
   yield();
 
   x1    = w - 1;
@@ -180,7 +183,7 @@ unsigned long testLines(uint16_t color) {
   t    += micros() - start;
 
   yield();
-  tft.fillScreen(ILI9341_BLACK);
+  tft.fillScreen(WROVER_BLACK);
   yield();
 
   x1    = 0;
@@ -193,7 +196,7 @@ unsigned long testLines(uint16_t color) {
   t    += micros() - start;
 
   yield();
-  tft.fillScreen(ILI9341_BLACK);
+  tft.fillScreen(WROVER_BLACK);
   yield();
 
   x1    = w - 1;
@@ -212,7 +215,7 @@ unsigned long testFastLines(uint16_t color1, uint16_t color2) {
   unsigned long start;
   int           x, y, w = tft.width(), h = tft.height();
 
-  tft.fillScreen(ILI9341_BLACK);
+  tft.fillScreen(WROVER_BLACK);
   start = micros();
   for(y=0; y<h; y+=5) tft.drawFastHLine(0, y, w, color1);
   for(x=0; x<w; x+=5) tft.drawFastVLine(x, 0, h, color2);
@@ -226,7 +229,7 @@ unsigned long testRects(uint16_t color) {
                 cx = tft.width()  / 2,
                 cy = tft.height() / 2;
 
-  tft.fillScreen(ILI9341_BLACK);
+  tft.fillScreen(WROVER_BLACK);
   n     = min(tft.width(), tft.height());
   start = micros();
   for(i=2; i<n; i+=6) {
@@ -243,7 +246,7 @@ unsigned long testFilledRects(uint16_t color1, uint16_t color2) {
                 cx = tft.width()  / 2 - 1,
                 cy = tft.height() / 2 - 1;
 
-  tft.fillScreen(ILI9341_BLACK);
+  tft.fillScreen(WROVER_BLACK);
   n = min(tft.width(), tft.height());
   for(i=n; i>0; i-=6) {
     i2    = i / 2;
@@ -262,7 +265,7 @@ unsigned long testFilledCircles(uint8_t radius, uint16_t color) {
   unsigned long start;
   int x, y, w = tft.width(), h = tft.height(), r2 = radius * 2;
 
-  tft.fillScreen(ILI9341_BLACK);
+  tft.fillScreen(WROVER_BLACK);
   start = micros();
   for(x=radius; x<w; x+=r2) {
     for(y=radius; y<h; y+=r2) {
@@ -296,7 +299,7 @@ unsigned long testTriangles() {
   int           n, i, cx = tft.width()  / 2 - 1,
                       cy = tft.height() / 2 - 1;
 
-  tft.fillScreen(ILI9341_BLACK);
+  tft.fillScreen(WROVER_BLACK);
   n     = min(cx, cy);
   start = micros();
   for(i=0; i<n; i+=5) {
@@ -315,7 +318,7 @@ unsigned long testFilledTriangles() {
   int           i, cx = tft.width()  / 2 - 1,
                    cy = tft.height() / 2 - 1;
 
-  tft.fillScreen(ILI9341_BLACK);
+  tft.fillScreen(WROVER_BLACK);
   start = micros();
   for(i=min(cx,cy); i>10; i-=5) {
     start = micros();
@@ -336,7 +339,7 @@ unsigned long testRoundRects() {
                 cx = tft.width()  / 2 - 1,
                 cy = tft.height() / 2 - 1;
 
-  tft.fillScreen(ILI9341_BLACK);
+  tft.fillScreen(WROVER_BLACK);
   w     = min(tft.width(), tft.height());
   start = micros();
   for(i=0; i<w; i+=6) {
@@ -353,7 +356,7 @@ unsigned long testFilledRoundRects() {
                 cx = tft.width()  / 2 - 1,
                 cy = tft.height() / 2 - 1;
 
-  tft.fillScreen(ILI9341_BLACK);
+  tft.fillScreen(WROVER_BLACK);
   start = micros();
   for(i=min(tft.width(), tft.height()); i>20; i-=6) {
     i2 = i / 2;
