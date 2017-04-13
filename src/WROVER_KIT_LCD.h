@@ -98,6 +98,41 @@
 #define WROVER_GREENYELLOW 0xAFE5 /* 173, 255,  47 */
 #define WROVER_PINK        0xF81F
 
+
+// Compatibility with ILI code.
+#define ILI9341_WIDTH       WROVER_WIDTH       
+#define ILI9341_HEIGHT      WROVER_HEIGHT      
+
+#define ILI9341_RDMODE      WROVER_RDDPM       
+#define ILI9341_RDMADCTL    WROVER_RDDMADCTL   
+#define ILI9341_RDPIXFMT    WROVER_RDDCOLMOD   
+#define ILI9341_RDIMGFMT    WROVER_RDDIM       
+#define ILI9341_RDSELFDIAG  WROVER_RDDSDR      
+
+#define ILI9341_BLACK       WROVER_BLACK       
+#define ILI9341_NAVY        WROVER_NAVY        
+#define ILI9341_DARKGREEN   WROVER_DARKGREEN   
+#define ILI9341_DARKCYAN    WROVER_DARKCYAN    
+#define ILI9341_MAROON      WROVER_MAROON      
+#define ILI9341_PURPLE      WROVER_PURPLE      
+#define ILI9341_OLIVE       WROVER_OLIVE       
+#define ILI9341_LIGHTGREY   WROVER_LIGHTGREY   
+#define ILI9341_DARKGREY    WROVER_DARKGREY    
+#define ILI9341_BLUE        WROVER_BLUE        
+#define ILI9341_GREEN       WROVER_GREEN       
+#define ILI9341_CYAN        WROVER_CYAN        
+#define ILI9341_RED         WROVER_RED         
+#define ILI9341_MAGENTA     WROVER_MAGENTA     
+#define ILI9341_YELLOW      WROVER_YELLOW      
+#define ILI9341_WHITE       WROVER_WHITE       
+#define ILI9341_ORANGE      WROVER_ORANGE      
+#define ILI9341_GREENYELLOW WROVER_GREENYELLOW 
+#define ILI9341_PINK        WROVER_PINK        
+
+// These get redefined to an incompatible 3 arg version in arduino libs.
+#define min(X, Y) (((X) < (Y)) ? (X) : (Y))
+#define max(X, Y) (((X) > (Y)) ? (X) : (Y))
+
 typedef enum {
     JPEG_DIV_NONE,
     JPEG_DIV_2,
@@ -141,6 +176,7 @@ class WROVER_KIT_LCD : public Adafruit_GFX {
         void      drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
         void      drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
         void      fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
+        void      drawBitmap(int16_t x, int16_t y, int16_t w, int16_t h, const uint16_t *pcolors);
 
         uint8_t   readcommand8(uint8_t reg, uint8_t index = 0);
         uint32_t  readId();
