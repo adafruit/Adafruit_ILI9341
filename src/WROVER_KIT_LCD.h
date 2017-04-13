@@ -129,10 +129,6 @@
 #define ILI9341_GREENYELLOW WROVER_GREENYELLOW 
 #define ILI9341_PINK        WROVER_PINK        
 
-// These get redefined to an incompatible 3 arg version in arduino libs.
-#define min(X, Y) (((X) < (Y)) ? (X) : (Y))
-#define max(X, Y) (((X) > (Y)) ? (X) : (Y))
-
 typedef enum {
     JPEG_DIV_NONE,
     JPEG_DIV_2,

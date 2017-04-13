@@ -18,6 +18,8 @@
 #include "Adafruit_GFX.h"
 #include "WROVER_KIT_LCD.h"
 
+#define min(X, Y) (((X) < (Y)) ? (X) : (Y))
+
 WROVER_KIT_LCD tft;
 
 void setup() {
