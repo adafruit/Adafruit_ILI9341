@@ -229,7 +229,7 @@ void WROVER_KIT_LCD::invertDisplay(boolean i) {
 
 void WROVER_KIT_LCD::scrollTo(uint16_t y) {
     startWrite();
-    writeCommand(0x37);
+    writeCommand(WROVER_VSCRSADD);
     SPI.write16(y);
     endWrite();
 }
@@ -365,6 +365,14 @@ void WROVER_KIT_LCD::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
         uint16_t color) {
     startWrite();
     writeFillRect(x,y,w,h,color);
+    endWrite();
+}
+
+// This code was ported/adapted from https://github.com/PaulStoffregen/ILI9341_t3
+void WROVER_KIT_LCD::drawBitmap(int16_t x, int16_t y, int16_t w, int16_t h, const uint16_t *pcolors) {
+    startWrite();
+    setAddrWindow(x, y, w, h);
+    writePixels((uint16_t*) pcolors, w*h);
     endWrite();
 }
 
