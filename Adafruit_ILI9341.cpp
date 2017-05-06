@@ -627,10 +627,13 @@ void Adafruit_ILI9341::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
     endWrite();
 }
 
-// This code was ported/adapted from https://github.com/PaulStoffregen/ILI9341_t3
+// Adapted from https://github.com/PaulStoffregen/ILI9341_t3
 // by Marc MERLIN. See examples/pictureEmbed to use this.
-void Adafruit_ILI9341::drawBitmap(int16_t x, int16_t y, int16_t w, int16_t h,
-  const uint16_t *pcolors) {
+// 5/6/2017: function name and arguments have changed for compatibility
+// with current GFX library and to avoid naming problems in prior
+// implementation.  Formerly drawBitmap() with arguments in different order.
+void Adafruit_ILI9341::drawRGBBitmap(int16_t x, int16_t y,
+  uint16_t *pcolors, int16_t w, int16_t h) {
 
     int16_t x2, y2; // Lower-right coord
     if(( x             >= _width ) ||      // Off-edge right
@@ -657,7 +660,7 @@ void Adafruit_ILI9341::drawBitmap(int16_t x, int16_t y, int16_t w, int16_t h,
     startWrite();
     setAddrWindow(x, y, w, h); // Clipped area
     while(h--) { // For each (clipped) scanline...
-      writePixels((uint16_t*)pcolors, w); // Push one (clipped) row
+      writePixels(pcolors, w); // Push one (clipped) row
       pcolors += saveW; // Advance pointer by one full (unclipped) line
     }
     endWrite();

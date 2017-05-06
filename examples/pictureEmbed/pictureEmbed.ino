@@ -15,7 +15,7 @@
 //    7. Press export to save your image.
 //  Assuming 'image_name' was typed in the 'prefixed name' box of step 4,
 //  you can have to include the c file, then using the image can be done with:
-//    tft.drawBitmap(0, 0, image_name.width, image_name.height, (uint16_t*)(image_name.pixel_data));
+//    tft.drawRGBBitmap(0, 0, image_name.pixel_data, image_name.width, image_name.height);
 //  See also https://forum.pjrc.com/threads/35575-Export-for-ILI9341_t3-with-GIMP
 
 #include "SPI.h"
@@ -48,10 +48,20 @@ void loop(void) {
     tft.setRotation(r);
     tft.fillScreen(ILI9341_BLACK);
     for(uint8_t j=0; j<20; j++) {
-      tft.drawBitmap(
+      tft.drawRGBBitmap(
         random(-DRAGON_WIDTH , tft.width()),
         random(-DRAGON_HEIGHT, tft.height()),
-        DRAGON_WIDTH, DRAGON_HEIGHT, (uint16_t*)dragonBitmap);
+#ifdef __AVR__
+        dragonBitmap,
+#else
+        // Most non-AVR MCU's have a "flat" memory model and don't
+        // distinguish between flash and RAM addresses.  In this case,
+        // the RAM-resident-optimized drawRGBBitmap in the ILI9341
+        // library can be invoked by forcibly type-converting the
+        // PROGMEM bitmap pointer to a non-const uint16_t *.
+        (uint16_t *)dragonBitmap,
+#endif
+        DRAGON_WIDTH, DRAGON_HEIGHT);
     }
     delay(3000);
   }

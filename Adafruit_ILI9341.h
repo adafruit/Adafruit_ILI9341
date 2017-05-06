@@ -156,28 +156,14 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
         void      drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
         void      drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
         void      fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
-        void      drawBitmap(int16_t x, int16_t y, int16_t w, int16_t h, const uint16_t *pcolors);
+
+        using     Adafruit_GFX::drawRGBBitmap; // Check base class first
+        void      drawRGBBitmap(int16_t x, int16_t y,
+                    uint16_t *pcolors, int16_t w, int16_t h);
 
         uint8_t   readcommand8(uint8_t reg, uint8_t index = 0);
 
         uint16_t  color565(uint8_t r, uint8_t g, uint8_t b);
-
-    // via Charles Bailey on stackoverflow:
-    // "Functions in derived classes which don't override functions in base
-    // classes but which have the same name will hide other functions of the
-    // same name in the base class.
-    // "It is generally considered bad practice to have have functions in
-    // derived classes which have the same name as functions in the base
-    // class which aren't intended to override the base class functions as
-    // what you are seeing is not usually desirable behaviour. It is usually
-    // preferable to give different functions different names."
-    // i.e. this function in ILI9341 should not have been called this; it's
-    // fundamentally different from GFX's drawBitmap().  But here we are,
-    // painted into the proverbial corner.  C++11 has the 'using' keyword
-    // to allow access to base class functions.  This'll band-aid the issue
-    // for now but might be inadequate for "vintage" complier variants that
-    // some board support packages might possibly be using, dunno.
-    using Adafruit_GFX::drawBitmap;
 
     private:
 #ifdef ESP32
