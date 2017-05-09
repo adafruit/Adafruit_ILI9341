@@ -51,10 +51,10 @@ void loop(void) {
       tft.drawRGBBitmap(
         random(-DRAGON_WIDTH , tft.width()),
         random(-DRAGON_HEIGHT, tft.height()),
-#ifdef __AVR__
+#if defined(__AVR__) || defined(ESP8266)
         dragonBitmap,
 #else
-        // Most non-AVR MCU's have a "flat" memory model and don't
+        // Some non-AVR MCU's have a "flat" memory model and don't
         // distinguish between flash and RAM addresses.  In this case,
         // the RAM-resident-optimized drawRGBBitmap in the ILI9341
         // library can be invoked by forcibly type-converting the
@@ -62,6 +62,7 @@ void loop(void) {
         (uint16_t *)dragonBitmap,
 #endif
         DRAGON_WIDTH, DRAGON_HEIGHT);
+      delay(1); // Allow ESP8266 to handle watchdog & WiFi stuff
     }
     delay(3000);
   }
