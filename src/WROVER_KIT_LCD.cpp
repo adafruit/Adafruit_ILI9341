@@ -311,8 +311,24 @@ void WROVER_KIT_LCD::writePixel(int16_t x, int16_t y, uint16_t color) {
 
 void WROVER_KIT_LCD::writeFillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color){
     if((x >= _width) || (y >= _height)) return;
-    if((x + w - 1) >= _width)  w = _width  - x;
-    if((y + h - 1) >= _height) h = _height - y;
+
+    int16_t x2 = x + w - 1, y2 = y + h - 1;
+    if((x2 < 0) || (y2 < 0)) return;
+
+    // Clip left/top
+    if(x < 0) {
+        x = 0;
+        w = x2 + 1;
+    }
+    if(y < 0) {
+        y = 0;
+        h = y2 + 1;
+    }
+
+    // Clip right/bottom
+    if(x2 >= _width)  w = _width  - x;
+    if(y2 >= _height) h = _height - y;
+
     int32_t len = (int32_t)w * h;
     setAddrWindow(x, y, w, h);
     writeColor(color, len);
@@ -555,7 +571,9 @@ typedef struct {
         uint16_t offX;
         uint16_t offY;
         jpeg_div_t scale;
-        File * file;
+        const void * src;
+        size_t len;
+        size_t index;
         WROVER_KIT_LCD * tft;
         uint16_t outWidth;
         uint16_t outHeight;
@@ -563,11 +581,21 @@ typedef struct {
 
 static uint32_t jpgReadFile(JDEC *decoder, uint8_t *buf, uint32_t len){
     jpg_file_decoder_t * jpeg = (jpg_file_decoder_t *)decoder->device;
+    File * file = (File *)jpeg->src;
     if(buf){
-        return jpeg->file->read(buf, len);
+        return file->read(buf, len);
     } else {
-        jpeg->file->seek(len, SeekCur);
+        file->seek(len, SeekCur);
     }
+    return len;
+}
+
+static uint32_t jpgRead(JDEC *decoder, uint8_t *buf, uint32_t len){
+    jpg_file_decoder_t * jpeg = (jpg_file_decoder_t *)decoder->device;
+    if(buf){
+        memcpy(buf, (const uint8_t *)jpeg->src + jpeg->index, len);
+    }
+    jpeg->index += len;
     return len;
 }
 
@@ -636,11 +664,46 @@ static uint32_t jpgWrite(JDEC *decoder, void *bitmap, JRECT *rect){
     return 1;
 }
 
-void WROVER_KIT_LCD::drawJpgFile(fs::FS &fs, const char * path, uint16_t x, uint16_t y, uint16_t maxWidth, uint16_t maxHeight, uint16_t offX, uint16_t offY, jpeg_div_t scale){
+static bool jpgDecode(jpg_file_decoder_t * jpeg, uint32_t(* reader)(JDEC*,uint8_t *, uint32_t)){
+    static uint8_t work[3100];
+    JDEC decoder;
+
+    JRESULT jres = jd_prepare(&decoder, reader, work, 3100, jpeg);
+    if(jres != JDR_OK){
+        log_e("jd_prepare failed! %s", jd_errors[jres]);
+        return false;
+    }
+
+    uint16_t jpgWidth = decoder.width / (1 << (uint8_t)(jpeg->scale));
+    uint16_t jpgHeight = decoder.height / (1 << (uint8_t)(jpeg->scale));
+
+    if(jpeg->offX >= jpgWidth || jpeg->offY >= jpgHeight){
+        log_e("Offset Outside of JPEG size");
+        return false;
+    }
+
+    size_t jpgMaxWidth = jpgWidth - jpeg->offX;
+    size_t jpgMaxHeight = jpgHeight - jpeg->offY;
+
+    jpeg->outWidth = (jpgMaxWidth > jpeg->maxWidth)?jpeg->maxWidth:jpgMaxWidth;
+    jpeg->outHeight = (jpgMaxHeight > jpeg->maxHeight)?jpeg->maxHeight:jpgMaxHeight;
+
+    jres = jd_decomp(&decoder, jpgWrite, (uint8_t)jpeg->scale);
+    if(jres != JDR_OK){
+        log_e("jd_decomp failed! %s", jd_errors[jres]);
+        return false;
+    }
+
+    return true;
+}
+
+void WROVER_KIT_LCD::drawJpg(const uint8_t * jpg_data, size_t jpg_len, uint16_t x, uint16_t y, uint16_t maxWidth, uint16_t maxHeight, uint16_t offX, uint16_t offY, jpeg_div_t scale){
     if((x + maxWidth) > width() || (y + maxHeight) > height()){
         log_e("Bad dimensions given");
         return;
     }
+
+    jpg_file_decoder_t jpeg;
 
     if(!maxWidth){
         maxWidth = width() - x;
@@ -649,17 +712,9 @@ void WROVER_KIT_LCD::drawJpgFile(fs::FS &fs, const char * path, uint16_t x, uint
         maxHeight = height() - y;
     }
 
-    File file = fs.open(path);
-    if(!file){
-        log_e("Failed to open file for reading");
-        return;
-    }
-
-    JDEC decoder;
-    jpg_file_decoder_t jpeg;
-    static uint8_t work[3100];
-
-    jpeg.file = &file;
+    jpeg.src = jpg_data;
+    jpeg.len = jpg_len;
+    jpeg.index = 0;
     jpeg.x = x;
     jpeg.y = y;
     jpeg.maxWidth = maxWidth;
@@ -669,28 +724,43 @@ void WROVER_KIT_LCD::drawJpgFile(fs::FS &fs, const char * path, uint16_t x, uint
     jpeg.scale = scale;
     jpeg.tft = this;
 
-    JRESULT jres = jd_prepare(&decoder, jpgReadFile, work, 3100, &jpeg);
-    if(jres != JDR_OK){
-        log_e("jd_prepare failed! %s", jd_errors[jres]);
-    } else {
-        uint16_t jpgWidth = decoder.width / (1 << (uint8_t)(jpeg.scale));
-        uint16_t jpgHeight = decoder.height / (1 << (uint8_t)(jpeg.scale));
+    jpgDecode(&jpeg, jpgRead);
+}
 
-        if(jpeg.offX >= jpgWidth || jpeg.offY >= jpgHeight){
-            log_e("Offset Outside of JPEG size");
-            return;
-        }
-
-        size_t jpgMaxWidth = jpgWidth - jpeg.offX;
-        size_t jpgMaxHeight = jpgHeight - jpeg.offY;
-
-        jpeg.outWidth = (jpgMaxWidth > jpeg.maxWidth)?jpeg.maxWidth:jpgMaxWidth;
-        jpeg.outHeight = (jpgMaxHeight > jpeg.maxHeight)?jpeg.maxHeight:jpgMaxHeight;
-
-        jres = jd_decomp(&decoder, jpgWrite, (uint8_t)jpeg.scale);
-        if(jres != JDR_OK){
-            log_e("jd_decomp failed! %s", jd_errors[jres]);
-        }
+void WROVER_KIT_LCD::drawJpgFile(fs::FS &fs, const char * path, uint16_t x, uint16_t y, uint16_t maxWidth, uint16_t maxHeight, uint16_t offX, uint16_t offY, jpeg_div_t scale){
+    if((x + maxWidth) > width() || (y + maxHeight) > height()){
+        log_e("Bad dimensions given");
+        return;
     }
+
+    File file = fs.open(path);
+    if(!file){
+        log_e("Failed to open file for reading");
+        return;
+    }
+
+    jpg_file_decoder_t jpeg;
+
+    if(!maxWidth){
+        maxWidth = width() - x;
+    }
+    if(!maxHeight){
+        maxHeight = height() - y;
+    }
+
+    jpeg.src = &file;
+    jpeg.len = file.size();
+    jpeg.index = 0;
+    jpeg.x = x;
+    jpeg.y = y;
+    jpeg.maxWidth = maxWidth;
+    jpeg.maxHeight = maxHeight;
+    jpeg.offX = offX;
+    jpeg.offY = offY;
+    jpeg.scale = scale;
+    jpeg.tft = this;
+
+    jpgDecode(&jpeg, jpgReadFile);
+
     file.close();
 }

@@ -181,6 +181,7 @@ class WROVER_KIT_LCD : public Adafruit_GFX {
         void      startBitmap(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
         void      endBitmap();
 
+        void      drawJpg(const uint8_t * jpg_data, size_t jpg_len, uint16_t x=0, uint16_t y=0, uint16_t maxWidth=0, uint16_t maxHeight=0, uint16_t offX=0, uint16_t offY=0, jpeg_div_t scale=JPEG_DIV_NONE);
         void      drawJpgFile(fs::FS &fs, const char * path, uint16_t x=0, uint16_t y=0, uint16_t maxWidth=0, uint16_t maxHeight=0, uint16_t offX=0, uint16_t offY=0, jpeg_div_t scale=JPEG_DIV_NONE);
         void      drawBmpFile(fs::FS &fs, const char * path, uint16_t x=0, uint16_t y=0, uint16_t maxWidth=0, uint16_t maxHeight=0, uint16_t offX=0, uint16_t offY=0);
 
@@ -193,6 +194,7 @@ class WROVER_KIT_LCD : public Adafruit_GFX {
 
         void        bmpSkipPixels(fs::File &file, uint8_t bitsPerPixel, size_t len);
         void        bmpAddPixels(fs::File &file, uint8_t bitsPerPixel, size_t len);
+
 
 };
 
