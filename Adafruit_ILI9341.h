@@ -116,7 +116,7 @@ typedef volatile uint32_t RwReg;
 
 #if defined (ARDUINO_STM32_FEATHER)    // doesnt work on wiced feather
   #undef USE_FAST_PINIO
-#elif defined (__AVR__) || defined(TEENSYDUINO) || defined(ESP8266) || defined (ESP32) || defined(arm)
+#elif defined (__AVR__) || defined(TEENSYDUINO) || defined(ESP8266) || defined (ESP32) || defined(__arm__)
   #define USE_FAST_PINIO
 #endif
 
