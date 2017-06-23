@@ -114,8 +114,10 @@ typedef volatile uint32_t RwReg;
 #define ILI9341_GREENYELLOW 0xAFE5      /* 173, 255,  47 */
 #define ILI9341_PINK        0xF81F
 
-#if defined (__AVR__) || defined(TEENSYDUINO) || defined(ESP8266) || defined (ESP32) || defined(__arm__)
-#define USE_FAST_PINIO
+#if defined (ARDUINO_STM32_FEATHER)    // doesnt work on wiced feather
+  #undef USE_FAST_PINIO
+#elif defined (__AVR__) || defined(TEENSYDUINO) || defined(ESP8266) || defined (ESP32) || defined(arm)
+  #define USE_FAST_PINIO
 #endif
 
 class Adafruit_ILI9341 : public Adafruit_GFX {
