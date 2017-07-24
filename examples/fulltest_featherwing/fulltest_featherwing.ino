@@ -50,6 +50,12 @@
    #define STMPE_CS PC7
    #define SD_CS    PC5
 #endif
+#ifdef ARDUINO_NRF52_FEATHER /* BSP 0.6.5 and higher! */
+   #define TFT_DC   11
+   #define TFT_CS   31
+   #define STMPE_CS 30
+   #define SD_CS    27
+#endif
 
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 Adafruit_STMPE610 ts = Adafruit_STMPE610(STMPE_CS);
