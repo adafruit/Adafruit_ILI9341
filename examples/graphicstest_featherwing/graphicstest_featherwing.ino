@@ -52,6 +52,12 @@
    #define STMPE_CS 30
    #define SD_CS    27
 #endif
+#ifdef ARDUINO_MAX32620FTHR
+   #define TFT_DC   P5_4
+   #define TFT_CS   P5_3
+   #define STMPE_CS P3_3
+   #define SD_CS    P3_2
+#endif
 
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 
