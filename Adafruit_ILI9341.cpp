@@ -178,7 +178,7 @@ static inline uint8_t _avr_spi_read(void) {
 /*
  * Final SPI Macros
  * */
-#if defined (ARDUINO_ARCH_ARC32)
+#if defined (ARDUINO_ARCH_ARC32) || defined (ARDUINO_MAXIM)
 #define SPI_DEFAULT_FREQ         16000000
 #elif defined (__AVR__) || defined(TEENSYDUINO)
 #define SPI_DEFAULT_FREQ         8000000
