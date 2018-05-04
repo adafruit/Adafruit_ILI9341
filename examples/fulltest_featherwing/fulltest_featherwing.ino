@@ -102,7 +102,6 @@ void loop() {
   Serial.print("\tY = "); Serial.print(p.y);
   Serial.print("\tPressure = "); Serial.println(p.z);  
  
- 
   // Scale from ~0->4000 to tft.width using the calibration #'s
   p.x = map(p.x, TS_MINX, TS_MAXX, 0, tft.width());
   p.y = map(p.y, TS_MINY, TS_MAXY, 0, tft.height());
@@ -122,7 +121,7 @@ void loop() {
 
 #define BUFFPIXEL 20
 
-void bmpDraw(char *filename, uint8_t x, uint16_t y) {
+void bmpDraw(char *filename, int16_t x, int16_t y) {
 
   File     bmpFile;
   int      bmpWidth, bmpHeight;   // W+H in pixels
@@ -188,7 +187,8 @@ void bmpDraw(char *filename, uint8_t x, uint16_t y) {
         if((y+h-1) >= tft.height()) h = tft.height() - y;
 
         // Set TFT address window to clipped image bounds
-        tft.setAddrWindow(x, y, x+w-1, y+h-1);
+        tft.startWrite();
+        tft.setAddrWindow(x, y, w, h);
 
         for (row=0; row<h; row++) { // For each scanline...
 
@@ -203,6 +203,7 @@ void bmpDraw(char *filename, uint8_t x, uint16_t y) {
           else     // Bitmap is stored top-to-bottom
             pos = bmpImageoffset + row * rowSize;
           if(bmpFile.position() != pos) { // Need seek?
+            tft.endWrite();
             bmpFile.seek(pos);
             buffidx = sizeof(sdbuffer); // Force buffer reload
           }
@@ -210,7 +211,9 @@ void bmpDraw(char *filename, uint8_t x, uint16_t y) {
           for (col=0; col<w; col++) { // For each pixel...
             // Time to read more pixel data?
             if (buffidx >= sizeof(sdbuffer)) { // Indeed
+              tft.endWrite();
               bmpFile.read(sdbuffer, sizeof(sdbuffer));
+              tft.startWrite();
               buffidx = 0; // Set index to beginning
             }
 
@@ -220,6 +223,7 @@ void bmpDraw(char *filename, uint8_t x, uint16_t y) {
             r = sdbuffer[buffidx++];
             tft.pushColor(tft.color565(r,g,b));
           } // end pixel
+          tft.endWrite();
         } // end scanline
         Serial.print(F("Loaded in "));
         Serial.print(millis() - startTime);
