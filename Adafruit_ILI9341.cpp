@@ -1,17 +1,50 @@
-/***************************************************
-  This is our library for the Adafruit ILI9341 Breakout and Shield
-  ----> http://www.adafruit.com/products/1651
-
-  Check out the links above for our tutorials and wiring diagrams
-  These displays use SPI to communicate, 4 or 5 pins are required to
-  interface (RST is optional)
-  Adafruit invests time and resources providing this open source code,
-  please support Adafruit and open-source hardware by purchasing
-  products from Adafruit!
-
-  Written by Limor Fried/Ladyada for Adafruit Industries.
-  MIT license, all text above must be included in any redistribution
- ****************************************************/
+/*!
+* @file Adafruit_ILI9341.cpp
+*
+* @mainpage Adafruit ILI9341 TFT Displays
+*
+* @section intro_sec Introduction
+*
+* This is the documentation for Adafruit's ILI9341 driver for the
+* Arduino platform. 
+*
+* This library works with the Adafruit 2.8" Touch Shield V2 (SPI)
+*    http://www.adafruit.com/products/1651
+*
+* Adafruit 2.4" TFT LCD with Touchscreen Breakout w/MicroSD Socket - ILI9341
+*    https://www.adafruit.com/product/2478
+*
+* 2.8" TFT LCD with Touchscreen Breakout Board w/MicroSD Socket - ILI9341
+*    https://www.adafruit.com/product/1770
+*
+* 2.2" 18-bit color TFT LCD display with microSD card breakout - ILI9340
+*    https://www.adafruit.com/product/1770
+*
+* TFT FeatherWing - 2.4" 320x240 Touchscreen For All Feathers 
+*    https://www.adafruit.com/product/3315
+*
+* These displays use SPI to communicate, 4 or 5 pins are required
+* to interface (RST is optional).
+*
+* Adafruit invests time and resources providing this open source code,
+* please support Adafruit and open-source hardware by purchasing
+* products from Adafruit!
+*
+* @section dependencies Dependencies
+*
+* This library depends on <a href="https://github.com/adafruit/Adafruit_GFX">
+* Adafruit_GFX</a> being present on your system. Please make sure you have
+* installed the latest version before using this library.
+*
+* @section author Author
+*
+* Written by Limor "ladyada" Fried for Adafruit Industries.
+*
+* @section license License
+*
+* BSD license, all text here must be included in any redistribution.
+*
+*/
 
 #include "Adafruit_ILI9341.h"
 #ifndef ARDUINO_STM32_FEATHER
@@ -23,28 +56,28 @@
 #include <limits.h>
 
 
-#define MADCTL_MY  0x80
-#define MADCTL_MX  0x40
-#define MADCTL_MV  0x20
-#define MADCTL_ML  0x10
-#define MADCTL_RGB 0x00
-#define MADCTL_BGR 0x08
-#define MADCTL_MH  0x04
+#define MADCTL_MY  0x80     ///< Bottom to top
+#define MADCTL_MX  0x40     ///< Right to left
+#define MADCTL_MV  0x20     ///< Reverse Mode
+#define MADCTL_ML  0x10     ///< LCD refresh Bottom to top
+#define MADCTL_RGB 0x00     ///< Red-Green-Blue pixel order
+#define MADCTL_BGR 0x08     ///< Blue-Green-Red pixel order
+#define MADCTL_MH  0x04     ///< LCD refresh right to left
 
 /*
  * Control Pins
  * */
 
 #ifdef USE_FAST_PINIO
-#define SPI_DC_HIGH()           *dcport |=  dcpinmask
-#define SPI_DC_LOW()            *dcport &= ~dcpinmask
-#define SPI_CS_HIGH()           *csport |= cspinmask
-#define SPI_CS_LOW()            *csport &= ~cspinmask
+#define SPI_DC_HIGH()           *dcport |=  dcpinmask   ///< set DataCommand pin high
+#define SPI_DC_LOW()            *dcport &= ~dcpinmask   ///< set DataCommand pin low
+#define SPI_CS_HIGH()           *csport |= cspinmask    ///< set ChipSelect pin high
+#define SPI_CS_LOW()            *csport &= ~cspinmask   ///< set ChipSelect pin high
 #else
-#define SPI_DC_HIGH()           digitalWrite(_dc, HIGH)
-#define SPI_DC_LOW()            digitalWrite(_dc, LOW)
-#define SPI_CS_HIGH()           digitalWrite(_cs, HIGH)
-#define SPI_CS_LOW()            digitalWrite(_cs, LOW)
+#define SPI_DC_HIGH()           digitalWrite(_dc, HIGH) ///< set DataCommand pin high
+#define SPI_DC_LOW()            digitalWrite(_dc, LOW)  ///< set DataCommand pin low
+#define SPI_CS_HIGH()           digitalWrite(_cs, HIGH) ///< set ChipSelect pin high
+#define SPI_CS_LOW()            digitalWrite(_cs, LOW)  ///< set ChipSelect pin high
 #endif
 
 /*
@@ -52,34 +85,34 @@
  * */
 
 #ifdef USE_FAST_PINIO
-#define SSPI_MOSI_HIGH()        *mosiport |=  mosipinmask
-#define SSPI_MOSI_LOW()         *mosiport &= ~mosipinmask
-#define SSPI_SCK_HIGH()         *clkport |=  clkpinmask
-#define SSPI_SCK_LOW()          *clkport &= ~clkpinmask
-#define SSPI_MISO_READ()        ((*misoport & misopinmask) != 0)
+#define SSPI_MOSI_HIGH()        *mosiport |=  mosipinmask  ///< Bitbang MOSI high
+#define SSPI_MOSI_LOW()         *mosiport &= ~mosipinmask  ///< Bitbang MOSI low
+#define SSPI_SCK_HIGH()         *clkport |=  clkpinmask    ///< Bitbang SCLK high
+#define SSPI_SCK_LOW()          *clkport &= ~clkpinmask    ///< Bitbang SCLK low
+#define SSPI_MISO_READ()        ((*misoport & misopinmask) != 0)  ///< Bitbang read MISO
 #else
-#define SSPI_MOSI_HIGH()        digitalWrite(_mosi, HIGH)
-#define SSPI_MOSI_LOW()         digitalWrite(_mosi, LOW)
-#define SSPI_SCK_HIGH()         digitalWrite(_sclk, HIGH)
-#define SSPI_SCK_LOW()          digitalWrite(_sclk, LOW)
-#define SSPI_MISO_READ()        digitalRead(_miso)
+#define SSPI_MOSI_HIGH()        digitalWrite(_mosi, HIGH)  ///< Bitbang MOSI high
+#define SSPI_MOSI_LOW()         digitalWrite(_mosi, LOW)   ///< Bitbang MOSI low
+#define SSPI_SCK_HIGH()         digitalWrite(_sclk, HIGH)  ///< Bitbang SCLK high
+#define SSPI_SCK_LOW()          digitalWrite(_sclk, LOW)   ///< Bitbang SCLK low
+#define SSPI_MISO_READ()        digitalRead(_miso)         ///< Bitbang read MISO
 #endif
 
-#define SSPI_BEGIN_TRANSACTION()
-#define SSPI_END_TRANSACTION()
-#define SSPI_WRITE(v)           spiWrite(v)
-#define SSPI_WRITE16(s)         SSPI_WRITE((s) >> 8); SSPI_WRITE(s)
-#define SSPI_WRITE32(l)         SSPI_WRITE((l) >> 24); SSPI_WRITE((l) >> 16); SSPI_WRITE((l) >> 8); SSPI_WRITE(l)
-#define SSPI_WRITE_PIXELS(c,l)  for(uint32_t i=0; i<(l); i+=2){ SSPI_WRITE(((uint8_t*)(c))[i+1]); SSPI_WRITE(((uint8_t*)(c))[i]); }
+#define SSPI_BEGIN_TRANSACTION()                           ///< Software SPI begin
+#define SSPI_END_TRANSACTION()                             ///< Software SPI end
+#define SSPI_WRITE(v)           spiWrite(v)                ///< Software SPI write 8 bits
+#define SSPI_WRITE16(s)         SSPI_WRITE((s) >> 8); SSPI_WRITE(s)  ///< Software SPI write 16 bits
+#define SSPI_WRITE32(l)         SSPI_WRITE((l) >> 24); SSPI_WRITE((l) >> 16); SSPI_WRITE((l) >> 8); SSPI_WRITE(l)   ///< Software SPI write 32 bits
+#define SSPI_WRITE_PIXELS(c,l)  for(uint32_t i=0; i<(l); i+=2){ SSPI_WRITE(((uint8_t*)(c))[i+1]); SSPI_WRITE(((uint8_t*)(c))[i]); }   ///< Software SPI write 'l' pixels (16 bits each)
 
 /*
  * Hardware SPI Macros
  * */
 
 #ifndef ESP32
-    #define SPI_OBJECT  SPI
+    #define SPI_OBJECT  SPI         ///< Default SPI hardware peripheral
 #else
-    #define SPI_OBJECT  _spi
+    #define SPI_OBJECT  _spi        ///< Default SPI hardware peripheral
 #endif
 
 #if defined (__AVR__) ||  defined(TEENSYDUINO) ||  defined(ARDUINO_ARCH_STM32F1)
@@ -93,15 +126,15 @@
 #elif defined(ARDUINO_ARCH_STM32F1)
     #define HSPI_SET_CLOCK() SPI_OBJECT.setClock(_freq);
 #else
-    #define HSPI_SET_CLOCK()
+    #define HSPI_SET_CLOCK()   ///< Hardware SPI set clock frequency
 #endif
 
 #ifdef SPI_HAS_TRANSACTION
     #define HSPI_BEGIN_TRANSACTION() SPI_OBJECT.beginTransaction(SPISettings(_freq, MSBFIRST, SPI_MODE0))
     #define HSPI_END_TRANSACTION()   SPI_OBJECT.endTransaction()
 #else
-    #define HSPI_BEGIN_TRANSACTION() HSPI_SET_CLOCK(); SPI_OBJECT.setBitOrder(MSBFIRST); SPI_OBJECT.setDataMode(SPI_MODE0)
-    #define HSPI_END_TRANSACTION()
+    #define HSPI_BEGIN_TRANSACTION() HSPI_SET_CLOCK(); SPI_OBJECT.setBitOrder(MSBFIRST); SPI_OBJECT.setDataMode(SPI_MODE0)        ///< Hardware SPI begin transaction
+    #define HSPI_END_TRANSACTION()    ///< Hardware SPI end transaction
 #endif
 
 #ifdef ESP32
@@ -109,10 +142,10 @@
 #endif
 #if defined(ESP8266) || defined(ESP32)
     // Optimized SPI (ESP8266 and ESP32)
-    #define HSPI_READ()              SPI_OBJECT.transfer(0)
-    #define HSPI_WRITE(b)            SPI_OBJECT.write(b)
-    #define HSPI_WRITE16(s)          SPI_OBJECT.write16(s)
-    #define HSPI_WRITE32(l)          SPI_OBJECT.write32(l)
+    #define HSPI_READ()              SPI_OBJECT.transfer(0)    ///< Hardware SPI read 8 bits
+    #define HSPI_WRITE(b)            SPI_OBJECT.write(b)       ///< Hardware SPI write 8 bits
+    #define HSPI_WRITE16(s)          SPI_OBJECT.write16(s)     ///< Hardware SPI write 16 bits
+    #define HSPI_WRITE32(l)          SPI_OBJECT.write32(l)     ///< Hardware SPI write 32 bits
     #ifdef SPI_HAS_WRITE_PIXELS
         #define SPI_MAX_PIXELS_AT_ONCE  32
         #define HSPI_WRITE_PIXELS(c,l)   SPI_OBJECT.writePixels(c,l)
@@ -134,12 +167,12 @@ static inline uint8_t _avr_spi_read(void) {
         #define HSPI_WRITE(b)            {SPDR = (b); while(!(SPSR & _BV(SPIF)));}
         #define HSPI_READ()              _avr_spi_read()
     #else
-        #define HSPI_WRITE(b)            SPI_OBJECT.transfer((uint8_t)(b))
-        #define HSPI_READ()              HSPI_WRITE(0)
+        #define HSPI_WRITE(b)            SPI_OBJECT.transfer((uint8_t)(b))    ///< Hardware SPI write 8 bits
+        #define HSPI_READ()              HSPI_WRITE(0)    ///< Hardware SPI read 8 bits
     #endif
-    #define HSPI_WRITE16(s)          HSPI_WRITE((s) >> 8); HSPI_WRITE(s)
-    #define HSPI_WRITE32(l)          HSPI_WRITE((l) >> 24); HSPI_WRITE((l) >> 16); HSPI_WRITE((l) >> 8); HSPI_WRITE(l)
-    #define HSPI_WRITE_PIXELS(c,l)   for(uint32_t i=0; i<(l); i+=2){ HSPI_WRITE(((uint8_t*)(c))[i+1]); HSPI_WRITE(((uint8_t*)(c))[i]); }
+    #define HSPI_WRITE16(s)          HSPI_WRITE((s) >> 8); HSPI_WRITE(s)  ///< Hardware SPI write 16 bits
+    #define HSPI_WRITE32(l)          HSPI_WRITE((l) >> 24); HSPI_WRITE((l) >> 16); HSPI_WRITE((l) >> 8); HSPI_WRITE(l)          ///< Hardware SPI write 32 bits
+    #define HSPI_WRITE_PIXELS(c,l)   for(uint32_t i=0; i<(l); i+=2){ HSPI_WRITE(((uint8_t*)(c))[i+1]); HSPI_WRITE(((uint8_t*)(c))[i]); }       ///< Hardware SPI write 'l' pixels 16-bits each
 #endif
 
 /*
@@ -156,21 +189,41 @@ static inline uint8_t _avr_spi_read(void) {
 #elif defined(ARDUINO_ARCH_STM32F1)
 #define SPI_DEFAULT_FREQ         36000000
 #else
-#define SPI_DEFAULT_FREQ         24000000
+#define SPI_DEFAULT_FREQ         24000000      ///< Default SPI data clock frequency
 #endif
 
-#define SPI_BEGIN()             if(_sclk < 0){SPI_OBJECT.begin();}
-#define SPI_BEGIN_TRANSACTION() if(_sclk < 0){HSPI_BEGIN_TRANSACTION();}
-#define SPI_END_TRANSACTION()   if(_sclk < 0){HSPI_END_TRANSACTION();}
-#define SPI_WRITE16(s)          if(_sclk < 0){HSPI_WRITE16(s);}else{SSPI_WRITE16(s);}
-#define SPI_WRITE32(l)          if(_sclk < 0){HSPI_WRITE32(l);}else{SSPI_WRITE32(l);}
-#define SPI_WRITE_PIXELS(c,l)   if(_sclk < 0){HSPI_WRITE_PIXELS(c,l);}else{SSPI_WRITE_PIXELS(c,l);}
+#define SPI_BEGIN()             if(_sclk < 0){SPI_OBJECT.begin();}          ///< SPI initialize
+#define SPI_BEGIN_TRANSACTION() if(_sclk < 0){HSPI_BEGIN_TRANSACTION();}    ///< SPI begin transaction
+#define SPI_END_TRANSACTION()   if(_sclk < 0){HSPI_END_TRANSACTION();}      ///< SPI end transaction
+#define SPI_WRITE16(s)          if(_sclk < 0){HSPI_WRITE16(s);}else{SSPI_WRITE16(s);}  ///< SPI write 16 bits
+#define SPI_WRITE32(l)          if(_sclk < 0){HSPI_WRITE32(l);}else{SSPI_WRITE32(l);}  ///< SPI write 32 bits
+#define SPI_WRITE_PIXELS(c,l)   if(_sclk < 0){HSPI_WRITE_PIXELS(c,l);}else{SSPI_WRITE_PIXELS(c,l);}  ///< SPI write 'l' pixels of 16-bits each
 
-// Pass 8-bit (each) R,G,B, get back 16-bit packed color
-uint16_t Adafruit_ILI9341::color565(uint8_t r, uint8_t g, uint8_t b) {
-    return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | ((b & 0xF8) >> 3);
+/**************************************************************************/
+/*!
+    @brief  Pass 8-bit (each) R,G,B, get back 16-bit packed color
+            This function converts 8-8-8 RGB data to 16-bit 5-6-5
+    @param    red   Red 8 bit color
+    @param    green Green 8 bit color
+    @param    blue  Blue 8 bit color
+    @return   Unsigned 16-bit down-sampled color in 5-6-5 format
+*/
+/**************************************************************************/
+uint16_t Adafruit_ILI9341::color565(uint8_t red, uint8_t green, uint8_t blue) {
+    return ((red & 0xF8) << 8) | ((green & 0xFC) << 3) | ((blue & 0xF8) >> 3);
 }
 
+/**************************************************************************/
+/*!
+    @brief  Instantiate Adafruit ILI9341 driver with software SPI
+    @param    cs    Chip select pin #
+    @param    dc    Data/Command pin #
+    @param    mosi  SPI MOSI pin #
+    @param    sclk  SPI Clock pin #
+    @param    rst   Reset pin # (optional, pass -1 if unused)
+    @param    miso  SPI MISO pin # (optional, pass -1 if unused)
+*/
+/**************************************************************************/
 Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t mosi,
         int8_t sclk, int8_t rst, int8_t miso) : Adafruit_GFX(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT) {
     _cs   = cs;
@@ -199,6 +252,14 @@ Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t mosi,
 #endif
 }
 
+/**************************************************************************/
+/*!
+    @brief  Instantiate Adafruit ILI9341 driver with software SPI
+    @param    cs    Chip select pin #
+    @param    dc    Data/Command pin #
+    @param    rst   Reset pin # (optional, pass -1 if unused)
+*/
+/**************************************************************************/
 Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t rst) : Adafruit_GFX(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT) {
     _cs   = cs;
     _dc   = dc;
@@ -221,7 +282,13 @@ Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t rst) : Adafruit_
 #endif
 }
 
-
+/**************************************************************************/
+/*!
+    @brief   Initialize ILI9341 chip
+    Connects to the ILI9341 over SPI and sends initialization procedure commands
+    @param    freq  Desired SPI clock frequency
+*/
+/**************************************************************************/
 #ifdef ESP32
 void Adafruit_ILI9341::begin(uint32_t freq, SPIClass &spi)
 #else
@@ -385,6 +452,13 @@ void Adafruit_ILI9341::begin(uint32_t freq)
     _height = ILI9341_TFTHEIGHT;
 }
 
+
+/**************************************************************************/
+/*!
+    @brief   Set origin of (0,0) and orientation of TFT display
+    @param   m  The index for rotation, from 0-3 inclusive
+*/
+/**************************************************************************/
 void Adafruit_ILI9341::setRotation(uint8_t m) {
     rotation = m % 4; // can't be higher than 3
     switch (rotation) {
@@ -416,12 +490,24 @@ void Adafruit_ILI9341::setRotation(uint8_t m) {
     endWrite();
 }
 
-void Adafruit_ILI9341::invertDisplay(boolean i) {
+/**************************************************************************/
+/*!
+    @brief   Enable/Disable display color inversion
+    @param   invert True to invert, False to have normal color
+*/
+/**************************************************************************/
+void Adafruit_ILI9341::invertDisplay(boolean invert) {
     startWrite();
-    writeCommand(i ? ILI9341_INVON : ILI9341_INVOFF);
+    writeCommand(invert ? ILI9341_INVON : ILI9341_INVOFF);
     endWrite();
 }
 
+/**************************************************************************/
+/*!
+    @brief   Scroll display memory
+    @param   y How many pixels to scroll display by
+*/
+/**************************************************************************/
 void Adafruit_ILI9341::scrollTo(uint16_t y) {
     startWrite();
     writeCommand(ILI9341_VSCRSADD);
@@ -429,62 +515,15 @@ void Adafruit_ILI9341::scrollTo(uint16_t y) {
     endWrite();
 }
 
-uint8_t Adafruit_ILI9341::spiRead() {
-    if(_sclk < 0){
-        return HSPI_READ();
-    }
-    if(_miso < 0){
-        return 0;
-    }
-    uint8_t r = 0;
-    for (uint8_t i=0; i<8; i++) {
-        SSPI_SCK_LOW();
-        SSPI_SCK_HIGH();
-        r <<= 1;
-        if (SSPI_MISO_READ()){
-            r |= 0x1;
-        }
-    }
-    return r;
-}
-
-void Adafruit_ILI9341::spiWrite(uint8_t b) {
-    if(_sclk < 0){
-        HSPI_WRITE(b);
-        return;
-    }
-    for(uint8_t bit = 0x80; bit; bit >>= 1){
-        if((b) & bit){
-            SSPI_MOSI_HIGH();
-        } else {
-            SSPI_MOSI_LOW();
-        }
-        SSPI_SCK_LOW();
-        SSPI_SCK_HIGH();
-    }
-}
-
-
-/*
- * Transaction API
- * */
-
-void Adafruit_ILI9341::startWrite(void){
-    SPI_BEGIN_TRANSACTION();
-    SPI_CS_LOW();
-}
-
-void Adafruit_ILI9341::endWrite(void){
-    SPI_CS_HIGH();
-    SPI_END_TRANSACTION();
-}
-
-void Adafruit_ILI9341::writeCommand(uint8_t cmd){
-    SPI_DC_LOW();
-    spiWrite(cmd);
-    SPI_DC_HIGH();
-}
-
+/**************************************************************************/
+/*!
+    @brief   Set the "address window" - the rectangle we will write to RAM with the next chunk of SPI data writes. The ILI9341 will automatically wrap the data as each row is filled
+    @param   x  TFT memory 'x' origin
+    @param   y  TFT memory 'y' origin
+    @param   w  Width of rectangle
+    @param   h  Height of rectangle
+*/
+/**************************************************************************/
 void Adafruit_ILI9341::setAddrWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
     uint32_t xa = ((uint32_t)x << 16) | (x+w-1);
     uint32_t ya = ((uint32_t)y << 16) | (y+h-1);
@@ -495,19 +534,43 @@ void Adafruit_ILI9341::setAddrWindow(uint16_t x, uint16_t y, uint16_t w, uint16_
     writeCommand(ILI9341_RAMWR); // write to RAM
 }
 
+/**************************************************************************/
+/*!
+    @brief   Blit 1 pixel of color without setting up SPI transaction
+    @param   color 16-bits of 5-6-5 color data
+/**************************************************************************/
 void Adafruit_ILI9341::pushColor(uint16_t color) {
-  SPI_WRITE16(color);
+    SPI_WRITE16(color);
 }
 
-
+/**************************************************************************/
+/*!
+    @brief   Blit 1 pixel of color without setting up SPI transaction
+    @param   color 16-bits of 5-6-5 color data
+*/
+/**************************************************************************/
 void Adafruit_ILI9341::writePixel(uint16_t color){
     SPI_WRITE16(color);
 }
 
+/**************************************************************************/
+/*!
+    @brief   Blit 'len' pixels of color without setting up SPI transaction
+    @param   colors Array of 16-bit 5-6-5 color data
+    @param   len Number of 16-bit pixels in colors array
+*/
+/**************************************************************************/
 void Adafruit_ILI9341::writePixels(uint16_t * colors, uint32_t len){
     SPI_WRITE_PIXELS((uint8_t*)colors , len * 2);
 }
 
+/**************************************************************************/
+/*!
+    @brief   Blit 'len' pixels of a single color without setting up SPI transaction
+    @param   color 16-bits of 5-6-5 color data
+    @param   len Number of 16-bit pixels you want to write out with same color
+*/
+/**************************************************************************/
 void Adafruit_ILI9341::writeColor(uint16_t color, uint32_t len){
 #ifdef SPI_HAS_WRITE_PIXELS
     if(_sclk >= 0){
@@ -545,12 +608,30 @@ void Adafruit_ILI9341::writeColor(uint16_t color, uint32_t len){
 #endif
 }
 
+/**************************************************************************/
+/*!
+   @brief  Draw a single pixel, DOES NOT set up SPI transaction
+    @param    x  TFT X location
+    @param    y  TFT Y location
+    @param    color 16-bit 5-6-5 Color to draw with
+*/
+/**************************************************************************/
 void Adafruit_ILI9341::writePixel(int16_t x, int16_t y, uint16_t color) {
     if((x < 0) ||(x >= _width) || (y < 0) || (y >= _height)) return;
     setAddrWindow(x,y,1,1);
     writePixel(color);
 }
 
+/**************************************************************************/
+/*!
+   @brief  Fill a rectangle, DOES NOT set up SPI transaction
+    @param    x  TFT X location begin
+    @param    y  TFT Y location begin
+    @param    w  Width of rectangle
+    @param    h  Height of rectangle
+    @param    color 16-bit 5-6-5 Color to fill with
+*/
+/**************************************************************************/
 void Adafruit_ILI9341::writeFillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color){
     if((x >= _width) || (y >= _height)) return;
     int16_t x2 = x + w - 1, y2 = y + h - 1;
@@ -575,49 +656,90 @@ void Adafruit_ILI9341::writeFillRect(int16_t x, int16_t y, int16_t w, int16_t h,
     writeColor(color, len);
 }
 
-void Adafruit_ILI9341::writeFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color){
-    writeFillRect(x, y, 1, h, color);
+
+/**************************************************************************/
+/*!
+   @brief  Draw a vertical line, DOES NOT set up SPI transaction
+    @param    x  TFT X location begin
+    @param    y  TFT Y location begin
+    @param    l  Length of line in pixels
+    @param    color 16-bit 5-6-5 Color to draw with
+*/
+/**************************************************************************/
+void Adafruit_ILI9341::writeFastVLine(int16_t x, int16_t y, int16_t l, uint16_t color){
+    writeFillRect(x, y, 1, l, color);
 }
 
-void Adafruit_ILI9341::writeFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color){
-    writeFillRect(x, y, w, 1, color);
+
+/**************************************************************************/
+/*!
+   @brief  Draw a horizontal line, DOES NOT set up SPI transaction
+    @param    x  TFT X location begin
+    @param    y  TFT Y location begin
+    @param    l  Length of line in pixels
+    @param    color 16-bit 5-6-5 Color to draw with
+*/
+/**************************************************************************/
+void Adafruit_ILI9341::writeFastHLine(int16_t x, int16_t y, int16_t l, uint16_t color){
+    writeFillRect(x, y, l, 1, color);
 }
 
-uint8_t Adafruit_ILI9341::readcommand8(uint8_t c, uint8_t index) {
-    uint32_t freq = _freq;
-    if(_freq > 24000000){
-        _freq = 24000000;
-    }
-    startWrite();
-    writeCommand(0xD9);  // woo sekret command?
-    spiWrite(0x10 + index);
-    writeCommand(c);
-    uint8_t r = spiRead();
-    endWrite();
-    _freq = freq;
-    return r;
-}
-
+/**************************************************************************/
+/*!
+   @brief  Draw a single pixel, includes code for SPI transaction
+    @param    x  TFT X location
+    @param    y  TFT Y location
+    @param    color 16-bit 5-6-5 Color to draw with
+*/
+/**************************************************************************/
 void Adafruit_ILI9341::drawPixel(int16_t x, int16_t y, uint16_t color){
     startWrite();
     writePixel(x, y, color);
     endWrite();
 }
 
+/**************************************************************************/
+/*!
+   @brief  Draw a vertical line, includes code for SPI transaction
+    @param    x  TFT X location begin
+    @param    y  TFT Y location begin
+    @param    l  Length of line in pixels
+    @param    color 16-bit 5-6-5 Color to draw with
+*/
+/**************************************************************************/
 void Adafruit_ILI9341::drawFastVLine(int16_t x, int16_t y,
-        int16_t h, uint16_t color) {
+        int16_t l, uint16_t color) {
     startWrite();
-    writeFastVLine(x, y, h, color);
+    writeFastVLine(x, y, l, color);
     endWrite();
 }
 
+/**************************************************************************/
+/*!
+   @brief  Draw a horizontal line, includes code for SPI transaction
+    @param    x  TFT X location begin
+    @param    y  TFT Y location begin
+    @param    l  Length of line in pixels
+    @param    color 16-bit 5-6-5 Color to draw with
+*/
+/**************************************************************************/
 void Adafruit_ILI9341::drawFastHLine(int16_t x, int16_t y,
-        int16_t w, uint16_t color) {
+        int16_t l, uint16_t color) {
     startWrite();
-    writeFastHLine(x, y, w, color);
+    writeFastHLine(x, y, l, color);
     endWrite();
 }
 
+/**************************************************************************/
+/*!
+   @brief  Fill a rectangle, includes code for SPI transaction
+    @param    x  TFT X location begin
+    @param    y  TFT Y location begin
+    @param    w  Width of rectangle
+    @param    h  Height of rectangle
+    @param    color 16-bit 5-6-5 Color to fill with
+*/
+/**************************************************************************/
 void Adafruit_ILI9341::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
         uint16_t color) {
     startWrite();
@@ -625,11 +747,22 @@ void Adafruit_ILI9341::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
     endWrite();
 }
 
-// Adapted from https://github.com/PaulStoffregen/ILI9341_t3
-// by Marc MERLIN. See examples/pictureEmbed to use this.
-// 5/6/2017: function name and arguments have changed for compatibility
-// with current GFX library and to avoid naming problems in prior
-// implementation.  Formerly drawBitmap() with arguments in different order.
+/**************************************************************************/
+/*!
+   @brief  Draw RGB rectangle of data from RAM to a location on screen
+   Adapted from https://github.com/PaulStoffregen/ILI9341_t3
+   by Marc MERLIN. See examples/pictureEmbed to use this.
+   5/6/2017: function name and arguments have changed for compatibility
+   with current GFX library and to avoid naming problems in prior
+   implementation.  Formerly drawBitmap() with arguments in different order.
+
+    @param    x  TFT X location begin
+    @param    y  TFT Y location begin
+    @param    pcolors Pointer to 16-bit color data
+    @param    w  Width of pcolors rectangle
+    @param    h  Height of pcolors rectangle
+*/
+/**************************************************************************/
 void Adafruit_ILI9341::drawRGBBitmap(int16_t x, int16_t y,
   uint16_t *pcolors, int16_t w, int16_t h) {
 
@@ -663,3 +796,111 @@ void Adafruit_ILI9341::drawRGBBitmap(int16_t x, int16_t y,
     }
     endWrite();
 }
+
+
+/**************************************************************************/
+/*!
+   @brief  Read 8 bits of data from ILI9341 configuration memory. NOT from RAM!
+           This is highly undocumented/supported, it's really a hack but kinda works?
+    @param    command  The command register to read data from
+    @param    index  The byte index into the command to read from
+    @return   Unsigned 8-bit data read from ILI9341 register
+*/
+/**************************************************************************/
+uint8_t Adafruit_ILI9341::readcommand8(uint8_t command, uint8_t index) {
+    uint32_t freq = _freq;
+    if(_freq > 24000000){
+        _freq = 24000000;
+    }
+    startWrite();
+    writeCommand(0xD9);  // woo sekret command?
+    spiWrite(0x10 + index);
+    writeCommand(command);
+    uint8_t r = spiRead();
+    endWrite();
+    _freq = freq;
+    return r;
+}
+
+
+/**************************************************************************/
+/*!
+   @brief  Begin SPI transaction, for software or hardware SPI
+*/
+/**************************************************************************/
+void Adafruit_ILI9341::startWrite(void){
+    SPI_BEGIN_TRANSACTION();
+    SPI_CS_LOW();
+}
+
+/**************************************************************************/
+/*!
+   @brief  End SPI transaction, for software or hardware SPI
+*/
+/**************************************************************************/
+void Adafruit_ILI9341::endWrite(void){
+    SPI_CS_HIGH();
+    SPI_END_TRANSACTION();
+}
+
+/**************************************************************************/
+/*!
+   @brief  Write 8-bit data to command/register (DataCommand line low).
+   Does not set up SPI transaction.
+   @param  cmd The command/register to transmit
+*/
+/**************************************************************************/
+void Adafruit_ILI9341::writeCommand(uint8_t cmd){
+    SPI_DC_LOW();
+    spiWrite(cmd);
+    SPI_DC_HIGH();
+}
+
+
+/**************************************************************************/
+/*!
+   @brief  Read 8-bit data via hardware or software SPI. Does not set up SPI transaction.
+   @returns One byte of data from SPI
+*/
+/**************************************************************************/
+uint8_t Adafruit_ILI9341::spiRead() {
+    if(_sclk < 0){
+        return HSPI_READ();
+    }
+    if(_miso < 0){
+        return 0;
+    }
+    uint8_t r = 0;
+    for (uint8_t i=0; i<8; i++) {
+        SSPI_SCK_LOW();
+        SSPI_SCK_HIGH();
+        r <<= 1;
+        if (SSPI_MISO_READ()){
+            r |= 0x1;
+        }
+    }
+    return r;
+}
+
+/**************************************************************************/
+/*!
+   @brief  Write 8-bit data via hardware or software SPI. Does not set up SPI transaction.
+   @param  b Byte of data to write over SPI
+*/
+/**************************************************************************/
+void Adafruit_ILI9341::spiWrite(uint8_t b) {
+    if(_sclk < 0){
+        HSPI_WRITE(b);
+        return;
+    }
+    for(uint8_t bit = 0x80; bit; bit >>= 1){
+        if((b) & bit){
+            SSPI_MOSI_HIGH();
+        } else {
+            SSPI_MOSI_LOW();
+        }
+        SSPI_SCK_LOW();
+        SSPI_SCK_HIGH();
+    }
+}
+
