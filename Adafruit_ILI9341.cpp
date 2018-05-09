@@ -152,6 +152,14 @@
     #else
         #define HSPI_WRITE_PIXELS(c,l)   for(uint32_t i=0; i<((l)/2); i++){ SPI_WRITE16(((uint16_t*)(c))[i]); }
     #endif
+#elif defined(__OPENCR__)   // Define for Robotis __OPENCR__
+    #define SPI_HAS_WRITE_PIXELS
+    #define HSPI_READ()              SPI_OBJECT.transfer(0)
+    #define HSPI_WRITE(b)            SPI_OBJECT.write(b)
+    #define HSPI_WRITE16(s)          SPI_OBJECT.write16(s)
+    #define HSPI_WRITE32(l)          SPI_OBJECT.write32(l)
+    #define SPI_MAX_PIXELS_AT_ONCE  32
+    #define HSPI_WRITE_PIXELS(c,l)   SPI_OBJECT.writePixels(c,l)
 #else
     // Standard Byte-by-Byte SPI
 
@@ -178,7 +186,7 @@ static inline uint8_t _avr_spi_read(void) {
 /*
  * Final SPI Macros
  * */
-#if defined (ARDUINO_ARCH_ARC32) || defined (ARDUINO_MAXIM)
+#if defined (ARDUINO_ARCH_ARC32) || defined (ARDUINO_MAXIM) || defined(__OPENCR__)
 #define SPI_DEFAULT_FREQ         16000000
 #elif defined (__AVR__) || defined(TEENSYDUINO)
 #define SPI_DEFAULT_FREQ         8000000

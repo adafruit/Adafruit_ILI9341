@@ -132,7 +132,7 @@ typedef volatile uint32_t RwReg;
 #define ILI9341_GREENYELLOW 0xAFE5      ///< 173, 255,  47
 #define ILI9341_PINK        0xFC18      ///< 255, 128, 192
 
-#if defined (ARDUINO_STM32_FEATHER) || defined (ARDUINO_MAXIM)    // doesnt work on wiced feather
+#if defined (ARDUINO_STM32_FEATHER) || defined (ARDUINO_MAXIM) ||  defined(__OPENCR__)    // doesnt work on these boards
   #undef USE_FAST_PINIO
 #elif defined (__AVR__) || defined(TEENSYDUINO) || defined(ESP8266) || defined (ESP32) || defined(__arm__)
   #define USE_FAST_PINIO
