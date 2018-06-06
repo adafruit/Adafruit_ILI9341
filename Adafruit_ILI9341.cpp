@@ -140,6 +140,9 @@
 #ifdef ESP32
     #define SPI_HAS_WRITE_PIXELS
 #endif
+#ifdef ESP8266
+    #define SPI_HAS_WRITE_PATTERN
+#endif
 #if defined(ESP8266) || defined(ESP32)
     // Optimized SPI (ESP8266 and ESP32)
     #define HSPI_READ()              SPI_OBJECT.transfer(0)    ///< Hardware SPI read 8 bits
@@ -592,6 +595,9 @@ void Adafruit_ILI9341::writeColor(uint16_t color, uint32_t len){
         writePixels(temp, tlen);
         len -= tlen;
     }
+#elif defined(SPI_HAS_WRITE_PATTERN)
+    uint8_t colorAr[] = {color >> 8, color};
+    SPI.writePattern(colorAr, 2, len);
 #else
     uint8_t hi = color >> 8, lo = color;
     if(_sclk < 0){ //AVR Optimization
