@@ -538,6 +538,7 @@ void Adafruit_ILI9341::setAddrWindow(uint16_t x, uint16_t y, uint16_t w, uint16_
 /*!
     @brief   Blit 1 pixel of color without setting up SPI transaction
     @param   color 16-bits of 5-6-5 color data
+*/
 /**************************************************************************/
 void Adafruit_ILI9341::pushColor(uint16_t color) {
     SPI_WRITE16(color);

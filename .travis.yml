@@ -1,6 +1,16 @@
 language: c
 sudo: false
 
+cache:
+  directories:
+    - ~/arduino_ide
+    # Caches Arduino IDE + ESP32 platform
+    - ~/.arduino15/packages/
+    # Caches Arduino platforms
+git:
+  depth: false
+  quiet: true
+
 # Blacklist
 branches:
   except:
