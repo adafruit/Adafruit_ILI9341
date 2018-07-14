@@ -93,7 +93,7 @@ Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t mosi,
 
 /**************************************************************************/
 /*!
-    @brief  Instantiate Adafruit ILI9341 driver with software SPI
+    @brief  Instantiate Adafruit ILI9341 driver with hardware SPI
     @param    cs    Chip select pin #
     @param    dc    Data/Command pin #
     @param    rst   Reset pin # (optional, pass -1 if unused)
