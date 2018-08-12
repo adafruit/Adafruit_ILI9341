@@ -122,7 +122,12 @@
 #define ILI9341_GREENYELLOW 0xAFE5  ///< 173, 255,  41
 #define ILI9341_PINK        0xFC18  ///< 255, 130, 198
 
-///< Class to manage hardware interface with ILI9341 chipset (also seems to work with ILI9340)
+/**************************************************************************/
+/*!
+@brief Class to manage hardware interface with ILI9341 chipset (also seems to work with ILI9340)
+*/
+/**************************************************************************/
+
 class Adafruit_ILI9341 : public Adafruit_SPITFT {
     public:
         Adafruit_ILI9341(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1);
