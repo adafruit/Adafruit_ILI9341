@@ -65,9 +65,12 @@ $(function() {
 <div class="title">Adafruit_ILI9341.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;WProgram.h&quot;</code><br />
+<div class="textblock"><code>#include &quot;Arduino.h&quot;</code><br />
+<code>#include &quot;Print.h&quot;</code><br />
 <code>#include &lt;SPI.h&gt;</code><br />
 <code>#include &quot;Adafruit_GFX.h&quot;</code><br />
+<code>#include &lt;Adafruit_SPITFT.h&gt;</code><br />
+<code>#include &lt;Adafruit_SPITFT_Macros.h&gt;</code><br />
 </div>
 <p><a href="_adafruit___i_l_i9341_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -269,35 +272,35 @@ Macros</h2></td></tr>
 <tr class="separator:a50166b9a65012fb2f8fe0a0d5f519fa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acaae04786d06f0ba08c8bea6b714b572"><td class="memItemLeft" align="right" valign="top"><a id="acaae04786d06f0ba08c8bea6b714b572"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___i_l_i9341_8h.html#acaae04786d06f0ba08c8bea6b714b572">ILI9341_NAVY</a>&#160;&#160;&#160;0x000F</td></tr>
-<tr class="memdesc:acaae04786d06f0ba08c8bea6b714b572"><td class="mdescLeft">&#160;</td><td class="mdescRight">0, 0, 128 <br /></td></tr>
+<tr class="memdesc:acaae04786d06f0ba08c8bea6b714b572"><td class="mdescLeft">&#160;</td><td class="mdescRight">0, 0, 123 <br /></td></tr>
 <tr class="separator:acaae04786d06f0ba08c8bea6b714b572"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a9d46f3af002ee1edc832257f3683a3"><td class="memItemLeft" align="right" valign="top"><a id="a5a9d46f3af002ee1edc832257f3683a3"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___i_l_i9341_8h.html#a5a9d46f3af002ee1edc832257f3683a3">ILI9341_DARKGREEN</a>&#160;&#160;&#160;0x03E0</td></tr>
-<tr class="memdesc:a5a9d46f3af002ee1edc832257f3683a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">0, 128, 0 <br /></td></tr>
+<tr class="memdesc:a5a9d46f3af002ee1edc832257f3683a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">0, 125, 0 <br /></td></tr>
 <tr class="separator:a5a9d46f3af002ee1edc832257f3683a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adbc78927dc7105782714d69048580576"><td class="memItemLeft" align="right" valign="top"><a id="adbc78927dc7105782714d69048580576"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___i_l_i9341_8h.html#adbc78927dc7105782714d69048580576">ILI9341_DARKCYAN</a>&#160;&#160;&#160;0x03EF</td></tr>
-<tr class="memdesc:adbc78927dc7105782714d69048580576"><td class="mdescLeft">&#160;</td><td class="mdescRight">0, 128, 128 <br /></td></tr>
+<tr class="memdesc:adbc78927dc7105782714d69048580576"><td class="mdescLeft">&#160;</td><td class="mdescRight">0, 125, 123 <br /></td></tr>
 <tr class="separator:adbc78927dc7105782714d69048580576"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8fdcfa7e66294fbedf701b2822a9c6e9"><td class="memItemLeft" align="right" valign="top"><a id="a8fdcfa7e66294fbedf701b2822a9c6e9"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___i_l_i9341_8h.html#a8fdcfa7e66294fbedf701b2822a9c6e9">ILI9341_MAROON</a>&#160;&#160;&#160;0x7800</td></tr>
-<tr class="memdesc:a8fdcfa7e66294fbedf701b2822a9c6e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">128, 0, 0 <br /></td></tr>
+<tr class="memdesc:a8fdcfa7e66294fbedf701b2822a9c6e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">123, 0, 0 <br /></td></tr>
 <tr class="separator:a8fdcfa7e66294fbedf701b2822a9c6e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4371aa3db522c197cae529a235553071"><td class="memItemLeft" align="right" valign="top"><a id="a4371aa3db522c197cae529a235553071"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___i_l_i9341_8h.html#a4371aa3db522c197cae529a235553071">ILI9341_PURPLE</a>&#160;&#160;&#160;0x780F</td></tr>
-<tr class="memdesc:a4371aa3db522c197cae529a235553071"><td class="mdescLeft">&#160;</td><td class="mdescRight">128, 0, 128 <br /></td></tr>
+<tr class="memdesc:a4371aa3db522c197cae529a235553071"><td class="mdescLeft">&#160;</td><td class="mdescRight">123, 0, 123 <br /></td></tr>
 <tr class="separator:a4371aa3db522c197cae529a235553071"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8f5be0a5e731a047a1a7b5edaa0e46f"><td class="memItemLeft" align="right" valign="top"><a id="ae8f5be0a5e731a047a1a7b5edaa0e46f"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___i_l_i9341_8h.html#ae8f5be0a5e731a047a1a7b5edaa0e46f">ILI9341_OLIVE</a>&#160;&#160;&#160;0x7BE0</td></tr>
-<tr class="memdesc:ae8f5be0a5e731a047a1a7b5edaa0e46f"><td class="mdescLeft">&#160;</td><td class="mdescRight">128, 128, 0 <br /></td></tr>
+<tr class="memdesc:ae8f5be0a5e731a047a1a7b5edaa0e46f"><td class="mdescLeft">&#160;</td><td class="mdescRight">123, 125, 0 <br /></td></tr>
 <tr class="separator:ae8f5be0a5e731a047a1a7b5edaa0e46f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35990ea476b079cd6746056777fadfd8"><td class="memItemLeft" align="right" valign="top"><a id="a35990ea476b079cd6746056777fadfd8"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___i_l_i9341_8h.html#a35990ea476b079cd6746056777fadfd8">ILI9341_LIGHTGREY</a>&#160;&#160;&#160;0xC618</td></tr>
-<tr class="memdesc:a35990ea476b079cd6746056777fadfd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">192, 192, 192 <br /></td></tr>
+<tr class="memdesc:a35990ea476b079cd6746056777fadfd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">198, 195, 198 <br /></td></tr>
 <tr class="separator:a35990ea476b079cd6746056777fadfd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56f69dad2de457c03d71ea0b38395c41"><td class="memItemLeft" align="right" valign="top"><a id="a56f69dad2de457c03d71ea0b38395c41"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___i_l_i9341_8h.html#a56f69dad2de457c03d71ea0b38395c41">ILI9341_DARKGREY</a>&#160;&#160;&#160;0x7BEF</td></tr>
-<tr class="memdesc:a56f69dad2de457c03d71ea0b38395c41"><td class="mdescLeft">&#160;</td><td class="mdescRight">128, 128, 128 <br /></td></tr>
+<tr class="memdesc:a56f69dad2de457c03d71ea0b38395c41"><td class="mdescLeft">&#160;</td><td class="mdescRight">123, 125, 123 <br /></td></tr>
 <tr class="separator:a56f69dad2de457c03d71ea0b38395c41"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa15cf651d66764cb8024808d6ea48eef"><td class="memItemLeft" align="right" valign="top"><a id="aa15cf651d66764cb8024808d6ea48eef"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___i_l_i9341_8h.html#aa15cf651d66764cb8024808d6ea48eef">ILI9341_BLUE</a>&#160;&#160;&#160;0x001F</td></tr>
@@ -333,11 +336,11 @@ Macros</h2></td></tr>
 <tr class="separator:a857910d1b98cb9d77a29c2beb5af949d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f9867862411a57b73cecbc0155e7507"><td class="memItemLeft" align="right" valign="top"><a id="a5f9867862411a57b73cecbc0155e7507"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___i_l_i9341_8h.html#a5f9867862411a57b73cecbc0155e7507">ILI9341_GREENYELLOW</a>&#160;&#160;&#160;0xAFE5</td></tr>
-<tr class="memdesc:a5f9867862411a57b73cecbc0155e7507"><td class="mdescLeft">&#160;</td><td class="mdescRight">173, 255, 47 <br /></td></tr>
+<tr class="memdesc:a5f9867862411a57b73cecbc0155e7507"><td class="mdescLeft">&#160;</td><td class="mdescRight">173, 255, 41 <br /></td></tr>
 <tr class="separator:a5f9867862411a57b73cecbc0155e7507"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad39cea2dab75ccfd9d83fab73ce1a56d"><td class="memItemLeft" align="right" valign="top"><a id="ad39cea2dab75ccfd9d83fab73ce1a56d"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_adafruit___i_l_i9341_8h.html#ad39cea2dab75ccfd9d83fab73ce1a56d">ILI9341_PINK</a>&#160;&#160;&#160;0xFC18</td></tr>
-<tr class="memdesc:ad39cea2dab75ccfd9d83fab73ce1a56d"><td class="mdescLeft">&#160;</td><td class="mdescRight">255, 128, 192 <br /></td></tr>
+<tr class="memdesc:ad39cea2dab75ccfd9d83fab73ce1a56d"><td class="mdescLeft">&#160;</td><td class="mdescRight">255, 130, 198 <br /></td></tr>
 <tr class="separator:ad39cea2dab75ccfd9d83fab73ce1a56d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
