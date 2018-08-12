@@ -99,7 +99,7 @@ void setup(void) {
   }
   Serial.println("OK!");
 
-  bmpDraw("purple.bmp", 0, 0);
+  bmpDraw("/purple.bmp", 0, 0);
 }
 
 void loop() {
@@ -229,7 +229,8 @@ void bmpDraw(char *filename, int16_t x, int16_t y) {
             b = sdbuffer[buffidx++];
             g = sdbuffer[buffidx++];
             r = sdbuffer[buffidx++];
-            tft.pushColor(tft.color565(r,g,b));
+            uint16_t c = tft.color565(r,g,b);
+            tft.writePixels(&c, 1);
           } // end pixel
           tft.endWrite();
         } // end scanline

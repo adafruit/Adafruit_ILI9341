@@ -50,7 +50,7 @@ void loop() {
     tft.setRotation(r);
     tft.fillScreen(ILI9341_BLUE);
     for(int8_t i=-2; i<1; i++) {
-      bmpDraw("purple.bmp",
+      bmpDraw("/purple.bmp",
         (tft.width()  / 2) + (i * 120),
         (tft.height() / 2) + (i * 160));
     }
