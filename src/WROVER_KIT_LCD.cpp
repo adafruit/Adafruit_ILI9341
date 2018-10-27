@@ -234,6 +234,18 @@ void WROVER_KIT_LCD::scrollTo(uint16_t y) {
     endWrite();
 }
 
+void WROVER_KIT_LCD::setupScrollArea(uint16_t TFA, uint16_t BFA) {
+  startWrite();
+  writeCommand(WROVER_VSCRDEF); // Vertical scroll definition
+  SPI.write(TFA >> 8);
+  SPI.write(TFA);
+  SPI.write((WROVER_HEIGHT - TFA - BFA) >> 8);
+  SPI.write(WROVER_HEIGHT - TFA - BFA);
+  SPI.write(BFA >> 8);
+  SPI.write(BFA);
+  endWrite();
+}
+
 /*
  * Transaction API
  * */
