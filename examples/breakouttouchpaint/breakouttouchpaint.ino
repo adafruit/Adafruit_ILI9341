@@ -23,8 +23,8 @@
 // These are the four touchscreen analog pins
 #define YP A2  // must be an analog pin, use "An" notation!
 #define XM A3  // must be an analog pin, use "An" notation!
-#define YM 5   // can be a digital pin
-#define XP 4   // can be a digital pin
+#define YM 9   // can be any digital pin
+#define XP 8   // can be any digital pin
 
 // This is calibration data for the raw touch data to the screen coordinates
 #define TS_MINX 150
