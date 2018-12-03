@@ -237,12 +237,12 @@ void WROVER_KIT_LCD::scrollTo(uint16_t y) {
 void WROVER_KIT_LCD::setupScrollArea(uint16_t tfa, uint16_t bfa) {
   startWrite();
   writeCommand(WROVER_VSCRDEF); // Vertical scroll definition
-  SPI.write(TFA >> 8);
-  SPI.write(TFA);
-  SPI.write((WROVER_HEIGHT - TFA - BFA) >> 8);
-  SPI.write(WROVER_HEIGHT - TFA - BFA);
-  SPI.write(BFA >> 8);
-  SPI.write(BFA);
+  SPI.write(tfa >> 8);
+  SPI.write(tfa);
+  SPI.write((WROVER_HEIGHT - tfa - bfa) >> 8);
+  SPI.write(WROVER_HEIGHT - tfa - bfa);
+  SPI.write(bfa >> 8);
+  SPI.write(bfa);
   endWrite();
 }
 
@@ -250,6 +250,12 @@ void WROVER_KIT_LCD::setupScrollArea(uint16_t tfa, uint16_t bfa) {
  * Transaction API
  * */
 
+
+/*
+ * Setup a portion of the screen for vertical scrolling
+ * We are using a hardware feature of the display, so we can only scroll in portrait orientation
+ *
+ * */
 void WROVER_KIT_LCD::setAddrWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
     uint32_t xa = ((uint32_t)x << 16) | (x+w-1);
     uint32_t ya = ((uint32_t)y << 16) | (y+h-1);
