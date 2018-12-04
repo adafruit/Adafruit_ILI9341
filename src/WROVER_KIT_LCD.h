@@ -149,6 +149,9 @@ class WROVER_KIT_LCD : public Adafruit_GFX {
         void      setRotation(uint8_t r);
         void      invertDisplay(boolean i);
         void      scrollTo(uint16_t y);
+        // setupScrollArea: optionnaly setup a portion of the screen for vertical hardware scrolling
+        // tfa = top fixed area, bfa = bottom fixed area
+        void      setupScrollArea(uint16_t tfa, uint16_t bfa);
 
         // Required Non-Transaction
         void      drawPixel(int16_t x, int16_t y, uint16_t color);
