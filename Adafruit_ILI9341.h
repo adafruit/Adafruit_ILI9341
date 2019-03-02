@@ -130,12 +130,17 @@
 
 class Adafruit_ILI9341 : public Adafruit_SPITFT {
     public:
-        Adafruit_ILI9341(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1);
+        Adafruit_ILI9341(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK,
+          int8_t _RST = -1, int8_t _MISO = -1);
         Adafruit_ILI9341(int8_t _CS, int8_t _DC, int8_t _RST = -1);
+        Adafruit_ILI9341(SPIClass *spiClass, int8_t dc,
+          int8_t cs = -1, int8_t rst = -1);
+        Adafruit_ILI9341(tftBusWidth busWidth, int8_t d0, int8_t wr, int8_t dc,
+          int8_t cs = -1, int8_t rst = -1, int8_t rd = -1);
 
         void    begin(uint32_t freq=0);
         void    setRotation(uint8_t r);
-        void    invertDisplay(boolean i);
+        void    invertDisplay(bool i);
         void    scrollTo(uint16_t y);
 
         // Transaction API not used by GFX

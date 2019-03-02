@@ -94,14 +94,55 @@ Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t mosi,
 
 /**************************************************************************/
 /*!
-    @brief  Instantiate Adafruit ILI9341 driver with hardware SPI
-    @param    cs    Chip select pin #
-    @param    dc    Data/Command pin #
-    @param    rst   Reset pin # (optional, pass -1 if unused)
+    @brief  Instantiate Adafruit ILI9341 driver with hardware SPI using the
+            default SPI peripheral.
+    @param  cs   Chip select pin # (OK to pass -1 if CS tied to GND).
+    @param  dc   Data/Command pin # (required).
+    @param  rst  Reset pin # (optional, pass -1 if unused).
 */
 /**************************************************************************/
-Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t rst) : Adafruit_SPITFT(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT, cs, dc, rst) {
+Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t rst) :
+  Adafruit_SPITFT(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT, cs, dc, rst) {
 }
+
+/**************************************************************************/
+/*!
+    @brief  Instantiate Adafruit ILI9341 driver with hardware SPI using
+            a specific SPI peripheral (not necessarily default).
+    @param  spiClass  Pointer to SPI peripheral (e.g. &SPI or &SPI1).
+    @param  dc        Data/Command pin # (required).
+    @param  cs        Chip select pin # (optional, pass -1 if unused and
+                      CS is tied to GND).
+    @param  rst       Reset pin # (optional, pass -1 if unused).
+*/
+/**************************************************************************/
+Adafruit_ILI9341::Adafruit_ILI9341(
+  SPIClass *spiClass, int8_t dc, int8_t cs, int8_t rst) :
+  Adafruit_SPITFT(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT, spiClass, cs, dc, rst) {
+}
+
+/**************************************************************************/
+/*!
+    @brief  Instantiate Adafruit ILI9341 driver with hardware SPI using
+            parallel interface.
+    @param  busWidth  If tft16 (enumeration in Adafruit_SPITFT.h), is a
+                      16-bit interface, else 8-bit.
+    @param  d0        Data pin 0 (MUST be a byte- or word-aligned LSB of a
+                      PORT register -- pins 1-n are extrapolated from this).
+    @param  wr        Write strobe pin # (required).
+    @param  dc        Data/Command pin # (required).
+    @param  cs        Chip select pin # (optional, pass -1 if unused and CS
+                      is tied to GND).
+    @param  rst       Reset pin # (optional, pass -1 if unused).
+    @param  rd        Read strobe pin # (optional, pass -1 if unused).
+*/
+/**************************************************************************/
+Adafruit_ILI9341::Adafruit_ILI9341(tftBusWidth busWidth,
+  int8_t d0, int8_t wr, int8_t cs, int8_t dc, int8_t rst, int8_t rd) :
+  Adafruit_SPITFT(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT, busWidth,
+    d0, wr, dc, cs, rst, rd) {
+}
+
 
 static const uint8_t PROGMEM initcmd[] = {
   0xEF, 3, 0x03, 0x80, 0x02,
@@ -139,12 +180,15 @@ static const uint8_t PROGMEM initcmd[] = {
 */
 /**************************************************************************/
 void Adafruit_ILI9341::begin(uint32_t freq) {
-    if(!freq) freq = SPI_DEFAULT_FREQ;
-    _freq = freq;
 
     initSPI(freq);
 
     startWrite();
+
+    if(_rst < 0) {                     // If no hardware reset pin...
+        writeCommand(ILI9341_SWRESET); // Engage software reset
+        delay(150);
+    }
 
     uint8_t        cmd, x, numArgs;
     const uint8_t *addr = initcmd;
@@ -153,7 +197,7 @@ void Adafruit_ILI9341::begin(uint32_t freq) {
         x       = pgm_read_byte(addr++);
         numArgs = x & 0x7F;
         while(numArgs--) spiWrite(pgm_read_byte(addr++));
-        if(x & 0x80) delay(120);
+        if(x & 0x80) delay(150);
     }
 
     endWrite();
@@ -206,7 +250,7 @@ void Adafruit_ILI9341::setRotation(uint8_t m) {
     @param   invert True to invert, False to have normal color
 */
 /**************************************************************************/
-void Adafruit_ILI9341::invertDisplay(boolean invert) {
+void Adafruit_ILI9341::invertDisplay(bool invert) {
     startWrite();
     writeCommand(invert ? ILI9341_INVON : ILI9341_INVOFF);
     endWrite();
@@ -228,20 +272,23 @@ void Adafruit_ILI9341::scrollTo(uint16_t y) {
 /**************************************************************************/
 /*!
     @brief   Set the "address window" - the rectangle we will write to RAM with the next chunk of SPI data writes. The ILI9341 will automatically wrap the data as each row is filled
-    @param   x  TFT memory 'x' origin
-    @param   y  TFT memory 'y' origin
-    @param   w  Width of rectangle
-    @param   h  Height of rectangle
+    @param   x1  TFT memory 'x' origin
+    @param   y1  TFT memory 'y' origin
+    @param   w   Width of rectangle
+    @param   h   Height of rectangle
 */
 /**************************************************************************/
-void Adafruit_ILI9341::setAddrWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
-    uint32_t xa = ((uint32_t)x << 16) | (x+w-1);
-    uint32_t ya = ((uint32_t)y << 16) | (y+h-1);
-    writeCommand(ILI9341_CASET); // Column addr set
-    SPI_WRITE32(xa);
-    writeCommand(ILI9341_PASET); // Row addr set
-    SPI_WRITE32(ya);
-    writeCommand(ILI9341_RAMWR); // write to RAM
+void Adafruit_ILI9341::setAddrWindow(
+  uint16_t x1, uint16_t y1, uint16_t w, uint16_t h) {
+    uint16_t x2 = (x1 + w - 1),
+             y2 = (y1 + h - 1);
+    writeCommand(ILI9341_CASET); // Column address set
+    SPI_WRITE16(x1);
+    SPI_WRITE16(x2);
+    writeCommand(ILI9341_PASET); // Row address set
+    SPI_WRITE16(y1);
+    SPI_WRITE16(y2);
+    writeCommand(ILI9341_RAMWR); // Write to RAM
 }
 
 /**************************************************************************/
@@ -254,15 +301,12 @@ void Adafruit_ILI9341::setAddrWindow(uint16_t x, uint16_t y, uint16_t w, uint16_
 */
 /**************************************************************************/
 uint8_t Adafruit_ILI9341::readcommand8(uint8_t command, uint8_t index) {
-    uint32_t freq = _freq;
-    if(_freq > 24000000) _freq = 24000000;
     startWrite();
     writeCommand(0xD9);  // woo sekret command?
     spiWrite(0x10 + index);
     writeCommand(command);
     uint8_t r = spiRead();
     endWrite();
-    _freq = freq;
     return r;
 }
 
