@@ -105,6 +105,7 @@ Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t rst) :
   Adafruit_SPITFT(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT, cs, dc, rst) {
 }
 
+#if !defined(ESP8266)
 /**************************************************************************/
 /*!
     @brief  Instantiate Adafruit ILI9341 driver with hardware SPI using
@@ -120,11 +121,11 @@ Adafruit_ILI9341::Adafruit_ILI9341(
   SPIClass *spiClass, int8_t dc, int8_t cs, int8_t rst) :
   Adafruit_SPITFT(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT, spiClass, cs, dc, rst) {
 }
+#endif // end !ESP8266
 
 /**************************************************************************/
 /*!
-    @brief  Instantiate Adafruit ILI9341 driver with hardware SPI using
-            parallel interface.
+    @brief  Instantiate Adafruit ILI9341 driver using parallel interface.
     @param  busWidth  If tft16 (enumeration in Adafruit_SPITFT.h), is a
                       16-bit interface, else 8-bit.
     @param  d0        Data pin 0 (MUST be a byte- or word-aligned LSB of a
