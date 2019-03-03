@@ -85,17 +85,23 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a033ea80ada2b6faa9da7757ce76ef3a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiate Adafruit ILI9341 driver with software SPI.  <a href="#a033ea80ada2b6faa9da7757ce76ef3a0">More...</a><br /></td></tr>
 <tr class="separator:a033ea80ada2b6faa9da7757ce76ef3a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a936e59c0f41844cce0077d17c4ab20ed"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___i_l_i9341.html#a936e59c0f41844cce0077d17c4ab20ed">Adafruit_ILI9341</a> (int8_t _CS, int8_t _DC, int8_t _RST=-1)</td></tr>
-<tr class="memdesc:a936e59c0f41844cce0077d17c4ab20ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiate Adafruit ILI9341 driver with hardware SPI.  <a href="#a936e59c0f41844cce0077d17c4ab20ed">More...</a><br /></td></tr>
+<tr class="memdesc:a936e59c0f41844cce0077d17c4ab20ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiate Adafruit ILI9341 driver with hardware SPI using the default SPI peripheral.  <a href="#a936e59c0f41844cce0077d17c4ab20ed">More...</a><br /></td></tr>
 <tr class="separator:a936e59c0f41844cce0077d17c4ab20ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed04bd2e4ecae270e6657283ecc67708"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___i_l_i9341.html#aed04bd2e4ecae270e6657283ecc67708">Adafruit_ILI9341</a> (SPIClass *spiClass, int8_t dc, int8_t cs=-1, int8_t rst=-1)</td></tr>
+<tr class="memdesc:aed04bd2e4ecae270e6657283ecc67708"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiate Adafruit ILI9341 driver with hardware SPI using a specific SPI peripheral (not necessarily default).  <a href="#aed04bd2e4ecae270e6657283ecc67708">More...</a><br /></td></tr>
+<tr class="separator:aed04bd2e4ecae270e6657283ecc67708"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9670663965975eaaf8b61c342ba9b855"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___i_l_i9341.html#a9670663965975eaaf8b61c342ba9b855">Adafruit_ILI9341</a> (tftBusWidth busWidth, int8_t d0, int8_t wr, int8_t dc, int8_t cs=-1, int8_t rst=-1, int8_t rd=-1)</td></tr>
+<tr class="memdesc:a9670663965975eaaf8b61c342ba9b855"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiate Adafruit ILI9341 driver using parallel interface.  <a href="#a9670663965975eaaf8b61c342ba9b855">More...</a><br /></td></tr>
+<tr class="separator:a9670663965975eaaf8b61c342ba9b855"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae11a6f258fcc60ecba4a32dc97ae96ca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___i_l_i9341.html#ae11a6f258fcc60ecba4a32dc97ae96ca">begin</a> (uint32_t freq=0)</td></tr>
 <tr class="memdesc:ae11a6f258fcc60ecba4a32dc97ae96ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize ILI9341 chip Connects to the ILI9341 over SPI and sends initialization procedure commands.  <a href="#ae11a6f258fcc60ecba4a32dc97ae96ca">More...</a><br /></td></tr>
 <tr class="separator:ae11a6f258fcc60ecba4a32dc97ae96ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae82ff4003dba45826284ff16791a647c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___i_l_i9341.html#ae82ff4003dba45826284ff16791a647c">setRotation</a> (uint8_t r)</td></tr>
 <tr class="memdesc:ae82ff4003dba45826284ff16791a647c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set origin of (0,0) and orientation of TFT display.  <a href="#ae82ff4003dba45826284ff16791a647c">More...</a><br /></td></tr>
 <tr class="separator:ae82ff4003dba45826284ff16791a647c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:accb523f8111e3daa4820415d9c44649d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___i_l_i9341.html#accb523f8111e3daa4820415d9c44649d">invertDisplay</a> (boolean i)</td></tr>
-<tr class="memdesc:accb523f8111e3daa4820415d9c44649d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable/Disable display color inversion.  <a href="#accb523f8111e3daa4820415d9c44649d">More...</a><br /></td></tr>
-<tr class="separator:accb523f8111e3daa4820415d9c44649d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeebe7e19bba4eea54f72223af0b580c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___i_l_i9341.html#aeebe7e19bba4eea54f72223af0b580c2">invertDisplay</a> (bool i)</td></tr>
+<tr class="memdesc:aeebe7e19bba4eea54f72223af0b580c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable/Disable display color inversion.  <a href="#aeebe7e19bba4eea54f72223af0b580c2">More...</a><br /></td></tr>
+<tr class="separator:aeebe7e19bba4eea54f72223af0b580c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaddeafbfb621731424d6d2f354175313"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___i_l_i9341.html#aaddeafbfb621731424d6d2f354175313">scrollTo</a> (uint16_t y)</td></tr>
 <tr class="memdesc:aaddeafbfb621731424d6d2f354175313"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scroll display memory.  <a href="#aaddeafbfb621731424d6d2f354175313">More...</a><br /></td></tr>
 <tr class="separator:aaddeafbfb621731424d6d2f354175313"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -110,7 +116,7 @@ Public Member Functions</h2></td></tr>
 <div class="textblock"><p>Class to manage hardware interface with ILI9341 chipset (also seems to work with ILI9340) </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a033ea80ada2b6faa9da7757ce76ef3a0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a033ea80ada2b6faa9da7757ce76ef3a0">&#9670;&nbsp;</a></span>Adafruit_ILI9341() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a033ea80ada2b6faa9da7757ce76ef3a0">&#9670;&nbsp;</a></span>Adafruit_ILI9341() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -175,7 +181,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <a id="a936e59c0f41844cce0077d17c4ab20ed"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a936e59c0f41844cce0077d17c4ab20ed">&#9670;&nbsp;</a></span>Adafruit_ILI9341() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a936e59c0f41844cce0077d17c4ab20ed">&#9670;&nbsp;</a></span>Adafruit_ILI9341() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -206,12 +212,135 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Instantiate Adafruit ILI9341 driver with hardware SPI. </p>
+<p>Instantiate Adafruit ILI9341 driver with hardware SPI using the default SPI peripheral. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">cs</td><td>Chip select pin # </td></tr>
-    <tr><td class="paramname">dc</td><td>Data/Command pin # </td></tr>
-    <tr><td class="paramname">rst</td><td>Reset pin # (optional, pass -1 if unused) </td></tr>
+    <tr><td class="paramname">cs</td><td>Chip select pin # (OK to pass -1 if CS tied to GND). </td></tr>
+    <tr><td class="paramname">dc</td><td>Data/Command pin # (required). </td></tr>
+    <tr><td class="paramname">rst</td><td>Reset pin # (optional, pass -1 if unused). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aed04bd2e4ecae270e6657283ecc67708"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed04bd2e4ecae270e6657283ecc67708">&#9670;&nbsp;</a></span>Adafruit_ILI9341() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Adafruit_ILI9341::Adafruit_ILI9341 </td>
+          <td>(</td>
+          <td class="paramtype">SPIClass *&#160;</td>
+          <td class="paramname"><em>spiClass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramname"><em>dc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramname"><em>cs</em> = <code>-1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramname"><em>rst</em> = <code>-1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Instantiate Adafruit ILI9341 driver with hardware SPI using a specific SPI peripheral (not necessarily default). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">spiClass</td><td>Pointer to SPI peripheral (e.g. &amp;SPI or &amp;SPI1). </td></tr>
+    <tr><td class="paramname">dc</td><td>Data/Command pin # (required). </td></tr>
+    <tr><td class="paramname">cs</td><td>Chip select pin # (optional, pass -1 if unused and CS is tied to GND). </td></tr>
+    <tr><td class="paramname">rst</td><td>Reset pin # (optional, pass -1 if unused). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a9670663965975eaaf8b61c342ba9b855"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9670663965975eaaf8b61c342ba9b855">&#9670;&nbsp;</a></span>Adafruit_ILI9341() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Adafruit_ILI9341::Adafruit_ILI9341 </td>
+          <td>(</td>
+          <td class="paramtype">tftBusWidth&#160;</td>
+          <td class="paramname"><em>busWidth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramname"><em>d0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramname"><em>wr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramname"><em>cs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramname"><em>dc</em> = <code>-1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramname"><em>rst</em> = <code>-1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramname"><em>rd</em> = <code>-1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Instantiate Adafruit ILI9341 driver using parallel interface. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">busWidth</td><td>If tft16 (enumeration in Adafruit_SPITFT.h), is a 16-bit interface, else 8-bit. </td></tr>
+    <tr><td class="paramname">d0</td><td>Data pin 0 (MUST be a byte- or word-aligned LSB of a PORT register &ndash; pins 1-n are extrapolated from this). </td></tr>
+    <tr><td class="paramname">wr</td><td>Write strobe pin # (required). </td></tr>
+    <tr><td class="paramname">dc</td><td>Data/Command pin # (required). </td></tr>
+    <tr><td class="paramname">cs</td><td>Chip select pin # (optional, pass -1 if unused and CS is tied to GND). </td></tr>
+    <tr><td class="paramname">rst</td><td>Reset pin # (optional, pass -1 if unused). </td></tr>
+    <tr><td class="paramname">rd</td><td>Read strobe pin # (optional, pass -1 if unused). </td></tr>
   </table>
   </dd>
 </dl>
@@ -271,8 +400,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="accb523f8111e3daa4820415d9c44649d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#accb523f8111e3daa4820415d9c44649d">&#9670;&nbsp;</a></span>invertDisplay()</h2>
+<a id="aeebe7e19bba4eea54f72223af0b580c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeebe7e19bba4eea54f72223af0b580c2">&#9670;&nbsp;</a></span>invertDisplay()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -280,7 +409,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void Adafruit_ILI9341::invertDisplay </td>
           <td>(</td>
-          <td class="paramtype">boolean&#160;</td>
+          <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>invert</em></td><td>)</td>
           <td></td>
         </tr>
@@ -333,13 +462,13 @@ Public Member Functions</h2></td></tr>
           <td class="memname">void Adafruit_ILI9341::setAddrWindow </td>
           <td>(</td>
           <td class="paramtype">uint16_t&#160;</td>
-          <td class="paramname"><em>x</em>, </td>
+          <td class="paramname"><em>x1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint16_t&#160;</td>
-          <td class="paramname"><em>y</em>, </td>
+          <td class="paramname"><em>y1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -364,8 +493,8 @@ Public Member Functions</h2></td></tr>
 <p>Set the "address window" - the rectangle we will write to RAM with the next chunk of SPI data writes. The ILI9341 will automatically wrap the data as each row is filled. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">x</td><td>TFT memory 'x' origin </td></tr>
-    <tr><td class="paramname">y</td><td>TFT memory 'y' origin </td></tr>
+    <tr><td class="paramname">x1</td><td>TFT memory 'x' origin </td></tr>
+    <tr><td class="paramname">y1</td><td>TFT memory 'y' origin </td></tr>
     <tr><td class="paramname">w</td><td>Width of rectangle </td></tr>
     <tr><td class="paramname">h</td><td>Height of rectangle </td></tr>
   </table>

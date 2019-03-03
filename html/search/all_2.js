@@ -65,5 +65,5 @@ var searchData=
   ['ili9341_5fvscrsadd',['ILI9341_VSCRSADD',['../_adafruit___i_l_i9341_8h.html#aed59201f8eb2291e618d3b3151adc497',1,'Adafruit_ILI9341.h']]],
   ['ili9341_5fwhite',['ILI9341_WHITE',['../_adafruit___i_l_i9341_8h.html#a604507ef031b95291b2d177088fe03e4',1,'Adafruit_ILI9341.h']]],
   ['ili9341_5fyellow',['ILI9341_YELLOW',['../_adafruit___i_l_i9341_8h.html#a0313d113622009bfd9b6011fc9bffcc9',1,'Adafruit_ILI9341.h']]],
-  ['invertdisplay',['invertDisplay',['../class_adafruit___i_l_i9341.html#accb523f8111e3daa4820415d9c44649d',1,'Adafruit_ILI9341']]]
+  ['invertdisplay',['invertDisplay',['../class_adafruit___i_l_i9341.html#aeebe7e19bba4eea54f72223af0b580c2',1,'Adafruit_ILI9341']]]
 ];
