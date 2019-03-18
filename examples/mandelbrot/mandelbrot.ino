@@ -1,4 +1,3 @@
-#include <Adafruit_ST7735.h>
 #include <Adafruit_ILI9341.h>
 
 #ifdef ADAFRUIT_PYPORTAL
