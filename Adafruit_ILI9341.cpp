@@ -182,6 +182,7 @@ static const uint8_t PROGMEM initcmd[] = {
 /**************************************************************************/
 void Adafruit_ILI9341::begin(uint32_t freq) {
 
+    if(!freq) freq = SPI_DEFAULT_FREQ;
     initSPI(freq);
 
     startWrite();
