@@ -16,7 +16,7 @@
 #define TFT_BACKLIGHT 25
 
 // ILI9341 with 8-bit parallel interface:
-Adafruit_ILI9341 tft(tft8, TFT_D0, TFT_WR, TFT_DC, TFT_CS, TFT_RST, TFT_RD);
+Adafruit_ILI9341 tft(tft8bitbus, TFT_D0, TFT_WR, TFT_DC, TFT_CS, TFT_RST, TFT_RD);
 
 #define BGCOLOR    0xAD75
 #define GRIDCOLOR  0xA815
