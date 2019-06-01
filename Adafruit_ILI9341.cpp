@@ -256,7 +256,10 @@ void Adafruit_ILI9341::invertDisplay(bool invert) {
 */
 /**************************************************************************/
 void Adafruit_ILI9341::scrollTo(uint16_t y) {
-    sendCommand(ILI9341_VSCRSADD, (uint8_t*) y, 2);
+    uint8_t data[2];
+    data[0] = y >> 8;
+    data[1] = y && 0xff;
+    sendCommand(ILI9341_VSCRSADD, (uint8_t*) data, 2);
 }
 
 /**************************************************************************/
