@@ -62,6 +62,7 @@ var searchData=
   ['ili9341_5ftftwidth',['ILI9341_TFTWIDTH',['../_adafruit___i_l_i9341_8h.html#afc86ae8ef4d7c6b3bfb0f83f9d4dcf63',1,'Adafruit_ILI9341.h']]],
   ['ili9341_5fvmctr1',['ILI9341_VMCTR1',['../_adafruit___i_l_i9341_8h.html#a3ac0bad81e82dca703ea78d9f1ad8cd1',1,'Adafruit_ILI9341.h']]],
   ['ili9341_5fvmctr2',['ILI9341_VMCTR2',['../_adafruit___i_l_i9341_8h.html#ae2d100e90910bf4aedb20fb88b3f582c',1,'Adafruit_ILI9341.h']]],
+  ['ili9341_5fvscrdef',['ILI9341_VSCRDEF',['../_adafruit___i_l_i9341_8h.html#aba45bf6c8278bf5210bab2607e993cf3',1,'Adafruit_ILI9341.h']]],
   ['ili9341_5fvscrsadd',['ILI9341_VSCRSADD',['../_adafruit___i_l_i9341_8h.html#aed59201f8eb2291e618d3b3151adc497',1,'Adafruit_ILI9341.h']]],
   ['ili9341_5fwhite',['ILI9341_WHITE',['../_adafruit___i_l_i9341_8h.html#a604507ef031b95291b2d177088fe03e4',1,'Adafruit_ILI9341.h']]],
   ['ili9341_5fyellow',['ILI9341_YELLOW',['../_adafruit___i_l_i9341_8h.html#a0313d113622009bfd9b6011fc9bffcc9',1,'Adafruit_ILI9341.h']]]

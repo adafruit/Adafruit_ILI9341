@@ -105,6 +105,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aaddeafbfb621731424d6d2f354175313"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___i_l_i9341.html#aaddeafbfb621731424d6d2f354175313">scrollTo</a> (uint16_t y)</td></tr>
 <tr class="memdesc:aaddeafbfb621731424d6d2f354175313"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scroll display memory.  <a href="#aaddeafbfb621731424d6d2f354175313">More...</a><br /></td></tr>
 <tr class="separator:aaddeafbfb621731424d6d2f354175313"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8900da165b142b9b59c8caef72d2eef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___i_l_i9341.html#aa8900da165b142b9b59c8caef72d2eef">setScrollMargins</a> (uint16_t top, uint16_t bottom)</td></tr>
+<tr class="memdesc:aa8900da165b142b9b59c8caef72d2eef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the height of the Top and Bottom Scroll Margins.  <a href="#aa8900da165b142b9b59c8caef72d2eef">More...</a><br /></td></tr>
+<tr class="separator:aa8900da165b142b9b59c8caef72d2eef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f0f28fd334e14e544a84319838faac1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_adafruit___i_l_i9341.html#a5f0f28fd334e14e544a84319838faac1">setAddrWindow</a> (uint16_t x, uint16_t y, uint16_t w, uint16_t h)</td></tr>
 <tr class="memdesc:a5f0f28fd334e14e544a84319838faac1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the "address window" - the rectangle we will write to RAM with the next chunk of SPI data writes. The ILI9341 will automatically wrap the data as each row is filled.  <a href="#a5f0f28fd334e14e544a84319838faac1">More...</a><br /></td></tr>
 <tr class="separator:a5f0f28fd334e14e544a84319838faac1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -446,6 +449,43 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">y</td><td>How many pixels to scroll display by </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa8900da165b142b9b59c8caef72d2eef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8900da165b142b9b59c8caef72d2eef">&#9670;&nbsp;</a></span>setScrollMargins()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Adafruit_ILI9341::setScrollMargins </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>top</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>bottom</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the height of the Top and Bottom Scroll Margins. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">top</td><td>The height of the Top scroll margin </td></tr>
+    <tr><td class="paramname">bottom</td><td>The height of the Bottom scroll margin </td></tr>
   </table>
   </dd>
 </dl>
