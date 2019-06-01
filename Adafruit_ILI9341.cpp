@@ -258,7 +258,7 @@ void Adafruit_ILI9341::invertDisplay(bool invert) {
 void Adafruit_ILI9341::scrollTo(uint16_t y) {
     uint8_t data[2];
     data[0] = y >> 8;
-    data[1] = y && 0xff;
+    data[1] = y & 0xff;
     sendCommand(ILI9341_VSCRSADD, (uint8_t*) data, 2);
 }
 
@@ -275,11 +275,11 @@ void Adafruit_ILI9341::setScrollMargins(uint16_t top, uint16_t bottom) {
     uint16_t middle = ILI9341_TFTHEIGHT - top + bottom;
     uint8_t data[6];
     data[0] = top >> 8;
-    data[1] = top && 0xff;
+    data[1] = top & 0xff;
     data[2] = middle >> 8;
-    data[3] = middle && 0xff;
+    data[3] = middle & 0xff;
     data[4] = bottom >> 8;
-    data[5] = bottom && 0xff;
+    data[5] = bottom & 0xff;
     sendCommand(ILI9341_VSCRDEF, (uint8_t*) data, 6);
   }
 }
