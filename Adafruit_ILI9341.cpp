@@ -57,6 +57,10 @@
 
 #if defined (ARDUINO_ARCH_ARC32) || defined (ARDUINO_MAXIM)
   #define SPI_DEFAULT_FREQ  16000000
+// TODO: check teensy 3.0/3.1/3.2 for faster SPI speed and
+// add them here if they work.
+#elif defined(__MK64FX512__) || defined(__MK66FX1M0__)
+  #define SPI_DEFAULT_FREQ  40000000
 #elif defined (__AVR__) || defined(TEENSYDUINO)
   #define SPI_DEFAULT_FREQ  8000000
 #elif defined(ESP8266) || defined(ESP32)
