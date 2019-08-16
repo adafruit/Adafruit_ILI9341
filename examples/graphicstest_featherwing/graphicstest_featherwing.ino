@@ -46,6 +46,12 @@
    #define STMPE_CS 30
    #define SD_CS    27
 #endif
+#ifdef ARDUINO_NRF52840_FEATHER
+   #define TFT_DC   10
+   #define TFT_CS   9
+   #define STMPE_CS 6
+   #define SD_CS    5
+#endif
 #if defined(ARDUINO_MAX32620FTHR) || defined(ARDUINO_MAX32630FTHR)
    #define TFT_DC   P5_4
    #define TFT_CS   P5_3
