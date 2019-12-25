@@ -18,16 +18,10 @@ branches:
 
 env:
   global:
-     - ARDUINO_IDE_VERSION="1.8.8"
      - PRETTYNAME="Adafruit ILI9341 Arduino Library"
-# Optional, will default to "$TRAVIS_BUILD_DIR/Doxyfile"
-#    - DOXYFILE: $TRAVIS_BUILD_DIR/Doxyfile
 
 before_install:
    - source <(curl -SLs https://raw.githubusercontent.com/adafruit/travis-ci-arduino/master/install.sh)
-
-install:
-   - arduino --install-library "Adafruit GFX Library","Adafruit STMPE610","Adafruit TouchScreen"
 
 script:
    - build_main_platforms
