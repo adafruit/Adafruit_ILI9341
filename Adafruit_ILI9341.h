@@ -74,6 +74,7 @@
 #define ILI9341_RAMRD      0x2E     ///< Memory Read
 
 #define ILI9341_PTLAR      0x30     ///< Partial Area
+#define ILI9341_VSCRDEF    0x33     ///< Vertical Scrolling Definition
 #define ILI9341_MADCTL     0x36     ///< Memory Access Control
 #define ILI9341_VSCRSADD   0x37     ///< Vertical Scrolling Start Address
 #define ILI9341_PIXFMT     0x3A     ///< COLMOD: Pixel Format Set
@@ -144,6 +145,7 @@ class Adafruit_ILI9341 : public Adafruit_SPITFT {
         void    setRotation(uint8_t r);
         void    invertDisplay(bool i);
         void    scrollTo(uint16_t y);
+        void    setScrollMargins(uint16_t top, uint16_t bottom);
 
         // Transaction API not used by GFX
         void    setAddrWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h);

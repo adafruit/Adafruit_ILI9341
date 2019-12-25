@@ -57,6 +57,9 @@
 
 #if defined (ARDUINO_ARCH_ARC32) || defined (ARDUINO_MAXIM)
   #define SPI_DEFAULT_FREQ  16000000
+// Teensy 3.0, 3.1/3.2, 3.5, 3.6
+#elif defined(__MK20DX128__) || defined(__MK20DX256__) || defined(__MK64FX512__) || defined(__MK66FX1M0__)
+  #define SPI_DEFAULT_FREQ  40000000
 #elif defined (__AVR__) || defined(TEENSYDUINO)
   #define SPI_DEFAULT_FREQ  8000000
 #elif defined(ESP8266) || defined(ESP32)
@@ -182,26 +185,23 @@ static const uint8_t PROGMEM initcmd[] = {
 /**************************************************************************/
 void Adafruit_ILI9341::begin(uint32_t freq) {
 
+    if(!freq) freq = SPI_DEFAULT_FREQ;
     initSPI(freq);
 
-    startWrite();
-
     if(_rst < 0) {                     // If no hardware reset pin...
-        writeCommand(ILI9341_SWRESET); // Engage software reset
+        sendCommand(ILI9341_SWRESET); // Engage software reset
         delay(150);
     }
 
     uint8_t        cmd, x, numArgs;
     const uint8_t *addr = initcmd;
     while((cmd = pgm_read_byte(addr++)) > 0) {
-        writeCommand(cmd);
-        x       = pgm_read_byte(addr++);
+        x = pgm_read_byte(addr++);
         numArgs = x & 0x7F;
-        while(numArgs--) spiWrite(pgm_read_byte(addr++));
+        sendCommand(cmd, addr, numArgs);
+        addr += numArgs;
         if(x & 0x80) delay(150);
     }
-
-    endWrite();
 
     _width  = ILI9341_TFTWIDTH;
     _height = ILI9341_TFTHEIGHT;
@@ -239,10 +239,7 @@ void Adafruit_ILI9341::setRotation(uint8_t m) {
             break;
     }
 
-    startWrite();
-    writeCommand(ILI9341_MADCTL);
-    spiWrite(m);
-    endWrite();
+    sendCommand(ILI9341_MADCTL, &m, 1);
 }
 
 /**************************************************************************/
@@ -252,9 +249,7 @@ void Adafruit_ILI9341::setRotation(uint8_t m) {
 */
 /**************************************************************************/
 void Adafruit_ILI9341::invertDisplay(bool invert) {
-    startWrite();
-    writeCommand(invert ? ILI9341_INVON : ILI9341_INVOFF);
-    endWrite();
+    sendCommand(invert ? ILI9341_INVON : ILI9341_INVOFF);
 }
 
 /**************************************************************************/
@@ -264,15 +259,37 @@ void Adafruit_ILI9341::invertDisplay(bool invert) {
 */
 /**************************************************************************/
 void Adafruit_ILI9341::scrollTo(uint16_t y) {
-    startWrite();
-    writeCommand(ILI9341_VSCRSADD);
-    SPI_WRITE16(y);
-    endWrite();
+    uint8_t data[2];
+    data[0] = y >> 8;
+    data[1] = y & 0xff;
+    sendCommand(ILI9341_VSCRSADD, (uint8_t*) data, 2);
 }
 
 /**************************************************************************/
 /*!
-    @brief   Set the "address window" - the rectangle we will write to RAM with the next chunk of SPI data writes. The ILI9341 will automatically wrap the data as each row is filled
+    @brief   Set the height of the Top and Bottom Scroll Margins
+    @param   top The height of the Top scroll margin
+    @param   bottom The height of the Bottom scroll margin
+ */
+/**************************************************************************/
+void Adafruit_ILI9341::setScrollMargins(uint16_t top, uint16_t bottom) {
+  // TFA+VSA+BFA must equal 320
+  if (top + bottom <= ILI9341_TFTHEIGHT) {
+    uint16_t middle = ILI9341_TFTHEIGHT - top + bottom;
+    uint8_t data[6];
+    data[0] = top >> 8;
+    data[1] = top & 0xff;
+    data[2] = middle >> 8;
+    data[3] = middle & 0xff;
+    data[4] = bottom >> 8;
+    data[5] = bottom & 0xff;
+    sendCommand(ILI9341_VSCRDEF, (uint8_t*) data, 6);
+  }
+}
+
+/**************************************************************************/
+/*!
+    @brief   Set the "address window" - the rectangle we will write to RAM with the next chunk of      SPI data writes. The ILI9341 will automatically wrap the data as each row is filled
     @param   x1  TFT memory 'x' origin
     @param   y1  TFT memory 'y' origin
     @param   w   Width of rectangle
@@ -294,20 +311,15 @@ void Adafruit_ILI9341::setAddrWindow(
 
 /**************************************************************************/
 /*!
-   @brief  Read 8 bits of data from ILI9341 configuration memory. NOT from RAM!
-           This is highly undocumented/supported, it's really a hack but kinda works?
-    @param    command  The command register to read data from
+    @brief  Read 8 bits of data from ILI9341 configuration memory. NOT from RAM!
+            This is highly undocumented/supported, it's really a hack but kinda works?
+    @param    commandByte  The command register to read data from
     @param    index  The byte index into the command to read from
     @return   Unsigned 8-bit data read from ILI9341 register
-*/
+ */
 /**************************************************************************/
-uint8_t Adafruit_ILI9341::readcommand8(uint8_t command, uint8_t index) {
-    startWrite();
-    writeCommand(0xD9);  // woo sekret command?
-    spiWrite(0x10 + index);
-    writeCommand(command);
-    uint8_t r = spiRead();
-    endWrite();
-    return r;
+uint8_t Adafruit_ILI9341::readcommand8(uint8_t commandByte, uint8_t index) {
+  uint8_t data = 0x10 + index;
+  sendCommand(0xD9, &data, 1); // Set Index Register
+  return Adafruit_SPITFT::readcommand8(commandByte);
 }
-

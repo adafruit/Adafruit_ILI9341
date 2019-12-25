@@ -20,7 +20,7 @@ TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 #define TFT_RD         9 // Read-strobe pin
 #define TFT_BACKLIGHT 25
 // ILI9341 with 8-bit parallel interface:
-Adafruit_ILI9341 tft = Adafruit_ILI9341(tft8, TFT_D0, TFT_WR, TFT_DC, TFT_CS, TFT_RST, TFT_RD);
+Adafruit_ILI9341 tft = Adafruit_ILI9341(tft8bitbus, TFT_D0, TFT_WR, TFT_DC, TFT_CS, TFT_RST, TFT_RD);
 
 // Size of the color selection boxes and the paintbrush size
 #define BOXSIZE 40
