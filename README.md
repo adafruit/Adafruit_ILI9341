@@ -1,4 +1,4 @@
-# Adafruit ILI9341 Arduino Library [![Build Status](https://travis-ci.com/adafruit/Adafruit_ILI9341.svg?branch=master)](https://travis-ci.com/adafruit/Adafruit_ILI9341)
+# Adafruit ILI9341 Arduino Library ![Build Status](https://github.com/adafruit/Adafruit_ILI9341/workflows/Arduino%20Library%20CI/badge.svg)
 
 This is a library for the Adafruit ILI9341 display products
 
