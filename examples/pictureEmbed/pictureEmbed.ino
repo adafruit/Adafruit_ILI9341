@@ -50,7 +50,7 @@
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);
 
 void setup() {
-  tft.begin();
+  tft.begin(64000000); // Can set SPI clock rate
 }
 
 void loop(void) {
