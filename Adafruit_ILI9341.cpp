@@ -327,3 +327,66 @@ uint8_t Adafruit_ILI9341::readcommand8(uint8_t commandByte, uint8_t index) {
   sendCommand(0xD9, &data, 1); // Set Index Register
   return Adafruit_SPITFT::readcommand8(commandByte);
 }
+
+
+#if defined(ARDUINO_ARCH_RP2040)
+  // Override GFX for RP2040
+void Adafruit_ILI9341::writePixel(int16_t x, int16_t y, uint16_t color) {
+  
+  if ((x >= 0) && (x < _width) && (y >= 0) && (y < _height)) {
+    // Since the SPI functions do not terminate until transmission is complete
+    // a busy check is not needed.
+    // while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+    SPI_DC_LOW();          // Command mode
+    spi_set_format(spi0,  8, (spi_cpol_t)0, (spi_cpha_t)0, SPI_MSB_FIRST);
+    spi_get_hw(spi0)->dr = (uint32_t)ILI9341_CASET;
+
+    while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+    SPI_DC_HIGH();
+    spi_get_hw(spi0)->dr = (uint32_t)x>>8;
+    spi_get_hw(spi0)->dr = (uint32_t)x;
+    spi_get_hw(spi0)->dr = (uint32_t)x>>8;
+    spi_get_hw(spi0)->dr = (uint32_t)x;
+
+    while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+    SPI_DC_LOW();          // Command mode
+    spi_get_hw(spi0)->dr = (uint32_t)ILI9341_PASET;
+
+    while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+    SPI_DC_HIGH();
+    spi_get_hw(spi0)->dr = (uint32_t)y>>8;
+    spi_get_hw(spi0)->dr = (uint32_t)y;
+    spi_get_hw(spi0)->dr = (uint32_t)y>>8;
+    spi_get_hw(spi0)->dr = (uint32_t)y;
+
+    while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+    SPI_DC_LOW();          // Command mode
+    spi_get_hw(spi0)->dr = (uint32_t)ILI9341_RAMWR;
+
+    while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+    SPI_DC_HIGH();
+    spi_get_hw(spi0)->dr = (uint32_t)color>>8;
+    spi_get_hw(spi0)->dr = (uint32_t)color;
+
+  /*
+    // Subsequent pixel reads work OK without draining the FIFO...
+    // Drain RX FIFO, then wait for shifting to finish (which may be *after*
+    // TX FIFO drains), then drain RX FIFO again
+    while (spi_is_readable(spi0))
+        (void)spi_get_hw(spi0)->dr;
+    while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS)
+        tight_loop_contents();
+    while (spi_is_readable(spi0))
+        (void)spi_get_hw(spi0)->dr;
+  //*/
+
+  //  Subsequent pixel reads work without this
+  //  spi_get_hw(spi0)->icr = SPI_SSPICR_RORIC_BITS;
+
+    while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+
+    // Next call will start with 8 bit command so changing to 16 bit not needed here
+    //spi_set_format(spi0,  16, (spi_cpol_t)0, (spi_cpha_t)0, SPI_MSB_FIRST);
+  }
+}
+#endif
