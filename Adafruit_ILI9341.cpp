@@ -303,13 +303,53 @@ void Adafruit_ILI9341::setScrollMargins(uint16_t top, uint16_t bottom) {
 void Adafruit_ILI9341::setAddrWindow(uint16_t x1, uint16_t y1, uint16_t w,
                                      uint16_t h) {
   uint16_t x2 = (x1 + w - 1), y2 = (y1 + h - 1);
-  writeCommand(ILI9341_CASET); // Column address set
-  SPI_WRITE16(x1);
-  SPI_WRITE16(x2);
-  writeCommand(ILI9341_PASET); // Row address set
-  SPI_WRITE16(y1);
-  SPI_WRITE16(y2);
-  writeCommand(ILI9341_RAMWR); // Write to RAM
+#if defined(ARDUINO_ARCH_RP2040)
+  // Use optimised code if it is HARDWARE SPI
+  if (connection == 0) {
+    // Since the SPI functions do not terminate until transmission is complete
+    // a busy check is not needed.
+    // while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+    SPI_DC_LOW();          // Command mode
+    spi_set_format(spi0,  8, (spi_cpol_t)0, (spi_cpha_t)0, SPI_MSB_FIRST);
+    spi_get_hw(spi0)->dr = (uint32_t)ILI9341_CASET;
+
+    while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+    SPI_DC_HIGH();         // Data mode
+    spi_get_hw(spi0)->dr = (uint32_t)x1>>8;
+    spi_get_hw(spi0)->dr = (uint32_t)x1;
+    spi_get_hw(spi0)->dr = (uint32_t)x2>>8;
+    spi_get_hw(spi0)->dr = (uint32_t)x2;
+
+    while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+    SPI_DC_LOW();          // Command mode
+    spi_get_hw(spi0)->dr = (uint32_t)ILI9341_PASET;
+
+    while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+    SPI_DC_HIGH();         // Data mode
+    spi_get_hw(spi0)->dr = (uint32_t)y1>>8;
+    spi_get_hw(spi0)->dr = (uint32_t)y1;
+    spi_get_hw(spi0)->dr = (uint32_t)y2>>8;
+    spi_get_hw(spi0)->dr = (uint32_t)y2;
+
+    while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+    SPI_DC_LOW();          // Command mode
+    spi_get_hw(spi0)->dr = (uint32_t)ILI9341_RAMWR;
+
+    while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+    spi_set_format(spi0, 16, (spi_cpol_t)0, (spi_cpha_t)0, SPI_MSB_FIRST);
+    SPI_DC_HIGH();         // Data mode
+  }
+  else
+#endif
+  {
+    writeCommand(ILI9341_CASET); // Column address set
+    SPI_WRITE16(x1);
+    SPI_WRITE16(x2);
+    writeCommand(ILI9341_PASET); // Row address set
+    SPI_WRITE16(y1);
+    SPI_WRITE16(y2);
+    writeCommand(ILI9341_RAMWR); // Write to RAM
+  }
 }
 
 /**************************************************************************/
@@ -329,64 +369,79 @@ uint8_t Adafruit_ILI9341::readcommand8(uint8_t commandByte, uint8_t index) {
 }
 
 
+// Override Adafruit_GFX writePixel() for RP2040
+/*!
+    @brief  Draw a single pixel to the display at requested coordinates.
+            Not self-contained; should follow a startWrite() call.
+    @param  x      Horizontal position (0 = left).
+    @param  y      Vertical position   (0 = top).
+    @param  color  16-bit pixel color in '565' RGB format.
+*/
 #if defined(ARDUINO_ARCH_RP2040)
-  // Override GFX for RP2040
 void Adafruit_ILI9341::writePixel(int16_t x, int16_t y, uint16_t color) {
-  
-  if ((x >= 0) && (x < _width) && (y >= 0) && (y < _height)) {
-    // Since the SPI functions do not terminate until transmission is complete
-    // a busy check is not needed.
-    // while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
-    SPI_DC_LOW();          // Command mode
-    spi_set_format(spi0,  8, (spi_cpol_t)0, (spi_cpha_t)0, SPI_MSB_FIRST);
-    spi_get_hw(spi0)->dr = (uint32_t)ILI9341_CASET;
 
-    while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
-    SPI_DC_HIGH();
-    spi_get_hw(spi0)->dr = (uint32_t)x>>8;
-    spi_get_hw(spi0)->dr = (uint32_t)x;
-    spi_get_hw(spi0)->dr = (uint32_t)x>>8;
-    spi_get_hw(spi0)->dr = (uint32_t)x;
+  // If it is a TFT_HARD_SPI interface then use RP2040 optimised code
+  // otherwise use original code
+  if (connection == 0) {
+    if ((x >= 0) && (x < _width) && (y >= 0) && (y < _height)) {
+      // Since the SPI functions do not terminate until transmission is complete
+      // a busy check is not needed.
+      // while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+      SPI_DC_LOW();          // Command mode
+      spi_set_format(spi0,  8, (spi_cpol_t)0, (spi_cpha_t)0, SPI_MSB_FIRST);
+      spi_get_hw(spi0)->dr = (uint32_t)ILI9341_CASET;
 
-    while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
-    SPI_DC_LOW();          // Command mode
-    spi_get_hw(spi0)->dr = (uint32_t)ILI9341_PASET;
+      while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+      SPI_DC_HIGH();
+      spi_get_hw(spi0)->dr = (uint32_t)x>>8;
+      spi_get_hw(spi0)->dr = (uint32_t)x;
+      spi_get_hw(spi0)->dr = (uint32_t)x>>8;
+      spi_get_hw(spi0)->dr = (uint32_t)x;
 
-    while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
-    SPI_DC_HIGH();
-    spi_get_hw(spi0)->dr = (uint32_t)y>>8;
-    spi_get_hw(spi0)->dr = (uint32_t)y;
-    spi_get_hw(spi0)->dr = (uint32_t)y>>8;
-    spi_get_hw(spi0)->dr = (uint32_t)y;
+      while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+      SPI_DC_LOW();          // Command mode
+      spi_get_hw(spi0)->dr = (uint32_t)ILI9341_PASET;
 
-    while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
-    SPI_DC_LOW();          // Command mode
-    spi_get_hw(spi0)->dr = (uint32_t)ILI9341_RAMWR;
+      while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+      SPI_DC_HIGH();
+      spi_get_hw(spi0)->dr = (uint32_t)y>>8;
+      spi_get_hw(spi0)->dr = (uint32_t)y;
+      spi_get_hw(spi0)->dr = (uint32_t)y>>8;
+      spi_get_hw(spi0)->dr = (uint32_t)y;
 
-    while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
-    SPI_DC_HIGH();
-    spi_get_hw(spi0)->dr = (uint32_t)color>>8;
-    spi_get_hw(spi0)->dr = (uint32_t)color;
+      while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+      SPI_DC_LOW();          // Command mode
+      spi_get_hw(spi0)->dr = (uint32_t)ILI9341_RAMWR;
 
-  /*
-    // Subsequent pixel reads work OK without draining the FIFO...
-    // Drain RX FIFO, then wait for shifting to finish (which may be *after*
-    // TX FIFO drains), then drain RX FIFO again
-    while (spi_is_readable(spi0))
-        (void)spi_get_hw(spi0)->dr;
-    while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS)
-        tight_loop_contents();
-    while (spi_is_readable(spi0))
-        (void)spi_get_hw(spi0)->dr;
-  //*/
+      while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+      SPI_DC_HIGH();
+      spi_get_hw(spi0)->dr = (uint32_t)color>>8;
+      spi_get_hw(spi0)->dr = (uint32_t)color;
 
-  //  Subsequent pixel reads work without this
-  //  spi_get_hw(spi0)->icr = SPI_SSPICR_RORIC_BITS;
+    /*
+      // Subsequent pixel reads work OK without draining the FIFO...
+      // Drain RX FIFO, then wait for shifting to finish (which may be *after*
+      // TX FIFO drains), then drain RX FIFO again
+      while (spi_is_readable(spi0))
+          (void)spi_get_hw(spi0)->dr;
+      while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS)
+          tight_loop_contents();
+      while (spi_is_readable(spi0))
+          (void)spi_get_hw(spi0)->dr;
+    //*/
 
-    while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+    //  Subsequent pixel reads work without this
+    //  spi_get_hw(spi0)->icr = SPI_SSPICR_RORIC_BITS;
 
-    // Next call will start with 8 bit command so changing to 16 bit not needed here
-    //spi_set_format(spi0,  16, (spi_cpol_t)0, (spi_cpha_t)0, SPI_MSB_FIRST);
+      while (spi_get_hw(spi0)->sr & SPI_SSPSR_BSY_BITS) {};
+
+      // Next call will start with 8 bit command so changing to 16 bit not needed here
+      //spi_set_format(spi0,  16, (spi_cpol_t)0, (spi_cpha_t)0, SPI_MSB_FIRST);
+    }
+  }
+  else {
+    Adafruit_SPITFT::writePixel(x, y, color);
+    return;
   }
 }
 #endif
