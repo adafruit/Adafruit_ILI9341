@@ -1,4 +1,6 @@
-Raspberry PI Pico (RP2040) optimised to work with Earle Philhower's Arduino board package.
+Raspberry PI Pico (RP2040) optimised to work with Earle Philhower's Arduino board package and my optimised fork of Adafruit_GFX here:
+
+https://github.com/Bodmer/Adafruit-GFX-Library
 
 
 
