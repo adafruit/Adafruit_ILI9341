@@ -26,9 +26,9 @@
 // TFT MISO/SDO     connects to Pico pin D0 (GPIO 0)
 // TFT MOSI/SDI     connects to Pico pin D3 (GPIO 3)
 // TFT CLK/SCK/SCLK connects to Pico pin D2 (GPIO 2) 
-#define TFT_CS   D20  // Chip select control pin (GPIO 20)
-#define TFT_DC   D18  // Data Command control pin (GPIO 18)
-#define TFT_RST  D19  // Reset pin (GPIO 19)
+#define TFT_CS   20  // Chip select control pin (GPIO 20)
+#define TFT_DC   18  // Data Command control pin (GPIO 18)
+#define TFT_RST  19  // Reset pin (GPIO 19)
 
 // Use hardware SPI (on Uno, #13, #12, #11) and the above for CS/DC
 //Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);

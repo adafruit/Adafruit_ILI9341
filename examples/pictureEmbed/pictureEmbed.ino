@@ -36,9 +36,9 @@
 // TFT MISO/SDO     connects to Pico pin D0 (GPIO 0)
 // TFT MOSI/SDI     connects to Pico pin D3 (GPIO 3)
 // TFT CLK/SCK/SCLK connects to Pico pin D2 (GPIO 2) 
-#define TFT_CS   D20  // Chip select control pin (GPIO 20)
-#define TFT_DC   D18  // Data Command control pin (GPIO 18)
-#define TFT_RST  D19  // Reset pin (GPIO 19)
+#define TFT_CS   20  // Chip select control pin (GPIO 20)
+#define TFT_DC   18  // Data Command control pin (GPIO 18)
+#define TFT_RST  19  // Reset pin (GPIO 19)
 
 // Other boards (including Feather boards) may have other pinouts;
 // see learn.adafruit.com/adafruit-2-4-tft-touch-screen-featherwing/pinouts
