@@ -36,3 +36,13 @@ To download. click the DOWNLOADS button in the top right corner, rename the unco
 Place the Adafruit_ILI9341 library folder your arduinosketchfolder/libraries/ folder. You may need to create the libraries subfolder if its your first library. Restart the IDE
 
 Also requires the Adafruit_GFX library for Arduino.
+
+**UNSUPPORTED Advanced Options**
+You can change the TFT Width/Height by adding the below two lines ABOCE the include line for this library.  
+** NOTE: This is only for displays of different sizes, or specifically if your screen is showing only on 3/4 of your display, and 1/4 is jibberish, you likely need to use the two lines below.  
+
+#define ILI9341_TFTHEIGHT 240
+#define ILI9341_TFTWIDTH  320
+
+#include "Adafruit_ILI9341.h"
+
