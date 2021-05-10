@@ -21,27 +21,27 @@
    #define TFT_CS   0
    #define TFT_DC   15
    #define SD_CS    2
-#else if defined(ESP32)
+#elif defined(ESP32)
    #define STMPE_CS 32
    #define TFT_CS   15
    #define TFT_DC   33
    #define SD_CS    14
-#else if defined(TEENSYDUINO)
+#elif defined(TEENSYDUINO)
    #define TFT_DC   10
    #define TFT_CS   4
    #define STMPE_CS 3
    #define SD_CS    8
-#else if defined(ARDUINO_STM32_FEATHER)
+#elif defined(ARDUINO_STM32_FEATHER)
    #define TFT_DC   PB4
    #define TFT_CS   PA15
    #define STMPE_CS PC7
    #define SD_CS    PC5
-#else if defined(ARDUINO_NRF52832_FEATHER)  /* BSP 0.6.5 and higher! */
+#elif defined(ARDUINO_NRF52832_FEATHER)  /* BSP 0.6.5 and higher! */
    #define TFT_DC   11
    #define TFT_CS   31
    #define STMPE_CS 30
    #define SD_CS    27
-#else if defined(ARDUINO_MAX32620FTHR) || defined(ARDUINO_MAX32630FTHR)
+#elif defined(ARDUINO_MAX32620FTHR) || defined(ARDUINO_MAX32630FTHR)
    #define TFT_DC   P5_4
    #define TFT_CS   P5_3
    #define STMPE_CS P3_3
