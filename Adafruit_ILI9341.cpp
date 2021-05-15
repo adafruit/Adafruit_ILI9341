@@ -277,7 +277,7 @@ void Adafruit_ILI9341::scrollTo(uint16_t y) {
 void Adafruit_ILI9341::setScrollMargins(uint16_t top, uint16_t bottom) {
   // TFA+VSA+BFA must equal 320
   if (top + bottom <= ILI9341_TFTHEIGHT) {
-    uint16_t middle = ILI9341_TFTHEIGHT - top + bottom;
+    uint16_t middle = ILI9341_TFTHEIGHT - (top + bottom);
     uint8_t data[6];
     data[0] = top >> 8;
     data[1] = top & 0xff;
