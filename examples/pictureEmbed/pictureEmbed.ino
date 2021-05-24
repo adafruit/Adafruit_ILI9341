@@ -27,20 +27,30 @@
 //#define TFT_CS 10
 
 // Feather 32u4 or M0 with TFT FeatherWing:
-#define TFT_DC 10
-#define TFT_CS  9
+//#define TFT_DC 10
+//#define TFT_CS  9
 // ESP8266:
 //#define TFT_DC 15
 //#define TFT_CS 0
+// Raspberry Pi Pico (RP2040)
+// TFT MISO/SDO     connects to Pico pin D0 (GPIO 0)
+// TFT MOSI/SDI     connects to Pico pin D3 (GPIO 3)
+// TFT CLK/SCK/SCLK connects to Pico pin D2 (GPIO 2) 
+#define TFT_CS   20  // Chip select control pin (GPIO 20)
+#define TFT_DC   18  // Data Command control pin (GPIO 18)
+#define TFT_RST  19  // Reset pin (GPIO 19)
+
 // Other boards (including Feather boards) may have other pinouts;
 // see learn.adafruit.com/adafruit-2-4-tft-touch-screen-featherwing/pinouts
 
-Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
+//Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 // If using the breakout, change pins as desired
 //Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);
+// If using Raspberry Pi Pico (RP2040)
+Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);
 
 void setup() {
-  tft.begin();
+  tft.begin(64000000); // Can set SPI clock rate
 }
 
 void loop(void) {

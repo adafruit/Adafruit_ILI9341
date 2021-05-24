@@ -19,19 +19,28 @@
 #include "Adafruit_ILI9341.h"
 
 // For the Adafruit shield, these are the default.
-#define TFT_DC 9
-#define TFT_CS 10
+//#define TFT_DC 9
+//#define TFT_CS 10
+
+// For Raspberry Pi Pico (RP2040)
+// TFT MISO/SDO     connects to Pico pin D0 (GPIO 0)
+// TFT MOSI/SDI     connects to Pico pin D3 (GPIO 3)
+// TFT CLK/SCK/SCLK connects to Pico pin D2 (GPIO 2) 
+#define TFT_CS   20  // Chip select control pin (GPIO 20)
+#define TFT_DC   18  // Data Command control pin (GPIO 18)
+#define TFT_RST  19  // Reset pin (GPIO 19)
 
 // Use hardware SPI (on Uno, #13, #12, #11) and the above for CS/DC
-Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
+//Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 // If using the breakout, change pins as desired
 //Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);
+// If using Raspberry Pi Pico (RP2040)
+Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);
 
 void setup() {
   Serial.begin(9600);
   Serial.println("ILI9341 Test!"); 
- 
-  tft.begin();
+  tft.begin(64000000); // Can set SPI clock rate
 
   // read diagnostics (optional but can help debug problems)
   uint8_t x = tft.readcommand8(ILI9341_RDMODE);
