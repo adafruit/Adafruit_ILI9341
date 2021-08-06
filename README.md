@@ -35,4 +35,4 @@ To download. click the DOWNLOADS button in the top right corner, rename the unco
 
 Place the Adafruit_ILI9341 library folder your arduinosketchfolder/libraries/ folder. You may need to create the libraries subfolder if its your first library. Restart the IDE
 
-Also requires the Adafruit_GFX library for Arduino.
+Also requires the [Adafruit_GFX](https://github.com/adafruit/Adafruit-GFX-Library) library for Arduino.
