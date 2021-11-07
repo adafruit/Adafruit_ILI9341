@@ -1,3 +1,11 @@
+Raspberry PI Pico (RP2040) optimised to work with Earle Philhower's Arduino board package and my optimised fork of Adafruit_GFX here:
+
+https://github.com/Bodmer/Adafruit-GFX-Library
+
+
+
+
+
 # Adafruit ILI9341 Arduino Library [![Build Status](https://github.com/adafruit/Adafruit_ILI9341/workflows/Arduino%20Library%20CI/badge.svg)](https://github.com/adafruit/Adafruit_ILI9341/actions)[![Documentation](https://github.com/adafruit/ci-arduino/blob/master/assets/doxygen_badge.svg)](http://adafruit.github.io/Adafruit_ILI9341/html/index.html)
 
 This is a library for the Adafruit ILI9341 display products
