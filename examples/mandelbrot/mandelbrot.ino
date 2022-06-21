@@ -14,15 +14,15 @@
 #else
   // Use SPI
   #define STMPE_CS 6
-  #define TFT_CS   9
-  #define TFT_DC   10
+  #define TFT_CS   10
+  #define TFT_DC   9
   #define SD_CS    5
   Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 #endif
 
 
 const int16_t
-  bits        = 20,   // Fractional resolution
+  bits        = 12,   // Fractional resolution
   pixelWidth  = 320,  // TFT dimensions
   pixelHeight = 240,
   iterations  = 128;  // Fractal iteration limit or 'dwell'
@@ -37,7 +37,7 @@ float
 #endif
 
 void setup(void) {
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.print("Mandelbrot drawer!");
 
   tft.begin();
