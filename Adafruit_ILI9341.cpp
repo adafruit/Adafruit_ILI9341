@@ -145,7 +145,16 @@ Adafruit_ILI9341::Adafruit_ILI9341(SPIClass *spiClass, int8_t dc, int8_t cs,
 Adafruit_ILI9341::Adafruit_ILI9341(tftBusWidth busWidth, int8_t d0, int8_t wr,
                                    int8_t dc, int8_t cs, int8_t rst, int8_t rd)
     : Adafruit_SPITFT(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT, busWidth, d0, wr, dc,
-                      cs, rst, rd) {}
+                      cs, rst, rd) {
+#if defined(CONFIG_IDF_TARGET_ESP32S3)
+  esp_lcd_panel_dev_config_t panel_config = {
+      .reset_gpio_num = rst,
+      .color_space = ESP_LCD_COLOR_SPACE_BGR,
+      .bits_per_pixel = 16,
+  };
+  esp_lcd_new_panel_st7789(io_handle, &panel_config, &tft8.panel_handle);
+#endif
+}
 
 // clang-format off
 static const uint8_t PROGMEM initcmd[] = {
