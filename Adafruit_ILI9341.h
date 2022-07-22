@@ -40,7 +40,6 @@
 #include "Arduino.h"
 #include "Print.h"
 #include <Adafruit_SPITFT.h>
-#include <Adafruit_SPITFT_Macros.h>
 #include <SPI.h>
 
 #define ILI9341_TFTWIDTH 240  ///< ILI9341 max TFT width
