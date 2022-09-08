@@ -143,7 +143,8 @@ Adafruit_ILI9341::Adafruit_ILI9341(SPIClass *spiClass, int16_t dc, int16_t cs,
 */
 /**************************************************************************/
 Adafruit_ILI9341::Adafruit_ILI9341(tftBusWidth busWidth, int16_t d0, int16_t wr,
-                                   int16_t dc, int16_t cs, int16_t rst, int16_t rd)
+                                   int16_t dc, int16_t cs, int16_t rst,
+                                   int16_t rd)
     : Adafruit_SPITFT(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT, busWidth, d0, wr, dc,
                       cs, rst, rd) {}
 
