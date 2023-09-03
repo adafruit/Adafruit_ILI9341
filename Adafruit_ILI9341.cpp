@@ -51,7 +51,7 @@
 #include "pins_arduino.h"
 #ifndef RASPI
 #if defined __has_include
-#if __has_include ("wiring_private.h")
+#if __has_include("wiring_private.h")
 #include "wiring_private.h"
 #endif
 #endif
