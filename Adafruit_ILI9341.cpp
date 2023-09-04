@@ -65,6 +65,8 @@
 #define SPI_DEFAULT_FREQ 8000000
 #elif defined(ESP8266) || defined(ESP32)
 #define SPI_DEFAULT_FREQ 40000000
+#elif defined(ARDUINO_ARCH_SPRESENSE)
+#define SPI_DEFAULT_FREQ 40000000
 #elif defined(RASPI)
 #define SPI_DEFAULT_FREQ 80000000
 #elif defined(ARDUINO_ARCH_STM32F1)
@@ -188,7 +190,11 @@ void Adafruit_ILI9341::begin(uint32_t freq) {
 
   if (!freq)
     freq = SPI_DEFAULT_FREQ;
+#if defined(ARDUINO_ARCH_SPRESENSE)
+  initSPI(freq, SPI_MODE3);
+#else
   initSPI(freq);
+#endif
 
   if (_rst < 0) {                 // If no hardware reset pin...
     sendCommand(ILI9341_SWRESET); // Engage software reset
