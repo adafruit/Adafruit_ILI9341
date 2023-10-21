@@ -12,12 +12,13 @@
   MIT license, all text above must be included in any redistribution
  ****************************************************/
 
-#include <SPI.h>
-#include <Wire.h>      // this is needed even tho we aren't using it
-
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ILI9341.h> // Hardware-specific library
-#include <Adafruit_STMPE610.h>
+
+// If using the rev 1 with STMPE resistive touch screen controller uncomment this line:
+//#include <Adafruit_STMPE610.h>
+// If using the rev 2 with TSC2007, uncomment this line:
+#include <Adafruit_TSC2007.h>
 
 #ifdef ESP8266
    #define STMPE_CS 16
@@ -59,14 +60,30 @@
 
 
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
-Adafruit_STMPE610 ts = Adafruit_STMPE610(STMPE_CS);
 
+#if defined(_ADAFRUIT_STMPE610H_)
+  Adafruit_STMPE610 ts = Adafruit_STMPE610(STMPE_CS);
+#elif defined(_ADAFRUIT_TSC2007_H)
+  // If you're using the TSC2007 there is no CS pin needed, so instead its an IRQ!
+  #define TSC_IRQ STMPE_CS
+  Adafruit_TSC2007 ts = Adafruit_TSC2007();             // newer rev 2 touch contoller
+#else
+  #error("You must have either STMPE or TSC2007 headers included!")
+#endif
 
 // This is calibration data for the raw touch data to the screen coordinates
-#define TS_MINX 3800
-#define TS_MAXX 100
-#define TS_MINY 100
-#define TS_MAXY 3750
+// For STMPE811/STMPE610
+#define STMPE_TS_MINX 3800
+#define STMPE_TS_MAXX 100
+#define STMPE_TS_MINY 100
+#define STMPE_TS_MAXY 3750
+// For TSC2007
+#define TSC_TS_MINX 300
+#define TSC_TS_MAXX 3800
+#define TSC_TS_MINY 185
+#define TSC_TS_MAXY 3700
+// we will assign the calibration values on init
+int16_t min_x, max_x, min_y, max_y;
 
 // Size of the color selection boxes and the paintbrush size
 #define BOXSIZE 40
@@ -75,13 +92,28 @@ int oldcolor, currentcolor;
 
 void setup(void) {
   Serial.begin(115200);
-
+  //while (!Serial);
+  
   delay(10);
-  Serial.println("FeatherWing TFT");
+  Serial.println("FeatherWing TFT Demo sketch");
+  
+#if defined(_ADAFRUIT_STMPE610H_)
   if (!ts.begin()) {
-    Serial.println("Couldn't start touchscreen controller");
-    while (1);
+    Serial.println("Couldn't start STMPE touchscreen controller");
+    while (1) delay(100);
   }
+  min_x = STMPE_TS_MINX; max_x = STMPE_TS_MAXX;
+  min_y = STMPE_TS_MINY; max_y = STMPE_TS_MAXY;
+#else
+  if (! ts.begin(0x48, &Wire)) {
+    Serial.println("Couldn't start TSC2007 touchscreen controller");
+    while (1) delay(100);
+  }
+  min_x = TSC_TS_MINX; max_x = TSC_TS_MAXX;
+  min_y = TSC_TS_MINY; max_y = TSC_TS_MAXY;
+  pinMode(TSC_IRQ, INPUT);
+#endif
+
   Serial.println("Touchscreen started");
   
   tft.begin();
@@ -101,17 +133,25 @@ void setup(void) {
 }
 
 void loop() {
-  // Retrieve a point  
+#if defined(TSC_IRQ)
+  if (digitalRead(TSC_IRQ)) {
+    // IRQ pin is high, nothing to read!
+    return;
+  }
+#endif
   TS_Point p = ts.getPoint();
-  
+
   Serial.print("X = "); Serial.print(p.x);
   Serial.print("\tY = "); Serial.print(p.y);
-  Serial.print("\tPressure = "); Serial.println(p.z);  
- 
+  Serial.print("\tPressure = "); Serial.print(p.z);
+  if (((p.x == 0) && (p.y == 0)) || (p.z < 10)) return; // no pressure, no touch
  
   // Scale from ~0->4000 to tft.width using the calibration #'s
-  p.x = map(p.x, TS_MINX, TS_MAXX, 0, tft.width());
-  p.y = map(p.y, TS_MINY, TS_MAXY, 0, tft.height());
+  p.x = map(p.x, min_x, max_x, 0, tft.width());
+  p.y = map(p.y, min_y, max_y, 0, tft.height());
+  Serial.print(" -> "); Serial.print(p.x); Serial.print(", "); Serial.println(p.y);
+
+ 
 
   if (p.y < BOXSIZE) {
      oldcolor = currentcolor;
