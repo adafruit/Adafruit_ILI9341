@@ -59,7 +59,8 @@
 #define SPI_DEFAULT_FREQ 16000000
 // Teensy 3.0, 3.1/3.2, 3.5, 3.6
 #elif defined(__MK20DX128__) || defined(__MK20DX256__) ||                      \
-    defined(__MK64FX512__) || defined(__MK66FX1M0__)
+    defined(__MK64FX512__) || defined(__MK66FX1M0__) ||                        \
+    defined(ARDUINO_TEENSY40) || defined(ARDUINO_TEENSY41)
 #define SPI_DEFAULT_FREQ 40000000
 #elif defined(__AVR__) || defined(TEENSYDUINO)
 #define SPI_DEFAULT_FREQ 8000000
