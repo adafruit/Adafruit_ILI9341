@@ -256,19 +256,17 @@ void Adafruit_ILI9341::setRotation(uint8_t m, bool mirrored) {
   switch (rotation) {
   case 0:
     if (mirrored) {
-        m = (MADCTL_BGR);
-    }
-    else {
-        m = (MADCTL_MX | MADCTL_BGR);
+      m = (MADCTL_BGR);
+    } else {
+      m = (MADCTL_MX | MADCTL_BGR);
     }
     _width = ILI9341_TFTWIDTH;
     _height = ILI9341_TFTHEIGHT;
     break;
   case 1:
     if (mirrored) {
-        m = (MADCTL_MY | MADCTL_MV | MADCTL_BGR);
-    }
-    else {
+      m = (MADCTL_MY | MADCTL_MV | MADCTL_BGR);
+    } else {
       m = (MADCTL_MV | MADCTL_BGR);
     }
     _width = ILI9341_TFTHEIGHT;
@@ -277,8 +275,7 @@ void Adafruit_ILI9341::setRotation(uint8_t m, bool mirrored) {
   case 2:
     if (mirrored) {
       m = (MADCTL_MX | MADCTL_MY | MADCTL_BGR);
-    }
-    else {
+    } else {
       m = (MADCTL_MY | MADCTL_BGR);
     }
     _width = ILI9341_TFTWIDTH;
@@ -287,8 +284,7 @@ void Adafruit_ILI9341::setRotation(uint8_t m, bool mirrored) {
   case 3:
     if (mirrored) {
       m = (MADCTL_MX | MADCTL_MV | MADCTL_BGR);
-    }
-    else {
+    } else {
       m = (MADCTL_MX | MADCTL_MY | MADCTL_MV | MADCTL_BGR);
     }
     _width = ILI9341_TFTHEIGHT;
