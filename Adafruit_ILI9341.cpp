@@ -246,6 +246,61 @@ void Adafruit_ILI9341::setRotation(uint8_t m) {
 
 /**************************************************************************/
 /*!
+    @brief   Set origin of (0,0) and orientation of TFT display
+    @param   m  The index for rotation, from 0-3 inclusive
+    @param   mirrored True to mirror display, false to keep display as-is
+*/
+/**************************************************************************/
+void Adafruit_ILI9341::setRotation(uint8_t m, bool mirrored) {
+  rotation = m % 4; // can't be higher than 3
+  switch (rotation) {
+  case 0:
+    if (mirrored) {
+        m = (MADCTL_BGR);
+    }
+    else {
+        m = (MADCTL_MX | MADCTL_BGR);
+    }
+    _width = ILI9341_TFTWIDTH;
+    _height = ILI9341_TFTHEIGHT;
+    break;
+  case 1:
+    if (mirrored) {
+        m = (MADCTL_MY | MADCTL_MV | MADCTL_BGR);
+    }
+    else {
+      m = (MADCTL_MV | MADCTL_BGR);
+    }
+    _width = ILI9341_TFTHEIGHT;
+    _height = ILI9341_TFTWIDTH;
+    break;
+  case 2:
+    if (mirrored) {
+      m = (MADCTL_MX | MADCTL_MY | MADCTL_BGR);
+    }
+    else {
+      m = (MADCTL_MY | MADCTL_BGR);
+    }
+    _width = ILI9341_TFTWIDTH;
+    _height = ILI9341_TFTHEIGHT;
+    break;
+  case 3:
+    if (mirrored) {
+      m = (MADCTL_MX | MADCTL_MV | MADCTL_BGR);
+    }
+    else {
+      m = (MADCTL_MX | MADCTL_MY | MADCTL_MV | MADCTL_BGR);
+    }
+    _width = ILI9341_TFTHEIGHT;
+    _height = ILI9341_TFTWIDTH;
+    break;
+  }
+
+  sendCommand(ILI9341_MADCTL, &m, 1);
+}
+
+/**************************************************************************/
+/*!
     @brief   Enable/Disable display color inversion
     @param   invert True to invert, False to have normal color
 */
