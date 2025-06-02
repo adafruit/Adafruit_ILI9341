@@ -101,7 +101,7 @@
 
 #define ILI9341_GMCTRP1 0xE0 ///< Positive Gamma Correction
 #define ILI9341_GMCTRN1 0xE1 ///< Negative Gamma Correction
-//#define ILI9341_PWCTR6     0xFC
+// #define ILI9341_PWCTR6     0xFC
 
 // Color definitions
 #define ILI9341_BLACK 0x0000       ///<   0,   0,   0
