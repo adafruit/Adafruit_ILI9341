@@ -22,7 +22,7 @@
 
 
 const int16_t
-  bits        = 20,   // Fractional resolution
+  bits        = 12,   // Fractional resolution
   pixelWidth  = 320,  // TFT dimensions
   pixelHeight = 240,
   iterations  = 128;  // Fractal iteration limit or 'dwell'
