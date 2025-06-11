@@ -26,11 +26,17 @@
    #define TFT_CS   7
    #define TFT_DC   8
    #define SD_CS    5
-#elif defined(ESP32) && !defined(ARDUINO_ADAFRUIT_FEATHER_ESP32S2)
+#elif defined(ESP32) && !defined(ARDUINO_ADAFRUIT_FEATHER_ESP32S2) && \
+      !defined(ARDUINO_FEATHERS3)
    #define STMPE_CS 32
    #define TFT_CS   15
    #define TFT_DC   33
    #define SD_CS    14
+#elif defined(ARDUINO_FEATHERS3)
+   #define TFT_DC   3
+   #define TFT_CS   1
+   #define STMPE_CS 38
+   #define SD_CS    33
 #elif defined(TEENSYDUINO)
    #define TFT_DC   10
    #define TFT_CS   4
@@ -80,8 +86,8 @@ void setup() {
   x = tft.readcommand8(ILI9341_RDIMGFMT);
   Serial.print("Image Format: 0x"); Serial.println(x, HEX);
   x = tft.readcommand8(ILI9341_RDSELFDIAG);
-  Serial.print("Self Diagnostic: 0x"); Serial.println(x, HEX); 
-  
+  Serial.print("Self Diagnostic: 0x"); Serial.println(x, HEX);
+
   Serial.println(F("Benchmark                Time (microseconds)"));
   delay(10);
   Serial.print(F("Screen fill              "));
@@ -194,7 +200,7 @@ unsigned long testLines(uint16_t color) {
 
   tft.fillScreen(ILI9341_BLACK);
   yield();
-  
+
   x1 = y1 = 0;
   y2    = h - 1;
   start = micros();
