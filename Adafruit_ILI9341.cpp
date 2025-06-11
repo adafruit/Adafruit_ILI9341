@@ -93,8 +93,8 @@
     @param    miso  SPI MISO pin # (optional, pass -1 if unused)
 */
 /**************************************************************************/
-Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t mosi,
-                                   int8_t sclk, int8_t rst, int8_t miso)
+Adafruit_ILI9341::Adafruit_ILI9341(int16_t cs, int16_t dc, int16_t mosi,
+                                   int16_t sclk, int16_t rst, int16_t miso)
     : Adafruit_SPITFT(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT, cs, dc, mosi, sclk,
                       rst, miso) {}
 
@@ -107,7 +107,7 @@ Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t mosi,
     @param  rst  Reset pin # (optional, pass -1 if unused).
 */
 /**************************************************************************/
-Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t rst)
+Adafruit_ILI9341::Adafruit_ILI9341(int16_t cs, int16_t dc, int16_t rst)
     : Adafruit_SPITFT(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT, cs, dc, rst) {}
 
 #if !defined(ESP8266)
@@ -122,8 +122,8 @@ Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t rst)
     @param  rst       Reset pin # (optional, pass -1 if unused).
 */
 /**************************************************************************/
-Adafruit_ILI9341::Adafruit_ILI9341(SPIClass *spiClass, int8_t dc, int8_t cs,
-                                   int8_t rst)
+Adafruit_ILI9341::Adafruit_ILI9341(SPIClass *spiClass, int16_t dc, int16_t cs,
+                                   int16_t rst)
     : Adafruit_SPITFT(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT, spiClass, cs, dc,
                       rst) {}
 #endif // end !ESP8266
@@ -143,8 +143,9 @@ Adafruit_ILI9341::Adafruit_ILI9341(SPIClass *spiClass, int8_t dc, int8_t cs,
     @param  rd        Read strobe pin # (optional, pass -1 if unused).
 */
 /**************************************************************************/
-Adafruit_ILI9341::Adafruit_ILI9341(tftBusWidth busWidth, int8_t d0, int8_t wr,
-                                   int8_t dc, int8_t cs, int8_t rst, int8_t rd)
+Adafruit_ILI9341::Adafruit_ILI9341(tftBusWidth busWidth, int16_t d0, int16_t wr,
+                                   int16_t dc, int16_t cs, int16_t rst,
+                                   int16_t rd)
     : Adafruit_SPITFT(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT, busWidth, d0, wr, dc,
                       cs, rst, rd) {}
 
