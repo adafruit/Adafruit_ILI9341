@@ -30,7 +30,18 @@
    #define TFT_CS   7
    #define TFT_DC   8
    #define SD_CS    5
-#elif defined(ESP32) && !defined(ARDUINO_ADAFRUIT_FEATHER_ESP32S2)
+#elif defined(ARDUINO_ADAFRUIT_FEATHER_ESP32S2)         || \
+      defined(ARDUINO_ADAFRUIT_FEATHER_ESP32S2_REVTFT)  || \
+      defined(ARDUINO_ADAFRUIT_FEATHER_ESP32S2_TFT)     || \
+      defined(ARDUINO_ADAFRUIT_FEATHER_ESP32S3)         || \
+      defined(ARDUINO_ADAFRUIT_FEATHER_ESP32S3_NOPSRAM) || \
+      defined(ARDUINO_ADAFRUIT_FEATHER_ESP32S3_REVTFT)  || \
+      defined(ARDUINO_ADAFRUIT_FEATHER_ESP32S3_TFT)
+  #define STMPE_CS  6
+  #define TFT_CS    9
+  #define TFT_DC   10
+  #define SD_CS     5
+#elif defined(ESP32)
    #define STMPE_CS 32
    #define TFT_CS   15
    #define TFT_DC   33
