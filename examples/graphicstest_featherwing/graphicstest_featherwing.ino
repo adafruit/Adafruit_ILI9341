@@ -42,11 +42,21 @@
    #define TFT_CS   15
    #define TFT_DC   33
    #define SD_CS    14
-#elif defined(ARDUINO_FEATHERS3)
+#elif defined(ARDUINO_FEATHERS3) || defined(ARDUINO_FEATHERS2)
    #define TFT_DC   3
    #define TFT_CS   1
    #define STMPE_CS 38
    #define SD_CS    33
+#elif defined(ARDUINO_PROS3)
+   #define TFT_DC   3
+   #define TFT_CS   1
+   #define STMPE_CS 38
+   #define SD_CS    34
+#elif defined(ARDUINO_NANOS3)
+   #define TFT_DC   3
+   #define TFT_CS   1
+   #define STMPE_CS 33
+   #define SD_CS    34
 #elif defined(TEENSYDUINO)
    #define TFT_DC   10
    #define TFT_CS   4
