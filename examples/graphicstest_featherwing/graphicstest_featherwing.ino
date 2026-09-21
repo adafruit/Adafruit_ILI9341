@@ -42,6 +42,21 @@
    #define TFT_CS   15
    #define TFT_DC   33
    #define SD_CS    14
+#elif defined(ARDUINO_FEATHERS3) || defined(ARDUINO_FEATHERS2)
+   #define TFT_DC   3
+   #define TFT_CS   1
+   #define STMPE_CS 38
+   #define SD_CS    33
+#elif defined(ARDUINO_PROS3)
+   #define TFT_DC   3
+   #define TFT_CS   1
+   #define STMPE_CS 38
+   #define SD_CS    34
+#elif defined(ARDUINO_NANOS3)
+   #define TFT_DC   3
+   #define TFT_CS   1
+   #define STMPE_CS 33
+   #define SD_CS    34
 #elif defined(TEENSYDUINO)
    #define TFT_DC   10
    #define TFT_CS   4
@@ -91,8 +106,8 @@ void setup() {
   x = tft.readcommand8(ILI9341_RDIMGFMT);
   Serial.print("Image Format: 0x"); Serial.println(x, HEX);
   x = tft.readcommand8(ILI9341_RDSELFDIAG);
-  Serial.print("Self Diagnostic: 0x"); Serial.println(x, HEX); 
-  
+  Serial.print("Self Diagnostic: 0x"); Serial.println(x, HEX);
+
   Serial.println(F("Benchmark                Time (microseconds)"));
   delay(10);
   Serial.print(F("Screen fill              "));
@@ -205,7 +220,7 @@ unsigned long testLines(uint16_t color) {
 
   tft.fillScreen(ILI9341_BLACK);
   yield();
-  
+
   x1 = y1 = 0;
   y2    = h - 1;
   start = micros();
