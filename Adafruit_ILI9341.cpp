@@ -47,7 +47,7 @@
  */
 
 #include "Adafruit_ILI9341.h"
-#ifndef ARDUINO_STM32_FEATHER
+#if !defined(ARDUINO_STM32_FEATHER) && !defined(ARDUINO_ARCH_ZEPHYR)
 #include "pins_arduino.h"
 #if !defined(RASPI) && !defined(ARDUINO_UNOR4_MINIMA) &&                       \
     !defined(ARDUINO_UNOR4_WIFI)
