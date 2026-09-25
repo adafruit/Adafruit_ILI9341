@@ -187,6 +187,8 @@ static const uint8_t PROGMEM initcmd[] = {
 /**************************************************************************/
 void Adafruit_ILI9341::begin(uint32_t freq) {
 
+  old_x1 = old_x2 = old_y1 = old_y2 = 0xffff;
+
   if (!freq)
     freq = SPI_DEFAULT_FREQ;
   initSPI(freq);
@@ -303,9 +305,6 @@ void Adafruit_ILI9341::setScrollMargins(uint16_t top, uint16_t bottom) {
 /**************************************************************************/
 void Adafruit_ILI9341::setAddrWindow(uint16_t x1, uint16_t y1, uint16_t w,
                                      uint16_t h) {
-  static uint16_t old_x1 = 0xffff, old_x2 = 0xffff;
-  static uint16_t old_y1 = 0xffff, old_y2 = 0xffff;
-
   uint16_t x2 = (x1 + w - 1), y2 = (y1 + h - 1);
   if (x1 != old_x1 || x2 != old_x2) {
     writeCommand(ILI9341_CASET); // Column address set
