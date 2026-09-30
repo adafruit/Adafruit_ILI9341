@@ -145,6 +145,7 @@ public:
 
   void begin(uint32_t freq = 0);
   void setRotation(uint8_t r);
+  void setRotation(uint8_t r, bool mirrored);
   void invertDisplay(bool i);
   void scrollTo(uint16_t y);
   void setScrollMargins(uint16_t top, uint16_t bottom);
