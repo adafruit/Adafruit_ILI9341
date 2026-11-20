@@ -50,7 +50,7 @@
 #ifndef ARDUINO_STM32_FEATHER
 #include "pins_arduino.h"
 #if !defined(RASPI) && !defined(ARDUINO_UNOR4_MINIMA) &&                       \
-    !defined(ARDUINO_UNOR4_WIFI)
+    !defined(ARDUINO_UNOR4_WIFI) && !defined(ARDUINO_ARCH_CH32)
 #include "wiring_private.h"
 #endif
 #endif
